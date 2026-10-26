@@ -1,1 +1,1447 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>Tottori Star Pocket</title>
 
+  <!-- PWA & Mobile Optimization Meta -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="theme-color" content="#030610">
+
+  <style>
+    :root {
+      --primary-blue: #3b82f6;
+      --neon-glow: #60a5fa;
+      --accent-gold: #fbbf24;
+      --glass-bg: rgba(10, 18, 36, 0.85);
+      --glass-border: rgba(147, 197, 253, 0.25);
+      --text-main: #f8fafc;
+      --text-sub: #94a3b8;
+      --radius-main: 24px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      user-select: none;
+      -webkit-user-select: none;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body, html {
+      width: 100vw;
+      height: 100vh;
+      height: 100dvh;
+      overflow: hidden;
+      background: #030610;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
+      color: var(--text-main);
+      position: fixed;
+      top: 0;
+      left: 0;
+    }
+
+    /* 3D Canvas 背景 */
+    #canvas-container {
+      width: 100vw;
+      height: 100vh;
+      height: 100dvh;
+      position: absolute;
+      top: 0;
+      left: 0;
+      z-index: 1;
+      touch-action: none;
+    }
+
+    /* 鳥取砂丘・馬の背のシルエット */
+    .dune-silhouette {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 28vh;
+      pointer-events: none;
+      z-index: 15;
+      overflow: hidden;
+      transition: opacity 0.4s ease, visibility 0.4s;
+    }
+    .dune-silhouette.is-hidden {
+      opacity: 0;
+      visibility: hidden;
+    }
+    .dune-svg {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      filter: drop-shadow(0 -4px 12px rgba(0, 0, 0, 0.8));
+    }
+
+    /* プラネタリウム風 レティクル */
+    .planetarium-grid {
+      position: absolute;
+      top: 45%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 70vw;
+      height: 70vw;
+      max-width: 420px;
+      max-height: 420px;
+      border: 1px dashed rgba(96, 165, 250, 0.25);
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 2;
+      box-shadow: 0 0 50px rgba(59, 130, 246, 0.12) inset;
+      opacity: 0.8;
+      transition: opacity 0.3s ease;
+    }
+    .planetarium-grid::before {
+      content: '';
+      position: absolute;
+      top: 50%; left: 0; width: 100%; height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(96, 165, 250, 0.25), transparent);
+    }
+    .planetarium-grid::after {
+      content: '';
+      position: absolute;
+      top: 0; left: 50%; width: 1px; height: 100%;
+      background: linear-gradient(180deg, transparent, rgba(96, 165, 250, 0.25), transparent);
+    }
+    .planetarium-grid.is-hidden {
+      display: none !important;
+    }
+
+    /* 方位表示カード */
+    .compass-card {
+      background: rgba(15, 23, 42, 0.7);
+      border: 1px solid var(--glass-border);
+      border-radius: 16px;
+      padding: 4px 10px;
+      font-size: 11px;
+      color: var(--neon-glow);
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      backdrop-filter: blur(8px);
+    }
+
+    /* UIレイヤー */
+    .ui-layer {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      height: 100dvh;
+      z-index: 20;
+      pointer-events: none;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: max(12px, env(safe-area-inset-top)) max(12px, env(safe-area-inset-right)) max(12px, env(safe-area-inset-bottom)) max(12px, env(safe-area-inset-left));
+    }
+
+    .glass-card {
+      background: var(--glass-bg);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius-main);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+      pointer-events: auto;
+    }
+
+    .drag-handle {
+      width: 36px;
+      height: 4px;
+      background: rgba(255, 255, 255, 0.3);
+      border-radius: 2px;
+      margin: 0 auto 10px auto;
+      cursor: pointer;
+    }
+
+    /* スタート画面 */
+    .screen-start {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 50;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      padding: 30px;
+      transition: opacity 0.5s ease, visibility 0.5s;
+    }
+    .start-logo {
+      font-size: 28px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      margin-bottom: 8px;
+      text-shadow: 0 0 15px rgba(96, 165, 250, 0.6);
+    }
+    .start-sub {
+      font-size: 13px;
+      color: var(--text-sub);
+      margin-bottom: 40px;
+    }
+    .btn-primary {
+      background: linear-gradient(135deg, var(--primary-blue), #1d4ed8);
+      color: #ffffff;
+      border: 1px solid rgba(147, 197, 253, 0.4);
+      padding: 14px 36px;
+      font-size: 15px;
+      font-weight: 600;
+      border-radius: 30px;
+      cursor: pointer;
+      box-shadow: 0 0 20px rgba(37, 99, 235, 0.5);
+      transition: transform 0.2s, background 0.3s;
+    }
+    .btn-primary:active { transform: scale(0.95); }
+
+    /* チュートリアル */
+    .screen-tutorial {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 40;
+      display: none;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+      background: rgba(4, 7, 15, 0.6);
+      backdrop-filter: blur(8px);
+    }
+    .tutorial-card {
+      width: 100%;
+      max-width: 340px;
+      padding: 24px;
+      text-align: center;
+    }
+
+    /* ヘッダー */
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 12px;
+      opacity: 0;
+      transition: opacity 0.5s;
+    }
+
+    .time-chip {
+      background: rgba(59, 130, 246, 0.2);
+      border: 1px solid var(--glass-border);
+      border-radius: 10px;
+      padding: 2px 6px;
+      font-size: 10px;
+      color: var(--neon-glow);
+      cursor: pointer;
+      margin-left: 4px;
+    }
+
+    .gyro-btn {
+      background: rgba(59, 130, 246, 0.2);
+      border: 1px solid var(--glass-border);
+      border-radius: 12px;
+      padding: 5px 10px;
+      color: var(--neon-glow);
+      font-size: 11px;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .gyro-btn.active {
+      background: var(--primary-blue);
+      color: #fff;
+    }
+
+    /* 時間選択モーダル */
+    .time-modal {
+      position: absolute;
+      top: 60px;
+      left: 12px;
+      right: 12px;
+      padding: 16px;
+      z-index: 35;
+      display: none;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .time-options {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 8px;
+    }
+    .time-opt-btn {
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid var(--glass-border);
+      border-radius: 12px;
+      padding: 8px;
+      font-size: 12px;
+      color: var(--text-main);
+      cursor: pointer;
+      text-align: center;
+    }
+    .time-opt-btn.active {
+      background: var(--primary-blue);
+      color: #fff;
+      border-color: var(--neon-glow);
+    }
+
+    /* 星詳細シート */
+    .star-sheet {
+      position: absolute;
+      bottom: calc(70px + env(safe-area-inset-bottom));
+      left: 12px;
+      right: 12px;
+      padding: 20px;
+      transform: translateY(140%);
+      transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+      z-index: 30;
+    }
+    .star-sheet.active { transform: translateY(0); }
+
+    /* AIチャットシート */
+    .chat-sheet {
+      position: absolute;
+      bottom: calc(70px + env(safe-area-inset-bottom));
+      left: 12px;
+      right: 12px;
+      height: 62vh;
+      display: flex;
+      flex-direction: column;
+      padding: 16px;
+      transform: translateY(140%);
+      transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+      z-index: 30;
+    }
+    .chat-sheet.active { transform: translateY(0); }
+
+    .chat-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-bottom: 10px;
+      border-bottom: 1px solid var(--glass-border);
+    }
+    .chat-messages {
+      flex: 1;
+      overflow-y: auto;
+      padding: 12px 0;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      -webkit-overflow-scrolling: touch;
+    }
+    .msg {
+      max-width: 85%;
+      padding: 10px 14px;
+      border-radius: 16px;
+      font-size: 13px;
+      line-height: 1.5;
+      user-select: text;
+      -webkit-user-select: text;
+    }
+    .msg-ai {
+      align-self: flex-start;
+      background: rgba(59, 130, 246, 0.25);
+      border: 1px solid rgba(96, 165, 250, 0.3);
+      color: var(--text-main);
+      border-top-left-radius: 4px;
+    }
+    .msg-user {
+      align-self: flex-end;
+      background: var(--primary-blue);
+      color: #ffffff;
+      border-top-right-radius: 4px;
+    }
+
+    .quick-questions {
+      display: flex;
+      gap: 6px;
+      overflow-x: auto;
+      padding: 6px 0;
+      margin-bottom: 4px;
+      -webkit-overflow-scrolling: touch;
+    }
+    .quick-chip {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid var(--glass-border);
+      border-radius: 14px;
+      padding: 6px 12px;
+      font-size: 11px;
+      color: var(--neon-glow);
+      cursor: pointer;
+      white-space: nowrap;
+    }
+    .quick-chip:active {
+      background: rgba(59, 130, 246, 0.4);
+    }
+
+    .chat-input-area {
+      display: flex;
+      gap: 8px;
+      padding-top: 4px;
+    }
+    .chat-input {
+      flex: 1;
+      background: rgba(15, 23, 42, 0.8);
+      border: 1px solid var(--glass-border);
+      border-radius: 20px;
+      padding: 10px 16px;
+      color: #fff;
+      font-size: 13px;
+      outline: none;
+    }
+    .chat-send-btn {
+      background: var(--primary-blue);
+      border: none;
+      border-radius: 20px;
+      padding: 0 16px;
+      color: #fff;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    /* 星を探すシート */
+    .search-sheet {
+      position: absolute;
+      bottom: calc(70px + env(safe-area-inset-bottom));
+      left: 12px;
+      right: 12px;
+      height: 62vh;
+      display: flex;
+      flex-direction: column;
+      padding: 16px;
+      transform: translateY(140%);
+      transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+      z-index: 30;
+    }
+    .search-sheet.active { transform: translateY(0); }
+
+    .search-input-box {
+      position: relative;
+      margin-bottom: 12px;
+    }
+    .search-input-box input {
+      width: 100%;
+      background: rgba(15, 23, 42, 0.8);
+      border: 1px solid var(--glass-border);
+      border-radius: 20px;
+      padding: 10px 16px 10px 36px;
+      color: #fff;
+      font-size: 13px;
+      outline: none;
+    }
+    .search-input-box::before {
+      content: '🔍';
+      position: absolute;
+      left: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 12px;
+      opacity: 0.6;
+    }
+
+    .filter-tags {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 12px;
+      overflow-x: auto;
+      padding-bottom: 4px;
+      -webkit-overflow-scrolling: touch;
+    }
+    .tag {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid var(--glass-border);
+      border-radius: 12px;
+      padding: 5px 12px;
+      font-size: 11px;
+      color: var(--text-sub);
+      cursor: pointer;
+      white-space: nowrap;
+    }
+    .tag.active {
+      background: var(--primary-blue);
+      color: #fff;
+      border-color: var(--neon-glow);
+    }
+
+    .star-list {
+      flex: 1;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      -webkit-overflow-scrolling: touch;
+    }
+    .star-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 14px;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 16px;
+      cursor: pointer;
+    }
+    .star-item:active {
+      background: rgba(59, 130, 246, 0.2);
+    }
+    .star-item.disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+    }
+    .star-item-info h4 {
+      font-size: 14px;
+      color: var(--text-main);
+      margin-bottom: 2px;
+    }
+    .star-item-info p {
+      font-size: 11px;
+      color: var(--text-sub);
+    }
+
+    /* 設定シート */
+    .settings-sheet {
+      position: absolute;
+      bottom: calc(70px + env(safe-area-inset-bottom));
+      left: 12px;
+      right: 12px;
+      height: 60vh;
+      display: flex;
+      flex-direction: column;
+      padding: 16px;
+      transform: translateY(140%);
+      transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+      z-index: 30;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+    .settings-sheet.active { transform: translateY(0); }
+
+    .setting-group {
+      margin-top: 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .setting-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 14px;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 16px;
+    }
+    .setting-label {
+      font-size: 13px;
+      color: var(--text-main);
+    }
+    .setting-desc {
+      font-size: 11px;
+      color: var(--text-sub);
+      margin-top: 2px;
+    }
+
+    .mode-selector {
+      display: flex;
+      gap: 6px;
+      margin-top: 6px;
+    }
+    .mode-btn {
+      flex: 1;
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid var(--glass-border);
+      border-radius: 10px;
+      padding: 6px;
+      font-size: 11px;
+      color: var(--text-sub);
+      cursor: pointer;
+      text-align: center;
+    }
+    .mode-btn.active {
+      background: var(--primary-blue);
+      color: #fff;
+      border-color: var(--neon-glow);
+      font-weight: 600;
+    }
+
+    .switch {
+      position: relative;
+      display: inline-block;
+      width: 44px;
+      height: 24px;
+    }
+    .switch input { opacity: 0; width: 0; height: 0; }
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background-color: rgba(255, 255, 255, 0.2);
+      transition: .3s;
+      border-radius: 24px;
+    }
+    .slider:before {
+      position: absolute;
+      content: "";
+      height: 18px;
+      width: 18px;
+      left: 3px;
+      bottom: 3px;
+      background-color: white;
+      transition: .3s;
+      border-radius: 50%;
+    }
+    input:checked + .slider {
+      background-color: var(--primary-blue);
+    }
+    input:checked + .slider:before {
+      transform: translateX(20px);
+    }
+
+    /* ボトムナビゲーション */
+    .bottom-nav {
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      padding: 10px 6px;
+      margin-top: auto;
+      opacity: 0;
+      transition: opacity 0.5s;
+    }
+    .nav-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      font-size: 10px;
+      color: var(--text-sub);
+      cursor: pointer;
+      background: none;
+      border: none;
+      gap: 2px;
+    }
+    .nav-item span { font-size: 18px; }
+    .nav-item.active { color: var(--neon-glow); }
+
+    .hidden {
+      opacity: 0 !important;
+      pointer-events: none !important;
+      visibility: hidden;
+    }
+  </style>
+
+ <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js"></script>
+</head>
+<body>
+
+  <!-- 3D Canvas 背景 -->
+  <div id="canvas-container"></div>
+  
+  <!-- 鳥取砂丘・馬の背のシルエット -->
+  <div id="dune-silhouette" class="dune-silhouette">
+    <svg class="dune-svg" viewBox="0 0 1440 320" preserveAspectRatio="none">
+      <path fill="#070c18" d="M0,240 Q400,180 800,220 Q1200,260 1440,190 L1440,320 L0,320 Z"></path>
+      <path fill="#02040a" d="M0,200 Q360,130 720,175 Q1080,220 1440,150 L1440,320 L0,320 Z"></path>
+      <path fill="none" stroke="rgba(251, 191, 36, 0.5)" stroke-width="2" d="M0,200 Q360,130 720,175 Q1080,220 1440,150"></path>
+    </svg>
+  </div>
+
+  <!-- プラネタリウム風 ガイドライン -->
+  <div id="planetarium-grid" class="planetarium-grid"></div>
+
+  <!-- 画面1: スタート画面 -->
+  <div id="screen-start" class="screen-start glass-card" style="border-radius:0; border:none; background: rgba(4,7,15,0.88);">
+    <div class="start-logo">Tottori Star Pocket</div>
+    <div class="start-sub">鳥取砂丘・馬の背に立ち、夜空を見上げるリアリティ体験。</div>
+    <button class="btn-primary" onclick="goToTutorial()">馬の背から見上げる ✦</button>
+  </div>
+
+  <!-- 画面2: チュートリアル -->
+  <div id="screen-tutorial" class="screen-tutorial">
+    <div class="glass-card tutorial-card">
+      <h3 style="margin-bottom: 10px; color: var(--neon-glow);">馬の背での見上げ操作</h3>
+      <p style="font-size: 13px; color: var(--text-sub); line-height: 1.6; margin-bottom: 20px;">
+        🔄 左右（360度）に自由に向きを変えられます。<br>
+        🌌 上下は地平線から夜空（180度）を見上げます。<br>
+        ⚙️ 設定からシルエットなしの「360度 自由観測」も可能です。
+      </p>
+      <button class="btn-primary" style="padding: 10px 28px; font-size: 14px;" onclick="startObservation()">観測を開始する</button>
+    </div>
+  </div>
+
+  <!-- UIレイヤー -->
+  <div class="ui-layer">
+    <!-- ヘッダー -->
+    <div id="main-header" class="header glass-card">
+      <div>
+        <div style="font-size: 12px; font-weight: 600; display:flex; align-items:center;">
+          <span>🪐 観測時間:</span>
+          <button class="time-chip" onclick="toggleTimeModal()">🕒 変更</button>
+        </div>
+        <div id="current-datetime-display" style="font-size: 10px; color: var(--accent-gold); margin-top: 1px;">----/--/-- --:--</div>
+      </div>
+      
+      <!-- 方位インジケーター -->
+      <div class="compass-card">
+        <span>🧭</span>
+        <span id="compass-direction" style="color: var(--text-main);">北 (N)</span>
+      </div>
+
+      <button id="gyro-toggle-btn" class="gyro-btn" onclick="toggleGyroMode()">
+        <span>📱</span><span id="gyro-btn-text">かざす</span>
+      </button>
+    </div>
+
+    <!-- プレビュー時間選択ポップアップ -->
+    <div id="time-modal" class="glass-card time-modal">
+      <div style="font-size: 12px; font-weight: 600; color: var(--neon-glow); margin-bottom: 4px;">🕒 観測時間を変更（プレビュー）</div>
+      <div class="time-options">
+        <button class="time-opt-btn active" onclick="setCustomTime('live')">⚡ 現在時刻 (LIVE)</button>
+        <button class="time-opt-btn" onclick="setCustomTime('tonight_20')">🌙 今夜 20:00</button>
+        <button class="time-opt-btn" onclick="setCustomTime('tonight_22')">🌌 今夜 22:00</button>
+        <button class="time-opt-btn" onclick="setCustomTime('midnight_02')">✨ 深夜 02:00</button>
+      </div>
+    </div>
+
+    <!-- 画面4: 星詳細シート -->
+    <div id="star-sheet" class="glass-card star-sheet">
+      <div class="drag-handle" onclick="closeStarSheet()"></div>
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+        <h2 id="sheet-star-name" style="font-size: 17px; color: var(--neon-glow);">織姫星 (ベガ)</h2>
+        <span id="sheet-star-type" style="font-size: 11px; color: var(--text-sub);">1等星 / 約25光年</span>
+      </div>
+      <p id="sheet-star-desc" style="font-size: 12px; color: var(--text-main); line-height: 1.5; margin-bottom: 12px;">
+        こと座の最光星。夏の大三角を形作る美しく明るい星です。
+      </p>
+      <button class="btn-primary" style="width: 100%; padding: 10px; font-size: 13px;" onclick="openAIChatFromSheet()">🤖 星空先生に聞いてみる</button>
+    </div>
+
+    <!-- 画面5: AIチャットシート -->
+    <div id="chat-sheet" class="glass-card chat-sheet">
+      <div class="drag-handle" onclick="closeChatSheet()"></div>
+      <div class="chat-header">
+        <div style="font-weight: 600; font-size: 14px; color: var(--neon-glow);">🤖 星空先生 AI</div>
+        <span style="font-size: 11px; color: var(--text-sub); cursor:pointer;" onclick="closeChatSheet()">閉じる</span>
+      </div>
+      <div id="chat-messages" class="chat-messages">
+        <div class="msg msg-ai">こんにちは！鳥取砂丘の馬の背へようこそ⭐ 今見えている星空について何でも質問してね！</div>
+      </div>
+
+      <div class="quick-questions">
+        <button class="quick-chip" onclick="sendQuickQuestion('今夜の馬の背の見どころを教えて！')">✨ 今夜の見どころ</button>
+        <button class="quick-chip" onclick="sendQuickQuestion('今見えている星で一番明るい星は？')">🌟 今見えている一番明るい星</button>
+        <button class="quick-chip" onclick="sendQuickQuestion('鳥取砂丘で星がきれいに見える理由は？')">🐪 馬の背の星空の秘密</button>
+        <button class="quick-chip" onclick="sendQuickQuestion('天の川はどうやって探せばいい？')">🌌 天の川の探し方</button>
+      </div>
+
+      <div class="chat-input-area">
+        <input type="text" id="chat-input" class="chat-input" placeholder="質問を入力..." onkeypress="handleKeyPress(event)">
+        <button class="chat-send-btn" onclick="sendChatMessage()">送信</button>
+      </div>
+    </div>
+
+    <!-- 画面6: 星を探すシート -->
+    <div id="search-sheet" class="glass-card search-sheet">
+      <div class="drag-handle" onclick="closeSearchSheet()"></div>
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+        <div style="font-weight: 600; font-size: 14px; color: var(--neon-glow);">🔍 星を探す</div>
+        <span style="font-size: 11px; color: var(--text-sub); cursor:pointer;" onclick="closeSearchSheet()">閉じる</span>
+      </div>
+
+      <div class="search-input-box">
+        <input type="text" id="star-search-input" placeholder="天体名・星座名で検索..." oninput="filterStarList()">
+      </div>
+
+      <div class="filter-tags">
+        <button class="tag active" onclick="setFilterTag(this, 'all')">すべて</button>
+        <button class="tag" onclick="setFilterTag(this, '1st')">1等星</button>
+        <button class="tag" onclick="setFilterTag(this, 'constellation')">星座</button>
+      </div>
+
+      <div id="star-list" class="star-list"></div>
+    </div>
+
+    <!-- 画面7: 設定シート -->
+    <div id="settings-sheet" class="glass-card settings-sheet">
+      <div class="drag-handle" onclick="closeSettingsSheet()"></div>
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+        <div style="font-weight: 600; font-size: 14px; color: var(--neon-glow);">⚙️ 設定</div>
+        <span style="font-size: 11px; color: var(--text-sub); cursor:pointer;" onclick="closeSettingsSheet()">閉じる</span>
+      </div>
+
+      <div class="setting-group">
+        <div class="setting-item" style="flex-direction: column; align-items: flex-start; gap: 6px;">
+          <div>
+            <div class="setting-label">📐 視界モード（可動域設定）</div>
+            <div class="setting-desc">砂丘の現地体験か、360度自由な探索かを選択</div>
+          </div>
+          <div class="mode-selector" style="width: 100%;">
+            <button class="mode-btn active" id="mode-dune" onclick="setPitchLimitMode('dune')">🐪 砂丘リアル (180°制限)</button>
+            <button class="mode-btn" id="mode-free" onclick="setPitchLimitMode('free')">🌌 360° 自由観測 (制限なし)</button>
+          </div>
+        </div>
+
+        <div class="setting-item">
+          <div>
+            <div class="setting-label">プラネタリウム枠（ガイド）</div>
+            <div class="setting-desc">画面中央の円枠や度数ガイドを表示</div>
+          </div>
+          <label class="switch">
+            <input type="checkbox" id="toggle-grid-lines" checked onchange="toggleGridLines(this.checked)">
+            <span class="slider"></span>
+          </label>
+        </div>
+
+        <div class="setting-item">
+          <div>
+            <div class="setting-label">星座線の表示</div>
+            <div class="setting-desc">夜空に星座をつなぐガイド線を表示</div>
+          </div>
+          <label class="switch">
+            <input type="checkbox" id="toggle-const-lines" checked onchange="toggleConstellationLines(this.checked)">
+            <span class="slider"></span>
+          </label>
+        </div>
+
+        <div class="setting-item">
+          <div>
+            <div class="setting-label">星空の微動自転</div>
+            <div class="setting-desc">時間の経過に合わせて星空を自動回転</div>
+          </div>
+          <label class="switch">
+            <input type="checkbox" id="toggle-auto-rotate" checked onchange="toggleAutoRotate(this.checked)">
+            <span class="slider"></span>
+          </label>
+        </div>
+
+        <div class="setting-item" style="flex-direction: column; align-items: flex-start; gap: 4px; margin-top: 10px;">
+          <div class="setting-label" style="color: var(--neon-glow);">アプリ情報</div>
+          <div class="setting-desc">Tottori Star Pocket v8.8.0</div>
+          <div class="setting-desc">Powered by Gemini 3.8 Flash & Three.js</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ボトムナビゲーション -->
+    <div id="main-nav" class="bottom-nav glass-card">
+      <button class="nav-item active" id="nav-obs" onclick="switchTab('obs')"><span>🌌</span>観測</button>
+      <button class="nav-item" id="nav-search" onclick="switchTab('search')"><span>🔍</span>探す</button>
+      <button class="nav-item" id="nav-ai" onclick="switchTab('ai')"><span>🤖</span>星空先生</button>
+      <button class="nav-item" id="nav-settings" onclick="switchTab('settings')"><span>⚙️</span>設定</button>
+    </div>
+  </div>
+
+  <script>
+    const GEMINI_API_KEY = "AQ.Ab8RN6LNgoDbf31gbKEB0WHdzki9OHm-tC6oT4_6rnu_uCNVhQ";
+
+    const starDatabase = [
+      { id: "vega", name: "織姫星 (ベガ)", category: "1st", type: "1等星 / 約25光年", desc: "こと座の1等星。夏の大三角を形成する最も青白く輝く星です。", color: 0x93c5fd, pos: new THREE.Vector3(150, 320, -350) },
+      { id: "altair", name: "彦星 (アルタイル)", category: "1st", type: "1等星 / 約17光年", desc: "わし座の1等星。織姫星と天の川を挟んで輝いています。", color: 0xf8fafc, pos: new THREE.Vector3(300, 220, -300) },
+      { id: "deneb", name: "デネブ", category: "1st", type: "1等星 / 約1400光年", desc: "はくちょう座の尻尾の星。超巨星で非常に強力な光を放っています。", color: 0xe0f2fe, pos: new THREE.Vector3(80, 410, -280) },
+      { id: "antares", name: "アンタレス", category: "1st", type: "赤色超巨星 / 約550光年", desc: "さそり座の心臓で赤く怪しく輝く星。「火星に対抗するもの」の意味を持ちます。", color: 0xf87171, pos: new THREE.Vector3(220, 100, -380) },
+      { id: "betelgeuse", name: "ベテルギウス", category: "1st", type: "赤色超巨星 / 約640光年", desc: "オリオン座の右肩にある赤色超巨星。冬の大三角の1つです。", color: 0xfb923c, pos: new THREE.Vector3(-250, 280, -320) },
+      { id: "rigel", name: "リゲル", category: "1st", type: "1等星 / 約860光年", desc: "オリオン座の左足で青白く輝く美しい1等星です。", color: 0x60a5fa, pos: new THREE.Vector3(-320, 140, -350) },
+      { id: "sirius", name: "シリウス", category: "1st", type: "1等星 / 約8.6光年", desc: "おおいぬ座の星で、全天で最も明るく見える恒星です。", color: 0x38bdf8, pos: new THREE.Vector3(-380, 120, -250) },
+      { id: "procyon", name: "プロキオン", category: "1st", type: "1等星 / 約11.5光年", desc: "こいぬ座の1等星。シリウス・ベテルギウスと共に「冬の大三角」を作ります。", color: 0xfef08a, pos: new THREE.Vector3(-180, 200, -380) },
+      { id: "arcturus", name: "アークトゥルス", category: "1st", type: "1等星 / 約37光年", desc: "うかい座のオレンジ色に輝く1等星。「春の夫婦星」としても親しまれます。", color: 0xfbbf24, pos: new THREE.Vector3(380, 260, 100) },
+      { id: "spica", name: "スピカ", category: "1st", type: "1等星 / 約250光年", desc: "おとめ座の青白色の1等星。和名では「真珠星」と呼ばれます。", color: 0xc084fc, pos: new THREE.Vector3(350, 150, 200) },
+      { id: "capella", name: "カペラ", category: "1st", type: "1等星 / 約42光年", desc: "ぎょしゃ座の黄色の1等星。北の空高く長時間輝いて見えます。", color: 0xfde047, pos: new THREE.Vector3(-100, 420, -220) },
+      { id: "aldebaran", name: "アルデバラン", category: "1st", type: "1等星 / 約65光年", desc: "おうし座の目にあたる赤オレンジ色の星。「後に続くもの」という意味を持ちます。", color: 0xf97316, pos: new THREE.Vector3(-350, 220, -200) },
+      { id: "pollux", name: "ポルックス", category: "1st", type: "1等星 / 約34光年", desc: "ふたご座の弟星。オレンジ色に優しく光る1等星です。", color: 0xfcd34d, pos: new THREE.Vector3(-190, 310, -280) },
+      { id: "regulus", name: "レグルス", category: "1st", type: "1等星 / 約79光年", desc: "しし座の心臓に位置する青白色の星。「小さな王」を意味します。", color: 0xa5f3fc, pos: new THREE.Vector3(120, 240, 350) },
+      { id: "fomalhaut", name: "フォーマルハウト", category: "1st", type: "1等星 / 約25光年", desc: "みなみのうお座の1等星。秋の夜空に静かに輝く「南の星」です。", color: 0xe0f2fe, pos: new THREE.Vector3(80, 80, -390) },
+      { id: "polaris", name: "北極星 (ポラリス)", category: "constellation", type: "2等星 / 約430光年", desc: "こぐま座の尻尾にあり、常に真北を指し示す航海の目印です。", color: 0xfef08a, pos: new THREE.Vector3(0, 420, -100) },
+      { id: "schedar", name: "シェダル", category: "constellation", type: "2等星 / 約230光年", desc: "カシオペヤ座のWの形を構成する主要な星です。", color: 0xfde047, pos: new THREE.Vector3(-120, 410, 80) }
+    ];
+
+    let currentFilterCategory = 'all';
+    let timeMode = 'live';
+    let minPitch = -5;
+    let maxPitch = 85;
+
+    const container = document.getElementById('canvas-container');
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 2000);
+    camera.position.set(0, 0, 0.1);
+
+    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    container.appendChild(renderer.domElement);
+
+    const starrySkyGroup = new THREE.Group();
+    scene.add(starrySkyGroup);
+
+    // ★ 足元・真下を含む全天360度に配置する背景球体 ★
+    const skyDomeGeo = new THREE.SphereGeometry(900, 32, 16);
+    const skyDomeMat = new THREE.MeshBasicMaterial({ color: 0x030610, side: THREE.BackSide });
+    scene.add(new THREE.Mesh(skyDomeGeo, skyDomeMat));
+
+    function createGlowStarTexture() {
+      const canvas = document.createElement('canvas');
+      canvas.width = 128; canvas.height = 128;
+      const ctx = canvas.getContext('2d');
+      const g = ctx.createRadialGradient(64, 64, 0, 64, 64, 64);
+      g.addColorStop(0, '#ffffff');
+      g.addColorStop(0.15, 'rgba(255,255,255,0.95)');
+      g.addColorStop(0.35, 'rgba(160,210,255,0.6)');
+      g.addColorStop(0.70, 'rgba(96,165,250,0.15)');
+      g.addColorStop(1, 'rgba(0,0,0,0)');
+      ctx.fillStyle = g; ctx.fillRect(0, 0, 128, 128);
+      return new THREE.CanvasTexture(canvas);
+    }
+    const starTex = createGlowStarTexture();
+
+    // ★ 地平線下（真下・下方向）含む全天360度へ背景の星を球状に均等配置 ★
+    const bgGeo = new THREE.BufferGeometry();
+    const bgPos = new Float32Array(5000 * 3);
+    for (let i = 0; i < 5000; i++) {
+      const u = Math.random();
+      const v = Math.random() * 2 - 1; // 全方向 (-1 〜 1) に分散させて下側にも配置
+      const theta = u * 2.0 * Math.PI;
+      const phi = Math.acos(v);
+      const radius = 500 + Math.random() * 200;
+      bgPos[i * 3]     = radius * Math.sin(phi) * Math.cos(theta);
+      bgPos[i * 3 + 1] = radius * Math.cos(phi);
+      bgPos[i * 3 + 2] = radius * Math.sin(phi) * Math.sin(theta);
+    }
+    bgGeo.setAttribute('position', new THREE.BufferAttribute(bgPos, 3));
+    const bgMat = new THREE.PointsMaterial({ size: 5.5, map: starTex, transparent: true, opacity: 0.9, blending: THREE.AdditiveBlending, depthWrite: false });
+    starrySkyGroup.add(new THREE.Points(bgGeo, bgMat));
+
+    const starSprites = [];
+    starDatabase.forEach((s) => {
+      const mat = new THREE.SpriteMaterial({ map: starTex, color: s.color || 0xffffff, transparent: true, blending: THREE.AdditiveBlending });
+      const sp = new THREE.Sprite(mat);
+      sp.position.copy(s.pos);
+      const baseScale = (s.category === '1st') ? 34 : 24;
+      sp.scale.set(baseScale, baseScale, 1);
+      sp.userData = { ...s, baseScale: baseScale, twinkleSpeed: 1.5 + Math.random() * 2.5, twinklePhase: Math.random() * Math.PI * 2, isVisibleOnSky: true };
+      starrySkyGroup.add(sp);
+      starSprites.push(sp);
+    });
+
+    const lineGroup = new THREE.Group();
+    const summerTriMat = new THREE.LineBasicMaterial({ color: 0x60a5fa, transparent: true, opacity: 0.55 });
+    const summerTriGeo = new THREE.BufferGeometry().setFromPoints([starDatabase[0].pos, starDatabase[1].pos, starDatabase[2].pos, starDatabase[0].pos]);
+    lineGroup.add(new THREE.Line(summerTriGeo, summerTriMat));
+
+    const winterTriMat = new THREE.LineBasicMaterial({ color: 0xfbbf24, transparent: true, opacity: 0.55 });
+    const winterTriGeo = new THREE.BufferGeometry().setFromPoints([starDatabase[4].pos, starDatabase[6].pos, starDatabase[7].pos, starDatabase[4].pos]);
+    lineGroup.add(new THREE.Line(winterTriGeo, winterTriMat));
+    starrySkyGroup.add(lineGroup);
+
+    function getActiveObservationDate() {
+      const now = new Date();
+      if (timeMode === 'live') return now;
+      const target = new Date(now);
+      if (timeMode === 'tonight_20') { target.setHours(20, 0, 0, 0); }
+      else if (timeMode === 'tonight_22') { target.setHours(22, 0, 0, 0); }
+      else if (timeMode === 'midnight_02') { target.setDate(target.getDate() + 1); target.setHours(2, 0, 0, 0); }
+      return target;
+    }
+
+    function updateRealtimeSkyPosition() {
+      const now = getActiveObservationDate();
+      const year = now.getFullYear();
+      const month = String(now.getMonth() + 1).padStart(2, '0');
+      const date = String(now.getDate()).padStart(2, '0');
+      const hours = String(now.getHours()).padStart(2, '0');
+      const minutes = String(now.getMinutes()).padStart(2, '0');
+      const seconds = String(now.getSeconds()).padStart(2, '0');
+
+      const headerElem = document.getElementById('current-datetime-display');
+      if (headerElem) {
+        const modeLabel = (timeMode === 'live') ? '' : ' [デモ]';
+        headerElem.innerText = `${year}/${month}/${date} ${hours}:${minutes}:${seconds}${modeLabel}`;
+      }
+
+      const startOfYear = new Date(year, 0, 0);
+      const diff = now - startOfYear;
+      const dayOfYear = Math.floor(diff / (1000 * 60 * 60 * 24));
+      const seasonAngle = (dayOfYear / 365.25) * Math.PI * 2;
+
+      const dayProgressSeconds = (now.getHours() * 3600) + (now.getMinutes() * 60) + now.getSeconds();
+      const dailyAngle = (dayProgressSeconds / 86400) * Math.PI * 2;
+
+      const currentRotationY = -(seasonAngle + dailyAngle);
+      starrySkyGroup.rotation.y = currentRotationY;
+
+      const worldPos = new THREE.Vector3();
+      starSprites.forEach(sp => {
+        sp.getWorldPosition(worldPos);
+        // 自由観測モード（minPitch < -10）のときは下側の星も常に描画対象にする
+        const isAboveHorizon = (minPitch < -10) ? true : (worldPos.y > -50); 
+        sp.userData.isVisibleOnSky = isAboveHorizon;
+        sp.visible = isAboveHorizon;
+      });
+
+      if (document.getElementById('search-sheet')?.classList.contains('active')) {
+        renderStarList();
+      }
+    }
+    setInterval(updateRealtimeSkyPosition, 1000);
+    updateRealtimeSkyPosition();
+
+    function toggleTimeModal() {
+      const modal = document.getElementById('time-modal');
+      modal.style.display = (modal.style.display === 'flex') ? 'none' : 'flex';
+    }
+
+    function setCustomTime(mode) {
+      timeMode = mode;
+      document.querySelectorAll('.time-opt-btn').forEach(btn => btn.classList.remove('active'));
+      event.target.classList.add('active');
+      document.getElementById('time-modal').style.display = 'none';
+      updateRealtimeSkyPosition();
+    }
+
+    function setPitchLimitMode(mode) {
+      document.getElementById('mode-dune').classList.remove('active');
+      document.getElementById('mode-free').classList.remove('active');
+      const duneElem = document.getElementById('dune-silhouette');
+
+      if (mode === 'dune') {
+        minPitch = -5;
+        maxPitch = 85;
+        duneElem.classList.remove('is-hidden');
+        document.getElementById('mode-dune').classList.add('active');
+      } else {
+        minPitch = -89;
+        maxPitch = 89;
+        duneElem.classList.add('is-hidden');
+        document.getElementById('mode-free').classList.add('active');
+      }
+      lat = Math.max(minPitch, Math.min(maxPitch, lat));
+      updateRealtimeSkyPosition();
+    }
+
+    let lon = 0, lat = 20, isDragging = false, prevMouse = { x: 0, y: 0 };
+    let isAutoRotate = true;
+    let isGyroActive = false;
+
+    function updateCompassDisplay() {
+      let deg = (lon % 360 + 360) % 360;
+      let text = "北 (N)";
+      if (deg >= 22.5 && deg < 67.5) text = "北東 (NE)";
+      else if (deg >= 67.5 && deg < 112.5) text = "東 (E)";
+      else if (deg >= 112.5 && deg < 157.5) text = "南東 (SE)";
+      else if (deg >= 157.5 && deg < 202.5) text = "南 (S)";
+      else if (deg >= 202.5 && deg < 247.5) text = "南西 (SW)";
+      else if (deg >= 247.5 && deg < 292.5) text = "西 (W)";
+      else if (deg >= 292.5 && deg < 337.5) text = "北西 (NW)";
+
+      const compElem = document.getElementById('compass-direction');
+      if (compElem) compElem.innerText = text;
+    }
+
+    function toggleGyroMode() {
+      if (!isGyroActive) {
+        if (typeof DeviceOrientationEvent !== 'undefined' && typeof DeviceOrientationEvent.requestPermission === 'function') {
+          DeviceOrientationEvent.requestPermission().then(permissionState => {
+            if (permissionState === 'granted') { enableGyro(); }
+            else { alert('ジャイロセンサーへのアクセス許可が必要です⭐'); }
+          }).catch(console.error);
+        } else { enableGyro(); }
+      } else { disableGyro(); }
+    }
+
+    function enableGyro() {
+      isGyroActive = true;
+      window.addEventListener('deviceorientation', handleOrientation);
+      document.getElementById('gyro-toggle-btn').classList.add('active');
+      document.getElementById('gyro-btn-text').innerText = '解除';
+    }
+
+    function disableGyro() {
+      isGyroActive = false;
+      window.removeEventListener('deviceorientation', handleOrientation);
+      document.getElementById('gyro-toggle-btn').classList.remove('active');
+      document.getElementById('gyro-btn-text').innerText = 'かざす';
+    }
+
+    function handleOrientation(e) {
+      if (!isGyroActive) return;
+      if (e.alpha !== null && e.beta !== null) {
+        lon = -e.alpha;
+        lat = Math.max(minPitch, Math.min(maxPitch, e.beta - 90));
+        updateCompassDisplay();
+      }
+    }
+
+    function onPointerStart(e) {
+      if (isGyroActive) disableGyro();
+      isDragging = false;
+      const x = e.touches ? e.touches[0].clientX : e.clientX;
+      const y = e.touches ? e.touches[0].clientY : e.clientY;
+      prevMouse = { x, y };
+    }
+
+    function onPointerMove(e) {
+      const x = e.touches ? e.touches[0].clientX : e.clientX;
+      const y = e.touches ? e.touches[0].clientY : e.clientY;
+      const dx = x - prevMouse.x, dy = y - prevMouse.y;
+      if (Math.abs(dx) > 3 || Math.abs(dy) > 3) isDragging = true;
+      if (isDragging) {
+        lon -= dx * 0.15;
+        lat += dy * 0.15;
+        lat = Math.max(minPitch, Math.min(maxPitch, lat));
+        updateCompassDisplay();
+      }
+      prevMouse = { x, y };
+    }
+
+    function onPointerEnd(e) {
+      if (!isDragging && (!e.touches || e.touches.length === 0)) {
+        const x = e.changedTouches ? e.changedTouches[0].clientX : e.clientX;
+        const y = e.changedTouches ? e.changedTouches[0].clientY : e.clientY;
+        const mouse = new THREE.Vector2((x/window.innerWidth)*2 - 1, -(y/window.innerHeight)*2 + 1);
+        const rc = new THREE.Raycaster();
+        rc.setFromCamera(mouse, camera);
+        rc.params.Sprite.threshold = 18;
+
+        const visibleSprites = starSprites.filter(sp => sp.visible);
+        const intersects = rc.intersectObjects(visibleSprites);
+        if (intersects.length > 0) openStarSheet(intersects[0].object.userData);
+      }
+    }
+
+    container.addEventListener('mousedown', onPointerStart);
+    window.addEventListener('mousemove', onPointerMove);
+    window.addEventListener('mouseup', onPointerEnd);
+    container.addEventListener('touchstart', onPointerStart, {passive:true});
+    window.addEventListener('touchmove', onPointerMove, {passive:true});
+    window.addEventListener('touchend', onPointerEnd);
+
+    let clock = new THREE.Clock();
+    function animate() {
+      requestAnimationFrame(animate);
+      const elapsedTime = clock.getElapsedTime();
+
+      bgMat.opacity = 0.85 + Math.cos(elapsedTime * 2.1) * 0.15;
+
+      starSprites.forEach(sp => {
+        if (!sp.visible) return;
+        const u = sp.userData;
+        const pulse = Math.sin(elapsedTime * u.twinkleSpeed + u.twinklePhase);
+        const currentScale = u.baseScale * (1 + pulse * 0.18);
+        sp.scale.set(currentScale, currentScale, 1);
+        sp.material.opacity = 0.82 + pulse * 0.18;
+      });
+
+      if (isAutoRotate && !isDragging && !isGyroActive) {
+        lon += 0.02;
+        updateCompassDisplay();
+      }
+
+      const phi = THREE.MathUtils.degToRad(90 - lat);
+      const theta = THREE.MathUtils.degToRad(lon);
+      camera.lookAt(500 * Math.sin(phi) * Math.cos(theta), 500 * Math.cos(phi), 500 * Math.sin(phi) * Math.sin(theta));
+      renderer.render(scene, camera);
+    }
+    animate();
+
+    function goToTutorial() {
+      document.getElementById('screen-start').classList.add('hidden');
+      document.getElementById('screen-tutorial').style.display = 'flex';
+    }
+
+    function startObservation() {
+      document.getElementById('screen-tutorial').style.display = 'none';
+      document.getElementById('main-header').style.opacity = '1';
+      document.getElementById('main-nav').style.opacity = '1';
+      renderStarList();
+    }
+
+    function closeAllSheets() {
+      document.getElementById('star-sheet').classList.remove('active');
+      document.getElementById('chat-sheet').classList.remove('active');
+      document.getElementById('search-sheet').classList.remove('active');
+      document.getElementById('settings-sheet').classList.remove('active');
+      document.getElementById('time-modal').style.display = 'none';
+      document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+    }
+
+    function openStarSheet(starData) {
+      closeAllSheets();
+      document.getElementById('sheet-star-name').innerText = starData.name;
+      document.getElementById('sheet-star-type').innerText = starData.type || '';
+      document.getElementById('sheet-star-desc').innerText = starData.desc;
+      document.getElementById('star-sheet').classList.add('active');
+      document.getElementById('nav-obs').classList.add('active');
+    }
+
+    function closeStarSheet() {
+      document.getElementById('star-sheet').classList.remove('active');
+      document.getElementById('nav-obs').classList.add('active');
+    }
+
+    function openChatSheet() {
+      closeAllSheets();
+      document.getElementById('chat-sheet').classList.add('active');
+      document.getElementById('nav-ai').classList.add('active');
+    }
+
+    function closeChatSheet() {
+      document.getElementById('chat-sheet').classList.remove('active');
+      document.getElementById('nav-obs').classList.add('active');
+    }
+
+    function openSearchSheet() {
+      closeAllSheets();
+      document.getElementById('search-sheet').classList.add('active');
+      document.getElementById('nav-search').classList.add('active');
+      renderStarList();
+    }
+
+    function closeSearchSheet() {
+      document.getElementById('search-sheet').classList.remove('active');
+      document.getElementById('nav-obs').classList.add('active');
+    }
+
+    function openSettingsSheet() {
+      closeAllSheets();
+      document.getElementById('settings-sheet').classList.add('active');
+      document.getElementById('nav-settings').classList.add('active');
+    }
+
+    function closeSettingsSheet() {
+      document.getElementById('settings-sheet').classList.remove('active');
+      document.getElementById('nav-obs').classList.add('active');
+    }
+
+    function openAIChatFromSheet() {
+      const starName = document.getElementById('sheet-star-name').innerText;
+      openChatSheet();
+      sendQuickQuestion(`${starName}について教えて！`);
+    }
+
+    function switchTab(tab) {
+      if (tab === 'ai') { openChatSheet(); }
+      else if (tab === 'search') { openSearchSheet(); }
+      else if (tab === 'settings') { openSettingsSheet(); }
+      else if (tab === 'obs') { closeAllSheets(); document.getElementById('nav-obs').classList.add('active'); }
+    }
+
+    function toggleGridLines(enabled) {
+      const grid = document.getElementById('planetarium-grid');
+      if (enabled) grid.classList.remove('is-hidden');
+      else grid.classList.add('is-hidden');
+    }
+
+    function toggleConstellationLines(enabled) { lineGroup.visible = enabled; }
+    function toggleAutoRotate(enabled) { isAutoRotate = enabled; }
+
+    function renderStarList() {
+      const container = document.getElementById('star-list');
+      if (!container) return;
+      const searchText = (document.getElementById('star-search-input')?.value || '').toLowerCase().trim();
+
+      const filtered = starDatabase.filter(star => {
+        const matchesCategory = (currentFilterCategory === 'all') || (star.category === currentFilterCategory);
+        const matchesText = star.name.toLowerCase().includes(searchText) || star.desc.toLowerCase().includes(searchText);
+        return matchesCategory && matchesText;
+      });
+
+      if (filtered.length === 0) {
+        container.innerHTML = `<div style="text-align:center; padding: 20px; font-size:12px; color:var(--text-sub);">該当する星が見つかりません⭐</div>`;
+        return;
+      }
+
+      container.innerHTML = filtered.map(star => {
+        const sprite = starSprites.find(s => s.userData.id === star.id);
+        const isVisibleNow = sprite ? sprite.userData.isVisibleOnSky : false;
+
+        if (isVisibleNow) {
+          return `
+            <div class="star-item" onclick="selectStarFromList('${star.id}')">
+              <div class="star-item-info">
+                <h4>${star.name}</h4>
+                <p>${star.type}</p>
+              </div>
+              <span style="font-size: 11px; color: var(--neon-glow); font-weight:600;">✨ 観測可能 ➔</span>
+            </div>
+          `;
+        } else {
+          return `
+            <div class="star-item disabled" onclick="selectStarFromList('${star.id}', false)">
+              <div class="star-item-info">
+                <h4>${star.name}</h4>
+                <p>${star.type}</p>
+              </div>
+              <span style="font-size: 11px; color: var(--text-sub);">🌅 地平線の下</span>
+            </div>
+          `;
+        }
+      }).join('');
+    }
+
+    function filterStarList() { renderStarList(); }
+    function setFilterTag(btnElement, category) {
+      document.querySelectorAll('.filter-tags .tag').forEach(tag => tag.classList.remove('active'));
+      btnElement.classList.add('active');
+      currentFilterCategory = category;
+      renderStarList();
+    }
+
+    function selectStarFromList(starId, canObserve = true) {
+      const star = starDatabase.find(s => s.id === starId);
+      if (!star) return;
+
+      if (!canObserve) {
+        openStarSheet({
+          name: star.name,
+          type: star.type,
+          desc: `${star.desc}\n\n※この星は現在の鳥取の時刻では馬の背の地平線より下に沈んでいるため、今夜は観測できません⭐`
+        });
+        return;
+      }
+
+      const sprite = starSprites.find(s => s.userData.id === starId);
+      if (sprite) {
+        const worldPos = new THREE.Vector3();
+        sprite.getWorldPosition(worldPos);
+        const r = Math.sqrt(worldPos.x * worldPos.x + worldPos.y * worldPos.y + worldPos.z * worldPos.z);
+        lat = Math.max(minPitch, Math.min(maxPitch, THREE.MathUtils.radToDeg(Math.asin(worldPos.y / r))));
+        lon = THREE.MathUtils.radToDeg(Math.atan2(worldPos.z, worldPos.x));
+        updateCompassDisplay();
+      }
+      openStarSheet(star);
+    }
+
+    function appendMessage(text, isUser) {
+      const msgs = document.getElementById('chat-messages');
+      const div = document.createElement('div');
+      div.className = `msg ${isUser ? 'msg-user' : 'msg-ai'}`;
+      div.innerText = text;
+      msgs.appendChild(div);
+      msgs.scrollTop = msgs.scrollHeight;
+    }
+
+    function handleKeyPress(e) { if (e.key === 'Enter') sendChatMessage(); }
+
+    function sendQuickQuestion(questionText) {
+      const input = document.getElementById('chat-input');
+      input.value = questionText;
+      sendChatMessage();
+    }
+
+    async function fetchWithRetry(url, options, retries = 2, delay = 1000) {
+      for (let i = 0; i <= retries; i++) {
+        try {
+          const res = await fetch(url, options);
+          if (res.status === 503 && i < retries) {
+            await new Promise(r => setTimeout(r, delay));
+            continue;
+          }
+          return res;
+        } catch (err) {
+          if (i === retries) throw err;
+          await new Promise(r => setTimeout(r, delay));
+        }
+      }
+    }
+
+    async function sendChatMessage() {
+      const input = document.getElementById('chat-input');
+      const text = input.value.trim();
+      if (!text) return;
+
+      appendMessage(text, true);
+      input.value = '';
+
+      const loadingDiv = document.createElement('div');
+      loadingDiv.className = 'msg msg-ai';
+      loadingDiv.id = 'chat-loading';
+      loadingDiv.innerText = '星空先生が考え中...💭';
+      document.getElementById('chat-messages').appendChild(loadingDiv);
+
+      const visibleStarNames = starSprites
+        .filter(sp => sp.userData.isVisibleOnSky)
+        .map(sp => sp.userData.name)
+        .join(', ');
+      
+      const obsDateStr = getActiveObservationDate().toLocaleString('ja-JP');
+
+      const systemPromptWithContext = `あなたは鳥取砂丘・馬の背の星空案内人「星空先生」です。
+ユーザーは現在【鳥取砂丘の馬の背】からアプリでリアルタイムに星空を見上げて観測しています。
+【現在の観測条件】
+- 観測日時: ${obsDateStr}
+- 現在馬の背の地平線より上に見えている主な星: [ ${visibleStarNames || '現在地平線上に目立つ主要星はありません'} ]
+
+小学生にも分かる親切で丁寧な口調で、200〜300文字程度で分かりやすく解説してください。
+ユーザーから「見どころ」や「おすすめの星」を聞かれた場合は、上記で現在見えている星のリストから優先して案内してください。
+文章の途中で切れず、必ず最後の句読点（。）までしっかりと書いて回答を完了させてください。`;
+
+      try {
+        const response = await fetchWithRetry('https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent', {
+          method: 'POST',
+          headers: { 
+            'Content-Type': 'application/json',
+            'x-goog-api-key': GEMINI_API_KEY
+          },
+          body: JSON.stringify({
+            contents: [
+              {
+                role: "user",
+                parts: [{ text: text }]
+              }
+            ],
+            systemInstruction: {
+              parts: [{ text: systemPromptWithContext }]
+            },
+            generationConfig: {
+              maxOutputTokens: 2048,
+              temperature: 0.7
+            }
+          })
+        });
+
+        const data = await response.json();
+        document.getElementById('chat-loading')?.remove();
+
+        if (data.error) {
+          console.error("Gemini API Error Detail:", data.error);
+          if (data.error.code === 503) {
+            appendMessage("ただいま星空先生への質問が混み合っています⭐ 少し時間をおいてもう一度送信してみてね！", false);
+          } else {
+            appendMessage(`APIエラー (${data.error.code || 'エラー'}): ${data.error.message || '接続に失敗しました'}`, false);
+          }
+          return;
+        }
+
+        if (data.candidates && data.candidates[0]?.content?.parts[0]?.text) {
+          appendMessage(data.candidates[0].content.parts[0].text, false);
+        } else {
+          appendMessage("ごめんなさい、返答の作成に失敗しました⭐ もう一度試してみてね！", false);
+        }
+      } catch (err) {
+        console.error("Fetch Exception:", err);
+        document.getElementById('chat-loading')?.remove();
+        appendMessage("通信エラーが発生しました。ネット接続を確認してみてね！", false);
+      }
+    }
+
+    window.addEventListener('resize', () => {
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+    });
+  </script>
+</body>
+</html>
