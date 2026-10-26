@@ -44,7 +44,6 @@
       left: 0;
     }
 
-    /* 3D Canvas 背景 */
     #canvas-container {
       width: 100vw;
       height: 100vh;
@@ -56,7 +55,6 @@
       touch-action: none;
     }
 
-    /* 鳥取砂丘・馬の背のシルエット */
     .dune-silhouette {
       position: fixed;
       bottom: 0;
@@ -81,7 +79,7 @@
       filter: drop-shadow(0 -4px 12px rgba(0, 0, 0, 0.8));
     }
 
-    /* プラネタリウム風 レティクル */
+    /* 高度目盛り付きプラネタリウムガイド */
     .planetarium-grid {
       position: absolute;
       top: 45%;
@@ -96,7 +94,7 @@
       pointer-events: none;
       z-index: 2;
       box-shadow: 0 0 50px rgba(59, 130, 246, 0.12) inset;
-      opacity: 0.8;
+      opacity: 0.85;
       transition: opacity 0.3s ease;
     }
     .planetarium-grid::before {
@@ -111,26 +109,33 @@
       top: 0; left: 50%; width: 1px; height: 100%;
       background: linear-gradient(180deg, transparent, rgba(96, 165, 250, 0.25), transparent);
     }
+    /* 内側高度リング */
+    .grid-inner-ring {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 45%;
+      height: 45%;
+      border: 1px dotted rgba(96, 165, 250, 0.2);
+      border-radius: 50%;
+    }
+    /* 中央レティクル点 */
+    .grid-center-dot {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 6px;
+      height: 6px;
+      background: var(--neon-glow);
+      border-radius: 50%;
+      box-shadow: 0 0 8px var(--neon-glow);
+    }
     .planetarium-grid.is-hidden {
       display: none !important;
     }
 
-    /* 方位表示カード */
-    .compass-card {
-      background: rgba(15, 23, 42, 0.7);
-      border: 1px solid var(--glass-border);
-      border-radius: 16px;
-      padding: 4px 10px;
-      font-size: 11px;
-      color: var(--neon-glow);
-      font-weight: 600;
-      display: flex;
-      align-items: center;
-      gap: 4px;
-      backdrop-filter: blur(8px);
-    }
-
-    /* UIレイヤー */
     .ui-layer {
       position: absolute;
       top: 0;
@@ -165,7 +170,6 @@
       cursor: pointer;
     }
 
-    /* スタート画面 */
     .screen-start {
       position: absolute;
       top: 0;
@@ -207,7 +211,6 @@
     }
     .btn-primary:active { transform: scale(0.95); }
 
-    /* チュートリアル */
     .screen-tutorial {
       position: absolute;
       top: 0;
@@ -219,17 +222,65 @@
       justify-content: center;
       align-items: center;
       padding: 20px;
-      background: rgba(4, 7, 15, 0.6);
-      backdrop-filter: blur(8px);
+      background: rgba(4, 7, 15, 0.75);
+      backdrop-filter: blur(12px);
     }
     .tutorial-card {
       width: 100%;
-      max-width: 340px;
-      padding: 24px;
+      max-width: 380px;
+      padding: 24px 20px;
       text-align: center;
     }
+    .tutorial-title {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--neon-glow);
+      margin-bottom: 6px;
+    }
+    .tutorial-sub {
+      font-size: 12px;
+      color: var(--text-sub);
+      margin-bottom: 20px;
+    }
+    .tutorial-steps {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 22px;
+      text-align: left;
+    }
+    .step-item {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(147, 197, 253, 0.15);
+      border-radius: 16px;
+      padding: 12px 14px;
+    }
+    .step-icon {
+      font-size: 26px;
+      width: 44px;
+      height: 44px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: rgba(59, 130, 246, 0.2);
+      border-radius: 12px;
+      border: 1px solid rgba(96, 165, 250, 0.3);
+      flex-shrink: 0;
+    }
+    .step-text h4 {
+      font-size: 13px;
+      color: var(--text-main);
+      margin-bottom: 2px;
+    }
+    .step-text p {
+      font-size: 11px;
+      color: var(--text-sub);
+      line-height: 1.4;
+    }
 
-    /* ヘッダー */
     .header {
       display: flex;
       justify-content: space-between;
@@ -250,6 +301,20 @@
       margin-left: 4px;
     }
 
+    .compass-card {
+      background: rgba(15, 23, 42, 0.75);
+      border: 1px solid var(--glass-border);
+      border-radius: 16px;
+      padding: 4px 10px;
+      font-size: 11px;
+      color: var(--neon-glow);
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      backdrop-filter: blur(8px);
+    }
+
     .gyro-btn {
       background: rgba(59, 130, 246, 0.2);
       border: 1px solid var(--glass-border);
@@ -268,7 +333,6 @@
       color: #fff;
     }
 
-    /* 時間選択モーダル */
     .time-modal {
       position: absolute;
       top: 60px;
@@ -301,8 +365,7 @@
       border-color: var(--neon-glow);
     }
 
-    /* 星詳細シート */
-    .star-sheet {
+    .star-sheet, .chat-sheet, .search-sheet, .settings-sheet {
       position: absolute;
       bottom: calc(70px + env(safe-area-inset-bottom));
       left: 12px;
@@ -312,23 +375,22 @@
       transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
       z-index: 30;
     }
-    .star-sheet.active { transform: translateY(0); }
+    .star-sheet.active, .chat-sheet.active, .search-sheet.active, .settings-sheet.active {
+      transform: translateY(0);
+    }
 
-    /* AIチャットシート */
-    .chat-sheet {
-      position: absolute;
-      bottom: calc(70px + env(safe-area-inset-bottom));
-      left: 12px;
-      right: 12px;
+    .chat-sheet, .search-sheet {
       height: 62vh;
       display: flex;
       flex-direction: column;
-      padding: 16px;
-      transform: translateY(140%);
-      transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-      z-index: 30;
     }
-    .chat-sheet.active { transform: translateY(0); }
+    .settings-sheet {
+      height: 60vh;
+      display: flex;
+      flex-direction: column;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+    }
 
     .chat-header {
       display: flex;
@@ -387,9 +449,6 @@
       cursor: pointer;
       white-space: nowrap;
     }
-    .quick-chip:active {
-      background: rgba(59, 130, 246, 0.4);
-    }
 
     .chat-input-area {
       display: flex;
@@ -415,22 +474,6 @@
       font-weight: 600;
       cursor: pointer;
     }
-
-    /* 星を探すシート */
-    .search-sheet {
-      position: absolute;
-      bottom: calc(70px + env(safe-area-inset-bottom));
-      left: 12px;
-      right: 12px;
-      height: 62vh;
-      display: flex;
-      flex-direction: column;
-      padding: 16px;
-      transform: translateY(140%);
-      transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-      z-index: 30;
-    }
-    .search-sheet.active { transform: translateY(0); }
 
     .search-input-box {
       position: relative;
@@ -498,9 +541,6 @@
       border-radius: 16px;
       cursor: pointer;
     }
-    .star-item:active {
-      background: rgba(59, 130, 246, 0.2);
-    }
     .star-item.disabled {
       opacity: 0.45;
       cursor: not-allowed;
@@ -514,24 +554,6 @@
       font-size: 11px;
       color: var(--text-sub);
     }
-
-    /* 設定シート */
-    .settings-sheet {
-      position: absolute;
-      bottom: calc(70px + env(safe-area-inset-bottom));
-      left: 12px;
-      right: 12px;
-      height: 60vh;
-      display: flex;
-      flex-direction: column;
-      padding: 16px;
-      transform: translateY(140%);
-      transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-      z-index: 30;
-      overflow-y: auto;
-      -webkit-overflow-scrolling: touch;
-    }
-    .settings-sheet.active { transform: translateY(0); }
 
     .setting-group {
       margin-top: 14px;
@@ -548,21 +570,10 @@
       border: 1px solid rgba(255, 255, 255, 0.08);
       border-radius: 16px;
     }
-    .setting-label {
-      font-size: 13px;
-      color: var(--text-main);
-    }
-    .setting-desc {
-      font-size: 11px;
-      color: var(--text-sub);
-      margin-top: 2px;
-    }
+    .setting-label { font-size: 13px; color: var(--text-main); }
+    .setting-desc { font-size: 11px; color: var(--text-sub); margin-top: 2px; }
 
-    .mode-selector {
-      display: flex;
-      gap: 6px;
-      margin-top: 6px;
-    }
+    .mode-selector { display: flex; gap: 6px; margin-top: 6px; }
     .mode-btn {
       flex: 1;
       background: rgba(255, 255, 255, 0.06);
@@ -581,40 +592,20 @@
       font-weight: 600;
     }
 
-    .switch {
-      position: relative;
-      display: inline-block;
-      width: 44px;
-      height: 24px;
-    }
+    .switch { position: relative; display: inline-block; width: 44px; height: 24px; }
     .switch input { opacity: 0; width: 0; height: 0; }
     .slider {
-      position: absolute;
-      cursor: pointer;
-      top: 0; left: 0; right: 0; bottom: 0;
+      position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0;
       background-color: rgba(255, 255, 255, 0.2);
-      transition: .3s;
-      border-radius: 24px;
+      transition: .3s; border-radius: 24px;
     }
     .slider:before {
-      position: absolute;
-      content: "";
-      height: 18px;
-      width: 18px;
-      left: 3px;
-      bottom: 3px;
-      background-color: white;
-      transition: .3s;
-      border-radius: 50%;
+      position: absolute; content: ""; height: 18px; width: 18px; left: 3px; bottom: 3px;
+      background-color: white; transition: .3s; border-radius: 50%;
     }
-    input:checked + .slider {
-      background-color: var(--primary-blue);
-    }
-    input:checked + .slider:before {
-      transform: translateX(20px);
-    }
+    input:checked + .slider { background-color: var(--primary-blue); }
+    input:checked + .slider:before { transform: translateX(20px); }
 
-    /* ボトムナビゲーション */
     .bottom-nav {
       display: flex;
       justify-content: space-around;
@@ -625,34 +616,22 @@
       transition: opacity 0.5s;
     }
     .nav-item {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      font-size: 10px;
-      color: var(--text-sub);
-      cursor: pointer;
-      background: none;
-      border: none;
-      gap: 2px;
+      display: flex; flex-direction: column; align-items: center;
+      font-size: 10px; color: var(--text-sub); cursor: pointer;
+      background: none; border: none; gap: 2px;
     }
     .nav-item span { font-size: 18px; }
     .nav-item.active { color: var(--neon-glow); }
 
-    .hidden {
-      opacity: 0 !important;
-      pointer-events: none !important;
-      visibility: hidden;
-    }
+    .hidden { opacity: 0 !important; pointer-events: none !important; visibility: hidden; }
   </style>
 
- <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js"></script>
 </head>
 <body>
 
-  <!-- 3D Canvas 背景 -->
   <div id="canvas-container"></div>
   
-  <!-- 鳥取砂丘・馬の背のシルエット -->
   <div id="dune-silhouette" class="dune-silhouette">
     <svg class="dune-svg" viewBox="0 0 1440 320" preserveAspectRatio="none">
       <path fill="#070c18" d="M0,240 Q400,180 800,220 Q1200,260 1440,190 L1440,320 L0,320 Z"></path>
@@ -661,32 +640,54 @@
     </svg>
   </div>
 
-  <!-- プラネタリウム風 ガイドライン -->
-  <div id="planetarium-grid" class="planetarium-grid"></div>
+  <!-- 高度目盛り付きプラネタリウムガイド -->
+  <div id="planetarium-grid" class="planetarium-grid">
+    <div class="grid-inner-ring"></div>
+    <div class="grid-center-dot"></div>
+  </div>
 
-  <!-- 画面1: スタート画面 -->
   <div id="screen-start" class="screen-start glass-card" style="border-radius:0; border:none; background: rgba(4,7,15,0.88);">
     <div class="start-logo">Tottori Star Pocket</div>
     <div class="start-sub">鳥取砂丘・馬の背に立ち、夜空を見上げるリアリティ体験。</div>
     <button class="btn-primary" onclick="goToTutorial()">馬の背から見上げる ✦</button>
   </div>
 
-  <!-- 画面2: チュートリアル -->
   <div id="screen-tutorial" class="screen-tutorial">
     <div class="glass-card tutorial-card">
-      <h3 style="margin-bottom: 10px; color: var(--neon-glow);">馬の背での見上げ操作</h3>
-      <p style="font-size: 13px; color: var(--text-sub); line-height: 1.6; margin-bottom: 20px;">
-        🔄 左右（360度）に自由に向きを変えられます。<br>
-        🌌 上下は地平線から夜空（180度）を見上げます。<br>
-        ⚙️ 設定からシルエットなしの「360度 自由観測」も可能です。
-      </p>
-      <button class="btn-primary" style="padding: 10px 28px; font-size: 14px;" onclick="startObservation()">観測を開始する</button>
+      <div class="tutorial-title">馬の背での見上げ操作ガイド</div>
+      <div class="tutorial-sub">画面をスワイプして夜空を探索してみましょう</div>
+
+      <div class="tutorial-steps">
+        <div class="step-item">
+          <div class="step-icon">🔄</div>
+          <div class="step-text">
+            <h4>左右(360度)回転</h4>
+            <p>画面を左右にスワイプして、砂丘の周りを自由にぐるりと見回せます。</p>
+          </div>
+        </div>
+
+        <div class="step-item">
+          <div class="step-icon">🌌</div>
+          <div class="step-text">
+            <h4>上下見上げ・高度表示</h4>
+            <p>画面中央に「方位」と「見上げる高度(0°〜90°)」がリアルタイム表示されます。</p>
+          </div>
+        </div>
+
+        <div class="step-item">
+          <div class="step-icon">📱</div>
+          <div class="step-text">
+            <h4>「かざす」モード</h4>
+            <p>右上ボタンを押すと、スマホの向きに合わせて視点がリアルタイム連動します。</p>
+          </div>
+        </div>
+      </div>
+
+      <button class="btn-primary" style="width: 100%; padding: 12px; font-size: 14px;" onclick="startObservation()">観測を開始する ✦</button>
     </div>
   </div>
 
-  <!-- UIレイヤー -->
   <div class="ui-layer">
-    <!-- ヘッダー -->
     <div id="main-header" class="header glass-card">
       <div>
         <div style="font-size: 12px; font-weight: 600; display:flex; align-items:center;">
@@ -696,10 +697,12 @@
         <div id="current-datetime-display" style="font-size: 10px; color: var(--accent-gold); margin-top: 1px;">----/--/-- --:--</div>
       </div>
       
-      <!-- 方位インジケーター -->
+      <!-- ★ 方位 ＋ 高度（リアルタイム表示） ★ -->
       <div class="compass-card">
         <span>🧭</span>
         <span id="compass-direction" style="color: var(--text-main);">北 (N)</span>
+        <span style="opacity: 0.4;">|</span>
+        <span id="compass-altitude" style="color: var(--accent-gold);">高度: 20°</span>
       </div>
 
       <button id="gyro-toggle-btn" class="gyro-btn" onclick="toggleGyroMode()">
@@ -707,7 +710,6 @@
       </button>
     </div>
 
-    <!-- プレビュー時間選択ポップアップ -->
     <div id="time-modal" class="glass-card time-modal">
       <div style="font-size: 12px; font-weight: 600; color: var(--neon-glow); margin-bottom: 4px;">🕒 観測時間を変更（プレビュー）</div>
       <div class="time-options">
@@ -718,7 +720,6 @@
       </div>
     </div>
 
-    <!-- 画面4: 星詳細シート -->
     <div id="star-sheet" class="glass-card star-sheet">
       <div class="drag-handle" onclick="closeStarSheet()"></div>
       <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
@@ -731,7 +732,6 @@
       <button class="btn-primary" style="width: 100%; padding: 10px; font-size: 13px;" onclick="openAIChatFromSheet()">🤖 星空先生に聞いてみる</button>
     </div>
 
-    <!-- 画面5: AIチャットシート -->
     <div id="chat-sheet" class="glass-card chat-sheet">
       <div class="drag-handle" onclick="closeChatSheet()"></div>
       <div class="chat-header">
@@ -755,7 +755,6 @@
       </div>
     </div>
 
-    <!-- 画面6: 星を探すシート -->
     <div id="search-sheet" class="glass-card search-sheet">
       <div class="drag-handle" onclick="closeSearchSheet()"></div>
       <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
@@ -776,7 +775,6 @@
       <div id="star-list" class="star-list"></div>
     </div>
 
-    <!-- 画面7: 設定シート -->
     <div id="settings-sheet" class="glass-card settings-sheet">
       <div class="drag-handle" onclick="closeSettingsSheet()"></div>
       <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
@@ -831,13 +829,12 @@
 
         <div class="setting-item" style="flex-direction: column; align-items: flex-start; gap: 4px; margin-top: 10px;">
           <div class="setting-label" style="color: var(--neon-glow);">アプリ情報</div>
-          <div class="setting-desc">Tottori Star Pocket v8.8.0</div>
+          <div class="setting-desc">Tottori Star Pocket v9.2.0</div>
           <div class="setting-desc">Powered by Gemini 3.8 Flash & Three.js</div>
         </div>
       </div>
     </div>
 
-    <!-- ボトムナビゲーション -->
     <div id="main-nav" class="bottom-nav glass-card">
       <button class="nav-item active" id="nav-obs" onclick="switchTab('obs')"><span>🌌</span>観測</button>
       <button class="nav-item" id="nav-search" onclick="switchTab('search')"><span>🔍</span>探す</button>
@@ -887,7 +884,6 @@
     const starrySkyGroup = new THREE.Group();
     scene.add(starrySkyGroup);
 
-    // ★ 足元・真下を含む全天360度に配置する背景球体 ★
     const skyDomeGeo = new THREE.SphereGeometry(900, 32, 16);
     const skyDomeMat = new THREE.MeshBasicMaterial({ color: 0x030610, side: THREE.BackSide });
     scene.add(new THREE.Mesh(skyDomeGeo, skyDomeMat));
@@ -907,12 +903,11 @@
     }
     const starTex = createGlowStarTexture();
 
-    // ★ 地平線下（真下・下方向）含む全天360度へ背景の星を球状に均等配置 ★
     const bgGeo = new THREE.BufferGeometry();
     const bgPos = new Float32Array(5000 * 3);
     for (let i = 0; i < 5000; i++) {
       const u = Math.random();
-      const v = Math.random() * 2 - 1; // 全方向 (-1 〜 1) に分散させて下側にも配置
+      const v = Math.random() * 2 - 1;
       const theta = u * 2.0 * Math.PI;
       const phi = Math.acos(v);
       const radius = 500 + Math.random() * 200;
@@ -985,7 +980,6 @@
       const worldPos = new THREE.Vector3();
       starSprites.forEach(sp => {
         sp.getWorldPosition(worldPos);
-        // 自由観測モード（minPitch < -10）のときは下側の星も常に描画対象にする
         const isAboveHorizon = (minPitch < -10) ? true : (worldPos.y > -50); 
         sp.userData.isVisibleOnSky = isAboveHorizon;
         sp.visible = isAboveHorizon;
@@ -1006,7 +1000,7 @@
     function setCustomTime(mode) {
       timeMode = mode;
       document.querySelectorAll('.time-opt-btn').forEach(btn => btn.classList.remove('active'));
-      event.target.classList.add('active');
+      if(event && event.target) event.target.classList.add('active');
       document.getElementById('time-modal').style.display = 'none';
       updateRealtimeSkyPosition();
     }
@@ -1029,12 +1023,14 @@
       }
       lat = Math.max(minPitch, Math.min(maxPitch, lat));
       updateRealtimeSkyPosition();
+      updateCompassDisplay();
     }
 
     let lon = 0, lat = 20, isDragging = false, prevMouse = { x: 0, y: 0 };
     let isAutoRotate = true;
     let isGyroActive = false;
 
+    /* ★ 方位 ＋ 見上げる高度（度数）の計算＆リアルタイム更新 ★ */
     function updateCompassDisplay() {
       let deg = (lon % 360 + 360) % 360;
       let text = "北 (N)";
@@ -1048,6 +1044,15 @@
 
       const compElem = document.getElementById('compass-direction');
       if (compElem) compElem.innerText = text;
+
+      // 高度（0°が地平線、90°が真上の天頂）
+      const altDeg = Math.round(Math.max(0, Math.min(90, lat)));
+      const altElem = document.getElementById('compass-altitude');
+      if (altElem) {
+        if (altDeg === 90) altElem.innerText = "高度: 90° (天頂)";
+        else if (altDeg === 0) altElem.innerText = "高度: 0° (地平線)";
+        else altElem.innerText = `高度: ${altDeg}°`;
+      }
     }
 
     function toggleGyroMode() {
@@ -1165,6 +1170,7 @@
       document.getElementById('screen-tutorial').style.display = 'none';
       document.getElementById('main-header').style.opacity = '1';
       document.getElementById('main-nav').style.opacity = '1';
+      updateCompassDisplay();
       renderStarList();
     }
 
@@ -1375,18 +1381,10 @@
         .filter(sp => sp.userData.isVisibleOnSky)
         .map(sp => sp.userData.name)
         .join(', ');
-      
-      const obsDateStr = getActiveObservationDate().toLocaleString('ja-JP');
 
-      const systemPromptWithContext = `あなたは鳥取砂丘・馬の背の星空案内人「星空先生」です。
-ユーザーは現在【鳥取砂丘の馬の背】からアプリでリアルタイムに星空を見上げて観測しています。
-【現在の観測条件】
-- 観測日時: ${obsDateStr}
-- 現在馬の背の地平線より上に見えている主な星: [ ${visibleStarNames || '現在地平線上に目立つ主要星はありません'} ]
-
-小学生にも分かる親切で丁寧な口調で、200〜300文字程度で分かりやすく解説してください。
-ユーザーから「見どころ」や「おすすめの星」を聞かれた場合は、上記で現在見えている星のリストから優先して案内してください。
-文章の途中で切れず、必ず最後の句読点（。）までしっかりと書いて回答を完了させてください。`;
+      const systemPromptWithContext = `鳥取砂丘の星空案内人「星空先生」として簡潔に答えてください。
+【見えている星】${visibleStarNames || '特になし'}
+小学生にもわかる丁寧な言葉で、必ず200文字以内で最後まで簡潔に解説を完結させてください。`;
 
       try {
         const response = await fetchWithRetry('https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent', {
@@ -1406,7 +1404,7 @@
               parts: [{ text: systemPromptWithContext }]
             },
             generationConfig: {
-              maxOutputTokens: 2048,
+              maxOutputTokens: 300,
               temperature: 0.7
             }
           })
@@ -1414,16 +1412,6 @@
 
         const data = await response.json();
         document.getElementById('chat-loading')?.remove();
-
-        if (data.error) {
-          console.error("Gemini API Error Detail:", data.error);
-          if (data.error.code === 503) {
-            appendMessage("ただいま星空先生への質問が混み合っています⭐ 少し時間をおいてもう一度送信してみてね！", false);
-          } else {
-            appendMessage(`APIエラー (${data.error.code || 'エラー'}): ${data.error.message || '接続に失敗しました'}`, false);
-          }
-          return;
-        }
 
         if (data.candidates && data.candidates[0]?.content?.parts[0]?.text) {
           appendMessage(data.candidates[0].content.parts[0].text, false);
