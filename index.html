@@ -8,7 +8,7 @@
   <!-- PWA & Mobile Optimization Meta -->
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="theme-color" content="#0a1836">
+  <meta name="theme-color" content="#040a17">
 
   <style>
     :root {
@@ -31,12 +31,13 @@
       -webkit-tap-highlight-color: transparent;
     }
 
+    /* 空のベースカラーを少し黒みを足した落ち着いた深い闇紺へ変更 */
     body, html {
       width: 100vw;
       height: 100vh;
       height: 100dvh;
       overflow: hidden;
-      background: #081226;
+      background: #040a17;
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
       color: var(--text-main);
       position: fixed;
@@ -181,7 +182,7 @@
       position: absolute;
       top: 0; left: 0; width: 100%; height: 100%;
       z-index: 45; display: none; justify-content: center; align-items: center;
-      padding: 16px; background: rgba(8, 18, 38, 0.92); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+      padding: 16px; background: rgba(4, 10, 23, 0.94); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
     }
     .tutorial-card {
       width: 100%; max-width: 380px; padding: 24px 20px; text-align: center;
@@ -279,6 +280,7 @@
       align-items: stretch;
     }
 
+    /* ウサタ画像コンテナとフォールバック処理 */
     .usata-left-hero {
       width: 220px;
       flex-shrink: 0;
@@ -289,7 +291,7 @@
       border-radius: 20px;
       position: relative;
       overflow: hidden;
-      background: #030a1c;
+      background: radial-gradient(circle, #102447 0%, #030a1c 100%);
       padding: 4px;
     }
 
@@ -362,12 +364,12 @@
       }
       .usata-left-hero {
         width: 100%;
-        height: 120px;
+        height: 110px;
         flex-shrink: 0;
-        background: radial-gradient(circle, #0c1c3d 0%, #030a1c 100%);
+        background: radial-gradient(circle, #102447 0%, #030a1c 100%);
       }
       .usata-hero-image {
-        max-height: 110px;
+        max-height: 100px;
         width: auto !important;
       }
     }
@@ -393,7 +395,6 @@
     .setting-label { font-size: 13px; color: var(--text-main); }
     .setting-desc { font-size: 11px; color: var(--text-sub); margin-top: 2px; }
 
-    /* スライダー（感度調整用）デザイン */
     .range-slider-box {
       display: flex;
       align-items: center;
@@ -485,7 +486,7 @@
     <div class="grid-center-dot"></div>
   </div>
 
-  <div id="screen-start" class="screen-start glass-card" style="border-radius:0; border:none; background: rgba(8,18,38,0.92);">
+  <div id="screen-start" class="screen-start glass-card" style="border-radius:0; border:none; background: rgba(4,10,23,0.94);">
     <div class="start-logo">Tottori Star Pocket</div>
     <div class="start-sub">鳥取砂丘・馬の背に立ち、夜空を見上げるリアリティ体験。</div>
     <button class="btn-primary" onclick="goToTutorial()">馬の背から見上げる ✦</button>
@@ -555,7 +556,7 @@
 
       <div class="usata-chat-layout">
         <div class="usata-left-hero">
-          <img id="usata-avatar" class="usata-hero-image" src="teacher-rabbit.png" alt="ウサタ先生" onerror="handleImageError(this)">
+          <img id="usata-avatar" class="usata-hero-image" src="./teacher-rabbit.png" alt="ウサタ先生" onerror="handleImageError(this)">
         </div>
 
         <div class="usata-right-panel">
@@ -610,7 +611,6 @@
       </div>
 
       <div class="setting-group">
-        <!-- ★ 新機能：かざす（ジャイロ）感度調整スライダー ★ -->
         <div class="setting-item" style="flex-direction: column; align-items: flex-start; gap: 6px;">
           <div style="width: 100%; display: flex; justify-content: space-between; align-items: center;">
             <div>
@@ -672,7 +672,7 @@
 
         <div class="setting-item" style="flex-direction: column; align-items: flex-start; gap: 4px; margin-top: 10px;">
           <div class="setting-label" style="color: var(--neon-glow);">アプリ情報</div>
-          <div class="setting-desc">Tottori Star Pocket v33.0.0 (ジャイロ手動感度調整機能実装版)</div>
+          <div class="setting-desc">Tottori Star Pocket v35.0.0 (黒み調整夜空＆ウサタ表示修正版)</div>
           <div class="setting-desc">Powered by Gemini 3.8 Flash & Three.js</div>
         </div>
       </div>
@@ -682,7 +682,7 @@
       <button class="nav-item active" id="nav-obs" onclick="switchTab('obs')"><span>🌌</span>観測</button>
       <button class="nav-item" id="nav-search" onclick="switchTab('search')"><span>🔍</span>探す</button>
       <button class="nav-item" id="nav-ai" onclick="switchTab('ai')">
-        <img class="nav-usata-icon" src="teacher-rabbit.png" alt="ウサタ" onerror="handleImageError(this)">
+        <img class="nav-usata-icon" src="./teacher-rabbit.png" alt="ウサタ" onerror="handleImageError(this)">
         ウサタ先生
       </button>
       <button class="nav-item" id="nav-settings" onclick="switchTab('settings')"><span>⚙️</span>設定</button>
@@ -694,10 +694,10 @@
     const GEMINI_API_KEY = "YOUR_GEMINI_API_KEY_HERE";
 
     const usataAvatars = {
-      default: "teacher-rabbit.png",
-      happy: "teacher-rabbit-happy.png",
-      proud: "teacher-rabbit-proud.png",
-      thinking: "teacher-rabbit-thinking.png"
+      default: "./teacher-rabbit.png",
+      happy: "./teacher-rabbit-happy.png",
+      proud: "./teacher-rabbit-proud.png",
+      thinking: "./teacher-rabbit-thinking.png"
     };
 
     function setUsataEmotion(emotionType) {
@@ -715,7 +715,17 @@
     }
 
     function handleImageError(img) {
-      img.src = 'teacher-rabbit.png';
+      // 万が一画像ファイルが見つからない場合も「？」にせずウサギ絵文字をフォールバック表示
+      const parent = img.parentElement;
+      if (parent && !parent.querySelector('.usata-fallback-emoji')) {
+        img.style.display = 'none';
+        const span = document.createElement('span');
+        span.className = 'usata-fallback-emoji';
+        span.style.fontSize = '48px';
+        span.style.lineHeight = '1';
+        span.innerText = '🐰';
+        parent.appendChild(span);
+      }
     }
 
     function detectEmotionFromText(text) {
@@ -757,7 +767,6 @@
     let minPitch = -5;
     let maxPitch = 85;
 
-    // ジャイロ感度変数（デフォルトは3）
     let gyroSensitivityLevel = 3; 
 
     function updateGyroSensitivity(val) {
@@ -779,8 +788,9 @@
     const starrySkyGroup = new THREE.Group();
     scene.add(starrySkyGroup);
 
+    /* ★ 修正ポイント：空ドームの背景に少し黒をブレンド（0x051226） ★ */
     const skyDomeGeo = new THREE.SphereGeometry(900, 32, 16);
-    const skyDomeMat = new THREE.MeshBasicMaterial({ color: 0x091936, side: THREE.BackSide });
+    const skyDomeMat = new THREE.MeshBasicMaterial({ color: 0x051226, side: THREE.BackSide });
     scene.add(new THREE.Mesh(skyDomeGeo, skyDomeMat));
 
     function createGlowStarTexture() {
@@ -969,11 +979,14 @@
     let lon = 0, lat = 20, isDragging = false, prevMouse = { x: 0, y: 0 };
     let isAutoRotate = true;
     let isGyroActive = false;
-    let targetLon = 0, targetLat = 20;
-    let initialGyroAlpha = null;
+
+    const targetQuaternion = new THREE.Quaternion();
 
     function updateCompassDisplay() {
-      let deg = (lon % 360 + 360) % 360;
+      const dir = new THREE.Vector3();
+      camera.getWorldDirection(dir);
+
+      let deg = (Math.atan2(-dir.x, -dir.z) * (180 / Math.PI) + 360) % 360;
       let text = "北 (N)";
       if (deg >= 22.5 && deg < 67.5) text = "北東 (NE)";
       else if (deg >= 67.5 && deg < 112.5) text = "東 (E)";
@@ -986,7 +999,7 @@
       const compElem = document.getElementById('compass-direction');
       if (compElem) compElem.innerText = text;
 
-      const altDeg = Math.round(Math.max(0, Math.min(90, lat)));
+      const altDeg = Math.round(Math.max(0, Math.min(90, Math.asin(dir.y) * (180 / Math.PI))));
       const altElem = document.getElementById('compass-altitude');
       if (altElem) {
         if (altDeg === 90) altElem.innerText = "高度: 90° (天頂)";
@@ -1008,9 +1021,6 @@
 
     function enableGyro() {
       isGyroActive = true;
-      initialGyroAlpha = null;
-      targetLon = lon;
-      targetLat = lat;
       window.addEventListener('deviceorientation', handleOrientation);
       document.getElementById('gyro-toggle-btn').classList.add('active');
       document.getElementById('gyro-btn-text').innerText = '解除';
@@ -1018,33 +1028,27 @@
 
     function disableGyro() {
       isGyroActive = false;
-      initialGyroAlpha = null;
       window.removeEventListener('deviceorientation', handleOrientation);
       document.getElementById('gyro-toggle-btn').classList.remove('active');
       document.getElementById('gyro-btn-text').innerText = 'かざす';
     }
 
-    /* ★ ユーザー設定の感度（gyroSensitivityLevel）をリアルタイムに反映する計算式 ★ */
     function handleOrientation(e) {
-      if (!isGyroActive || e.alpha === null || e.beta === null) return;
+      if (!isGyroActive || e.alpha === null || e.beta === null || e.gamma === null) return;
 
-      if (initialGyroAlpha === null) {
-        initialGyroAlpha = e.alpha;
-      }
+      const alpha = THREE.MathUtils.degToRad(e.alpha);
+      const beta  = THREE.MathUtils.degToRad(e.beta);
+      const gamma = THREE.MathUtils.degToRad(e.gamma);
 
-      // 感度レベル 1〜10 を倍率（0.1〜1.0）へ換算
-      const sensFactor = gyroSensitivityLevel * 0.1;
+      const euler = new THREE.Euler(beta, alpha, -gamma, 'YXZ');
+      const q = new THREE.Quaternion().setFromEuler(euler);
 
-      const relativeAlpha = (e.alpha - initialGyroAlpha);
-      const calculatedLon = lon - relativeAlpha * sensFactor;
-      const calculatedLat = Math.max(minPitch, Math.min(maxPitch, (e.beta - 45) * sensFactor * 1.2));
+      const orient = window.orientation ? THREE.MathUtils.degToRad(window.orientation) : 0;
+      const qOrient = new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0, 0, 1), -orient);
+      q.multiply(qOrient);
 
-      if (Math.abs(calculatedLon - targetLon) > 0.15) {
-        targetLon = calculatedLon;
-      }
-      if (Math.abs(calculatedLat - targetLat) > 0.15) {
-        targetLat = calculatedLat;
-      }
+      const qBase = new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(1, 0, 0), -Math.PI / 2);
+      targetQuaternion.copy(qBase.multiply(q));
     }
 
     function onPointerStart(e) {
@@ -1064,8 +1068,9 @@
         lon -= dx * 0.15;
         lat += dy * 0.15;
         lat = Math.max(minPitch, Math.min(maxPitch, lat));
-        targetLon = lon;
-        targetLat = lat;
+
+        const euler = new THREE.Euler(THREE.MathUtils.degToRad(lat), THREE.MathUtils.degToRad(lon), 0, 'YXZ');
+        targetQuaternion.setFromEuler(euler);
         updateCompassDisplay();
       }
       prevMouse = { x, y };
@@ -1116,20 +1121,19 @@
       });
 
       if (isGyroActive) {
-        // 感度に応じて補正スピードも適正化
-        const lerpSpeed = 0.02 + gyroSensitivityLevel * 0.005;
-        lon += (targetLon - lon) * lerpSpeed;
-        lat += (targetLat - lat) * lerpSpeed;
+        const slerpFactor = 0.02 + gyroSensitivityLevel * 0.015;
+        camera.quaternion.slerp(targetQuaternion, slerpFactor);
         updateCompassDisplay();
       } else if (isAutoRotate && !isDragging) {
         lon += 0.02;
-        targetLon = lon;
+        const euler = new THREE.Euler(THREE.MathUtils.degToRad(lat), THREE.MathUtils.degToRad(lon), 0, 'YXZ');
+        targetQuaternion.setFromEuler(euler);
+        camera.quaternion.slerp(targetQuaternion, 0.1);
         updateCompassDisplay();
+      } else {
+        camera.quaternion.slerp(targetQuaternion, 0.15);
       }
 
-      const phi = THREE.MathUtils.degToRad(90 - lat);
-      const theta = THREE.MathUtils.degToRad(lon);
-      camera.lookAt(500 * Math.sin(phi) * Math.cos(theta), 500 * Math.cos(phi), 500 * Math.sin(phi) * Math.sin(theta));
       renderer.render(scene, camera);
     }
     animate();
@@ -1357,8 +1361,9 @@
         const r = Math.sqrt(worldPos.x * worldPos.x + worldPos.y * worldPos.y + worldPos.z * worldPos.z);
         lat = Math.max(minPitch, Math.min(maxPitch, THREE.MathUtils.radToDeg(Math.asin(worldPos.y / r))));
         lon = THREE.MathUtils.radToDeg(Math.atan2(worldPos.z, worldPos.x));
-        targetLon = lon;
-        targetLat = lat;
+        
+        const euler = new THREE.Euler(THREE.MathUtils.degToRad(lat), THREE.MathUtils.degToRad(lon), 0, 'YXZ');
+        targetQuaternion.setFromEuler(euler);
         updateCompassDisplay();
       }
       openStarSheet(star);
