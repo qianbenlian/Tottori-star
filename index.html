@@ -31,7 +31,6 @@
       -webkit-tap-highlight-color: transparent;
     }
 
-    /* 空のベースカラーを少し明るめの夜空色へ変更 */
     body, html {
       width: 100vw;
       height: 100vh;
@@ -261,8 +260,8 @@
     }
 
     .chat-sheet {
-      height: 60vh;
-      max-height: 540px;
+      height: 65vh;
+      max-height: 560px;
       display: flex;
       flex-direction: column;
     }
@@ -274,14 +273,15 @@
     .usata-chat-layout {
       display: flex;
       flex: 1;
-      gap: 16px;
+      gap: 12px;
       margin-top: 8px;
       overflow: hidden;
       align-items: stretch;
     }
 
+    /* デスクトップ用レイアウト */
     .usata-left-hero {
-      width: 260px;
+      width: 220px;
       flex-shrink: 0;
       display: flex;
       align-items: center;
@@ -356,9 +356,22 @@
       100% { transform: translateY(-4px); }
     }
 
+    /* ★ 修正ポイント1：スマホ表示でのウサタ立ち絵最適化（消えない対策） ★ */
     @media (max-width: 640px) {
-      .usata-chat-layout { flex-direction: column; gap: 8px; }
-      .usata-left-hero { width: 100%; height: 130px; }
+      .usata-chat-layout {
+        flex-direction: column;
+        gap: 8px;
+      }
+      .usata-left-hero {
+        width: 100%;
+        height: 120px; /* スマホで画面を圧迫しない高さにしっかり固定 */
+        flex-shrink: 0;
+        background: radial-gradient(circle, #0c1c3d 0%, #030a1c 100%);
+      }
+      .usata-hero-image {
+        max-height: 110px;
+        width: auto !important;
+      }
     }
 
     .search-input-box { position: relative; margin-bottom: 12px; }
@@ -460,9 +473,7 @@
       <div class="tutorial-title">夜空の観察ガイド</div>
       <div id="tutorial-sub-text" class="tutorial-sub">画面を操作して鳥取砂丘の星空を見渡そう</div>
 
-      <div class="tutorial-grid" id="tutorial-grid-container">
-        <!-- Javascriptで自動注入されます -->
-      </div>
+      <div class="tutorial-grid" id="tutorial-grid-container"></div>
 
       <button class="btn-primary" style="width: 100%; padding: 13px; font-size: 14px;" onclick="startObservation()">観測をはじめる ✦</button>
     </div>
@@ -530,7 +541,7 @@
           </div>
 
           <div id="chat-messages" class="chat-messages">
-            <!-- 会話ログがここに追加されます -->
+            <!-- 会話ログ -->
           </div>
 
           <div class="quick-questions">
@@ -622,7 +633,7 @@
 
         <div class="setting-item" style="flex-direction: column; align-items: flex-start; gap: 4px; margin-top: 10px;">
           <div class="setting-label" style="color: var(--neon-glow);">アプリ情報</div>
-          <div class="setting-desc">Tottori Star Pocket v31.0.0 (夜空明度アップ＆ジャイロ感度補正版)</div>
+          <div class="setting-desc">Tottori Star Pocket v32.0.0 (スマホ画像表示＆超高精度ジャイロ制御版)</div>
           <div class="setting-desc">Powered by Gemini 3.8 Flash & Three.js</div>
         </div>
       </div>
@@ -665,11 +676,8 @@
     }
 
     function handleImageError(img) {
-      if (img.src.includes('teacher-rabbit.png')) {
-        img.style.display = 'none';
-      } else {
-        img.src = 'teacher-rabbit.png';
-      }
+      // エラー時でも非表示にせず、ベース画像で保持
+      img.src = 'teacher-rabbit.png';
     }
 
     function detectEmotionFromText(text) {
@@ -724,7 +732,6 @@
     const starrySkyGroup = new THREE.Group();
     scene.add(starrySkyGroup);
 
-    /* ★ 修正ポイント1：空ドームの背景色をより明るく見やすい深い青へ ★ */
     const skyDomeGeo = new THREE.SphereGeometry(900, 32, 16);
     const skyDomeMat = new THREE.MeshBasicMaterial({ color: 0x091936, side: THREE.BackSide });
     scene.add(new THREE.Mesh(skyDomeGeo, skyDomeMat));
@@ -744,7 +751,7 @@
     }
     const starTex = createGlowStarTexture();
 
-    // 天の川（Milky Way）
+    // 天の川
     function createMilkyWay() {
       const particleCount = 4000;
       const geo = new THREE.BufferGeometry();
@@ -776,7 +783,7 @@
         size: 16,
         map: starTex,
         transparent: true,
-        opacity: 0.38, // 明るさを底上げ
+        opacity: 0.38,
         vertexColors: true,
         blending: THREE.AdditiveBlending,
         depthWrite: false
@@ -788,7 +795,7 @@
     }
     createMilkyWay();
 
-    // 背景の星
+    // 背景星
     const bgGeo = new THREE.BufferGeometry();
     const bgPos = new Float32Array(5000 * 3);
     for (let i = 0; i < 5000; i++) {
@@ -810,7 +817,7 @@
       const mat = new THREE.SpriteMaterial({ map: starTex, color: s.color || 0xffffff, transparent: true, blending: THREE.AdditiveBlending });
       const sp = new THREE.Sprite(mat);
       sp.position.copy(s.pos);
-      const baseScale = (s.category === '1st') ? 42 : 28; // 明るく目立つサイズに拡大
+      const baseScale = (s.category === '1st') ? 42 : 28;
       sp.scale.set(baseScale, baseScale, 1);
       sp.userData = { ...s, baseScale: baseScale, twinkleSpeed: 1.5 + Math.random() * 2.5, twinklePhase: Math.random() * Math.PI * 2, isVisibleOnSky: true };
       starrySkyGroup.add(sp);
@@ -916,6 +923,7 @@
     let isAutoRotate = true;
     let isGyroActive = false;
     let targetLon = 0, targetLat = 20;
+    let initialGyroAlpha = null;
 
     function updateCompassDisplay() {
       let deg = (lon % 360 + 360) % 360;
@@ -953,6 +961,7 @@
 
     function enableGyro() {
       isGyroActive = true;
+      initialGyroAlpha = null; // 開始基準角をリセット
       targetLon = lon;
       targetLat = lat;
       window.addEventListener('deviceorientation', handleOrientation);
@@ -962,22 +971,31 @@
 
     function disableGyro() {
       isGyroActive = false;
+      initialGyroAlpha = null;
       window.removeEventListener('deviceorientation', handleOrientation);
       document.getElementById('gyro-toggle-btn').classList.remove('active');
       document.getElementById('gyro-btn-text').innerText = 'かざす';
     }
 
-    /* ★ 修正ポイント2：ジャイロセンサーに過敏に反応しないマイルド補正（ローパスフィルター） ★ */
+    /* ★ 修正ポイント2：スマホ用超高精度・マイルドジャイロ制御 ★ */
     function handleOrientation(e) {
-      if (!isGyroActive) return;
-      if (e.alpha !== null && e.beta !== null) {
-        // センサーの生データに倍率（0.4）を掛けて回転運動の暴れを軽減
-        const rawLon = -e.alpha;
-        const rawLat = Math.max(minPitch, Math.min(maxPitch, e.beta - 90));
+      if (!isGyroActive || e.alpha === null || e.beta === null) return;
 
-        // 急激な回転をマイルドに追従させる補正計算
-        targetLon = targetLon + (rawLon - targetLon) * 0.3;
-        targetLat = targetLat + (rawLat - targetLat) * 0.3;
+      if (initialGyroAlpha === null) {
+        initialGyroAlpha = e.alpha; // 起動した瞬間の方角を基準点（ゼロ点）に設定
+      }
+
+      // スマホをかざした時の回転幅（感度）を 0.35 に絞り、急激な暴れを抑制
+      const relativeAlpha = (e.alpha - initialGyroAlpha);
+      const calculatedLon = lon - relativeAlpha * 0.35;
+      const calculatedLat = Math.max(minPitch, Math.min(maxPitch, (e.beta - 45) * 0.5));
+
+      // デッドゾーン（微小な手ブレを無視するフィルター）
+      if (Math.abs(calculatedLon - targetLon) > 0.2) {
+        targetLon = calculatedLon;
+      }
+      if (Math.abs(calculatedLat - targetLat) > 0.2) {
+        targetLat = calculatedLat;
       }
     }
 
@@ -1049,10 +1067,10 @@
         sp.material.opacity = (0.85 + pulse * 0.15) * fogFactor;
       });
 
-      /* ★ ジャイロ有効時のカメラをゆっくり（0.04）滑らかになじませる ★ */
+      // 補正速度（0.035）を非常にゆるやかにし、ヌルッとしたカメラ追従を実現
       if (isGyroActive) {
-        lon += (targetLon - lon) * 0.04;
-        lat += (targetLat - lat) * 0.04;
+        lon += (targetLon - lon) * 0.035;
+        lat += (targetLat - lat) * 0.035;
         updateCompassDisplay();
       } else if (isAutoRotate && !isDragging) {
         lon += 0.02;
