@@ -8,14 +8,14 @@
   <!-- PWA & Mobile Optimization Meta -->
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="theme-color" content="#030610">
+  <meta name="theme-color" content="#0a1836">
 
   <style>
     :root {
       --primary-blue: #3b82f6;
       --neon-glow: #60a5fa;
       --accent-gold: #fbbf24;
-      --glass-bg: rgba(10, 18, 36, 0.88);
+      --glass-bg: rgba(10, 22, 48, 0.82);
       --glass-border: rgba(147, 197, 253, 0.25);
       --text-main: #f8fafc;
       --text-sub: #94a3b8;
@@ -31,12 +31,13 @@
       -webkit-tap-highlight-color: transparent;
     }
 
+    /* 空のベースカラーを少し明るめの夜空色へ変更 */
     body, html {
       width: 100vw;
       height: 100vh;
       height: 100dvh;
       overflow: hidden;
-      background: #030610;
+      background: #081226;
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
       color: var(--text-main);
       position: fixed;
@@ -88,11 +89,11 @@
       height: 70vw;
       max-width: 420px;
       max-height: 420px;
-      border: 1px dashed rgba(96, 165, 250, 0.25);
+      border: 1px dashed rgba(96, 165, 250, 0.35);
       border-radius: 50%;
       pointer-events: none;
       z-index: 2;
-      box-shadow: 0 0 50px rgba(59, 130, 246, 0.12) inset;
+      box-shadow: 0 0 50px rgba(59, 130, 246, 0.15) inset;
       opacity: 0.85;
       transition: opacity 0.3s ease;
     }
@@ -100,20 +101,20 @@
       content: '';
       position: absolute;
       top: 50%; left: 0; width: 100%; height: 1px;
-      background: linear-gradient(90deg, transparent, rgba(96, 165, 250, 0.25), transparent);
+      background: linear-gradient(90deg, transparent, rgba(96, 165, 250, 0.35), transparent);
     }
     .planetarium-grid::after {
       content: '';
       position: absolute;
       top: 0; left: 50%; width: 1px; height: 100%;
-      background: linear-gradient(180deg, transparent, rgba(96, 165, 250, 0.25), transparent);
+      background: linear-gradient(180deg, transparent, rgba(96, 165, 250, 0.35), transparent);
     }
     .grid-inner-ring {
       position: absolute;
       top: 50%; left: 50%;
       transform: translate(-50%, -50%);
       width: 45%; height: 45%;
-      border: 1px dotted rgba(96, 165, 250, 0.2);
+      border: 1px dotted rgba(96, 165, 250, 0.3);
       border-radius: 50%;
     }
     .grid-center-dot {
@@ -136,16 +137,16 @@
       z-index: 20;
       pointer-events: none;
       display: flex; flex-direction: column; justify-content: space-between;
-      padding: max(12px, env(safe-area-inset-top)) max(12px, env(safe-area-inset-right)) max(12px, env(safe-area-inset-bottom)) max(12px, env(safe-area-inset-left));
+      padding: max(8px, env(safe-area-inset-top)) max(12px, env(safe-area-inset-right)) max(12px, env(safe-area-inset-bottom)) max(12px, env(safe-area-inset-left));
     }
 
     .glass-card {
       background: var(--glass-bg);
-      backdrop-filter: blur(16px);
-      -webkit-backdrop-filter: blur(16px);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
       border: 1px solid var(--glass-border);
       border-radius: var(--radius-main);
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
       pointer-events: auto;
     }
 
@@ -181,7 +182,7 @@
       position: absolute;
       top: 0; left: 0; width: 100%; height: 100%;
       z-index: 45; display: none; justify-content: center; align-items: center;
-      padding: 16px; background: rgba(3, 6, 16, 0.92); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+      padding: 16px; background: rgba(8, 18, 38, 0.92); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
     }
     .tutorial-card {
       width: 100%; max-width: 380px; padding: 24px 20px; text-align: center;
@@ -218,24 +219,25 @@
     .tut-tag { font-size: 10px; color: var(--accent-gold); font-weight: 600; }
 
     .header {
-      display: flex; justify-content: space-between; align-items: center; padding: 10px 12px; opacity: 0; transition: opacity 0.5s;
+      display: flex; justify-content: space-between; align-items: center; padding: 6px 14px; opacity: 0; transition: opacity 0.5s;
+      border-radius: 20px; background: rgba(10, 20, 42, 0.65);
     }
     .time-chip {
       background: rgba(59, 130, 246, 0.2); border: 1px solid var(--glass-border); border-radius: 10px;
       padding: 2px 6px; font-size: 10px; color: var(--neon-glow); cursor: pointer; margin-left: 4px;
     }
     .compass-card {
-      background: rgba(15, 23, 42, 0.75); border: 1px solid var(--glass-border); border-radius: 16px;
-      padding: 4px 10px; font-size: 11px; color: var(--neon-glow); font-weight: 600; display: flex; align-items: center; gap: 6px; backdrop-filter: blur(8px);
+      background: rgba(15, 23, 42, 0.55); border: 1px solid var(--glass-border); border-radius: 14px;
+      padding: 3px 10px; font-size: 11px; color: var(--neon-glow); font-weight: 600; display: flex; align-items: center; gap: 6px;
     }
     .gyro-btn {
       background: rgba(59, 130, 246, 0.2); border: 1px solid var(--glass-border); border-radius: 12px;
-      padding: 5px 10px; color: var(--neon-glow); font-size: 11px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 4px;
+      padding: 4px 10px; color: var(--neon-glow); font-size: 11px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 4px;
     }
     .gyro-btn.active { background: var(--primary-blue); color: #fff; }
 
     .time-modal {
-      position: absolute; top: 60px; left: 12px; right: 12px; padding: 16px; z-index: 35; display: none; flex-direction: column; gap: 10px;
+      position: absolute; top: 52px; left: 12px; right: 12px; padding: 16px; z-index: 35; display: none; flex-direction: column; gap: 10px;
     }
     .time-options { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; }
     .time-opt-btn {
@@ -245,34 +247,119 @@
     .time-opt-btn.active { background: var(--primary-blue); color: #fff; border-color: var(--neon-glow); }
 
     .star-sheet, .chat-sheet, .search-sheet, .settings-sheet {
-      position: absolute; bottom: calc(70px + env(safe-area-inset-bottom)); left: 12px; right: 12px;
-      padding: 20px; transform: translateY(140%); transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1); z-index: 30;
+      position: absolute;
+      bottom: 72px;
+      left: 12px;
+      right: 12px;
+      padding: 16px;
+      transform: translateY(180%);
+      transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+      z-index: 30;
     }
-    .star-sheet.active, .chat-sheet.active, .search-sheet.active, .settings-sheet.active { transform: translateY(0); }
+    .star-sheet.active, .chat-sheet.active, .search-sheet.active, .settings-sheet.active {
+      transform: translateY(0);
+    }
 
-    .chat-sheet, .search-sheet { height: 62vh; display: flex; flex-direction: column; }
-    .settings-sheet { height: 60vh; display: flex; flex-direction: column; overflow-y: auto; -webkit-overflow-scrolling: touch; }
+    .chat-sheet {
+      height: 60vh;
+      max-height: 540px;
+      display: flex;
+      flex-direction: column;
+    }
+    .search-sheet { height: 58vh; max-height: 520px; display: flex; flex-direction: column; }
+    .settings-sheet { height: 50vh; display: flex; flex-direction: column; overflow-y: auto; -webkit-overflow-scrolling: touch; }
 
-    .chat-header { display: flex; justify-content: space-between; align-items: center; padding-bottom: 10px; border-bottom: 1px solid var(--glass-border); }
+    .chat-header { display: flex; justify-content: space-between; align-items: center; padding-bottom: 8px; border-bottom: 1px solid var(--glass-border); flex-shrink: 0; }
+
+    .usata-chat-layout {
+      display: flex;
+      flex: 1;
+      gap: 16px;
+      margin-top: 8px;
+      overflow: hidden;
+      align-items: stretch;
+    }
+
+    .usata-left-hero {
+      width: 260px;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid rgba(147, 197, 253, 0.25);
+      border-radius: 20px;
+      position: relative;
+      overflow: hidden;
+      background: #030a1c;
+      padding: 4px;
+    }
+
+    .usata-hero-image {
+      width: 100%;
+      height: 100%;
+      object-fit: contain !important;
+      object-position: center center;
+      transition: opacity 0.25s ease, transform 0.25s ease;
+      animation: usataFloat 3s ease-in-out infinite alternate;
+    }
+    .usata-hero-image.changing {
+      opacity: 0.3;
+      transform: scale(0.95);
+    }
+
+    .usata-right-panel {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      min-width: 0;
+    }
+
+    .usata-welcome-msg {
+      background: rgba(59, 130, 246, 0.2);
+      border: 1px solid rgba(96, 165, 250, 0.3);
+      border-radius: 16px;
+      padding: 10px 14px;
+      font-size: 12px;
+      line-height: 1.5;
+      color: var(--text-main);
+      flex-shrink: 0;
+    }
+
     .chat-messages {
-      flex: 1; overflow-y: auto; padding: 12px 0; display: flex; flex-direction: column; gap: 10px; -webkit-overflow-scrolling: touch;
+      flex: 1; overflow-y: auto; padding: 4px 0; display: flex; flex-direction: column; gap: 8px; -webkit-overflow-scrolling: touch;
     }
-    .msg { max-width: 85%; padding: 10px 14px; border-radius: 16px; font-size: 13px; line-height: 1.5; user-select: text; -webkit-user-select: text; }
-    .msg-ai { align-self: flex-start; background: rgba(59, 130, 246, 0.25); border: 1px solid rgba(96, 165, 250, 0.3); color: var(--text-main); border-top-left-radius: 4px; }
-    .msg-user { align-self: flex-end; background: var(--primary-blue); color: #ffffff; border-top-right-radius: 4px; }
+    
+    .msg-row { display: flex; max-width: 90%; }
+    .msg-row.msg-row-user { align-self: flex-end; }
+    .msg-row.msg-row-ai { align-self: flex-start; }
 
-    .quick-questions { display: flex; gap: 6px; overflow-x: auto; padding: 6px 0; margin-bottom: 4px; -webkit-overflow-scrolling: touch; }
+    .msg { padding: 8px 12px; border-radius: 14px; font-size: 12px; line-height: 1.5; user-select: text; -webkit-user-select: text; }
+    .msg-ai { background: rgba(59, 130, 246, 0.25); border: 1px solid rgba(96, 165, 250, 0.3); color: var(--text-main); border-top-left-radius: 4px; }
+    .msg-user { background: var(--primary-blue); color: #ffffff; border-top-right-radius: 4px; }
+
+    .quick-questions { display: flex; gap: 6px; overflow-x: auto; padding: 4px 0; flex-shrink: 0; -webkit-overflow-scrolling: touch; }
     .quick-chip {
-      background: rgba(255, 255, 255, 0.08); border: 1px solid var(--glass-border); border-radius: 14px;
+      background: rgba(255, 255, 255, 0.08); border: 1px solid var(--glass-border); border-radius: 12px;
       padding: 6px 12px; font-size: 11px; color: var(--neon-glow); cursor: pointer; white-space: nowrap;
     }
 
-    .chat-input-area { display: flex; gap: 8px; padding-top: 4px; }
+    .chat-input-area { display: flex; gap: 8px; padding-top: 2px; flex-shrink: 0; }
     .chat-input {
-      flex: 1; background: rgba(15, 23, 42, 0.8); border: 1px solid var(--glass-border); border-radius: 20px; padding: 10px 16px; color: #fff; font-size: 13px; outline: none;
+      flex: 1; background: rgba(15, 23, 42, 0.8); border: 1px solid var(--glass-border); border-radius: 18px; padding: 8px 14px; color: #fff; font-size: 12px; outline: none;
     }
-    .chat-send-btn { background: var(--primary-blue); border: none; border-radius: 20px; padding: 0 16px; color: #fff; font-weight: 600; cursor: pointer; }
+    .chat-send-btn { background: var(--primary-blue); border: none; border-radius: 18px; padding: 0 16px; color: #fff; font-size: 12px; font-weight: 600; cursor: pointer; }
     .chat-send-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    @keyframes usataFloat {
+      0% { transform: translateY(0px); }
+      100% { transform: translateY(-4px); }
+    }
+
+    @media (max-width: 640px) {
+      .usata-chat-layout { flex-direction: column; gap: 8px; }
+      .usata-left-hero { width: 100%; height: 130px; }
+    }
 
     .search-input-box { position: relative; margin-bottom: 12px; }
     .search-input-box input {
@@ -306,15 +393,44 @@
     input:checked + .slider { background-color: var(--primary-blue); }
     input:checked + .slider:before { transform: translateX(20px); }
 
-    .bottom-nav { display: flex; justify-content: space-around; align-items: center; padding: 10px 6px; margin-top: auto; opacity: 0; transition: opacity 0.5s; }
+    .bottom-nav {
+      position: absolute;
+      bottom: max(10px, env(safe-area-inset-bottom));
+      left: 12px;
+      right: 12px;
+      height: 52px;
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      padding: 4px;
+      z-index: 40;
+      opacity: 0;
+      transition: opacity 0.5s;
+      background: rgba(10, 20, 42, 0.7);
+    }
     .nav-item { display: flex; flex-direction: column; align-items: center; font-size: 10px; color: var(--text-sub); cursor: pointer; background: none; border: none; gap: 2px; }
     .nav-item span { font-size: 18px; }
-    .nav-item.active { color: var(--neon-glow); }
+    .nav-item.active { color: var(--neon-glow); font-weight: 600; }
+
+    .nav-usata-icon {
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 1.5px solid var(--glass-border);
+      background: rgba(255, 255, 255, 0.1);
+      transition: border-color 0.3s, transform 0.2s;
+    }
+    .nav-item.active .nav-usata-icon {
+      border-color: var(--neon-glow);
+      box-shadow: 0 0 8px rgba(96, 165, 250, 0.6);
+      transform: scale(1.1);
+    }
 
     .hidden { opacity: 0 !important; pointer-events: none !important; visibility: hidden; }
   </style>
 
-  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 </head>
 <body>
 
@@ -322,9 +438,9 @@
   
   <div id="dune-silhouette" class="dune-silhouette">
     <svg class="dune-svg" viewBox="0 0 1440 320" preserveAspectRatio="none">
-      <path fill="#070c18" d="M0,240 Q400,180 800,220 Q1200,260 1440,190 L1440,320 L0,320 Z"></path>
-      <path fill="#02040a" d="M0,200 Q360,130 720,175 Q1080,220 1440,150 L1440,320 L0,320 Z"></path>
-      <path fill="none" stroke="rgba(251, 191, 36, 0.5)" stroke-width="2" d="M0,200 Q360,130 720,175 Q1080,220 1440,150"></path>
+      <path fill="#0d1b38" d="M0,240 Q400,180 800,220 Q1200,260 1440,190 L1440,320 L0,320 Z"></path>
+      <path fill="#060e21" d="M0,200 Q360,130 720,175 Q1080,220 1440,150 L1440,320 L0,320 Z"></path>
+      <path fill="none" stroke="rgba(251, 191, 36, 0.6)" stroke-width="2" d="M0,200 Q360,130 720,175 Q1080,220 1440,150"></path>
     </svg>
   </div>
 
@@ -333,7 +449,7 @@
     <div class="grid-center-dot"></div>
   </div>
 
-  <div id="screen-start" class="screen-start glass-card" style="border-radius:0; border:none; background: rgba(4,7,15,0.88);">
+  <div id="screen-start" class="screen-start glass-card" style="border-radius:0; border:none; background: rgba(8,18,38,0.92);">
     <div class="start-logo">Tottori Star Pocket</div>
     <div class="start-sub">鳥取砂丘・馬の背に立ち、夜空を見上げるリアリティ体験。</div>
     <button class="btn-primary" onclick="goToTutorial()">馬の背から見上げる ✦</button>
@@ -342,32 +458,10 @@
   <div id="screen-tutorial" class="screen-tutorial">
     <div class="glass-card tutorial-card">
       <div class="tutorial-title">夜空の観察ガイド</div>
-      <div class="tutorial-sub">画面をスワイプして鳥取砂丘の星空を見渡そう</div>
+      <div id="tutorial-sub-text" class="tutorial-sub">画面を操作して鳥取砂丘の星空を見渡そう</div>
 
-      <div class="tutorial-grid">
-        <div class="tut-box">
-          <div class="tut-icon-circle">👈👉</div>
-          <div class="tut-info">
-            <h4>1. 画面を横になぞる</h4>
-            <p>方角をクルッと360度変更 <span class="tut-tag">(東・南・西・北)</span></p>
-          </div>
-        </div>
-
-        <div class="tut-box">
-          <div class="tut-icon-circle">👆👇</div>
-          <div class="tut-info">
-            <h4>2. 画面を縦になぞる</h4>
-            <p>見上げる角度を変更 <span class="tut-tag">(高度 0°〜90°)</span></p>
-          </div>
-        </div>
-
-        <div class="tut-box">
-          <div class="tut-icon-circle">🤖</div>
-          <div class="tut-info">
-            <h4>3. 星をタッチして質問</h4>
-            <p>星を選ぶと「星空先生」が優しく解説！</p>
-          </div>
-        </div>
+      <div class="tutorial-grid" id="tutorial-grid-container">
+        <!-- Javascriptで自動注入されます -->
       </div>
 
       <button class="btn-primary" style="width: 100%; padding: 13px; font-size: 14px;" onclick="startObservation()">観測をはじめる ✦</button>
@@ -415,29 +509,42 @@
       <p id="sheet-star-desc" style="font-size: 12px; color: var(--text-main); line-height: 1.5; margin-bottom: 12px;">
         こと座の最光星。夏の大三角を形作る美しく明るい星です。
       </p>
-      <button class="btn-primary" style="width: 100%; padding: 10px; font-size: 13px;" onclick="openAIChatFromSheet()">🤖 星空先生に聞いてみる</button>
+      <button class="btn-primary" style="width: 100%; padding: 10px; font-size: 13px;" onclick="openAIChatFromSheet()">ウサタ先生に聞いてみる</button>
     </div>
 
     <div id="chat-sheet" class="glass-card chat-sheet">
       <div class="drag-handle" onclick="closeChatSheet()"></div>
       <div class="chat-header">
-        <div style="font-weight: 600; font-size: 14px; color: var(--neon-glow);">🤖 星空先生 AI</div>
+        <div style="font-weight: 600; font-size: 14px; color: var(--neon-glow);">ウサタ先生 AI</div>
         <span style="font-size: 11px; color: var(--text-sub); cursor:pointer;" onclick="closeChatSheet()">閉じる</span>
       </div>
-      <div id="chat-messages" class="chat-messages">
-        <div class="msg msg-ai">こんにちは！鳥取砂丘の馬の背へようこそ⭐ 今見えている星空について何でも質問してね！</div>
-      </div>
 
-      <div class="quick-questions">
-        <button class="quick-chip" onclick="sendQuickQuestion('今夜の馬の背の見どころを教えて！')">✨ 今夜の見どころ</button>
-        <button class="quick-chip" onclick="sendQuickQuestion('今見えている星で一番明るい星は？')">🌟 今見えている一番明るい星</button>
-        <button class="quick-chip" onclick="sendQuickQuestion('鳥取砂丘で星がきれいに見える理由は？')">🐪 馬の背の星空の秘密</button>
-        <button class="quick-chip" onclick="sendQuickQuestion('天の川はどうやって探せばいい？')">🌌 天の川の探し方</button>
-      </div>
+      <div class="usata-chat-layout">
+        <div class="usata-left-hero">
+          <img id="usata-avatar" class="usata-hero-image" src="teacher-rabbit.png" alt="ウサタ先生" onerror="handleImageError(this)">
+        </div>
 
-      <div class="chat-input-area">
-        <input type="text" id="chat-input" class="chat-input" placeholder="質問を入力..." onkeypress="handleKeyPress(event)">
-        <button id="chat-send-btn" class="chat-send-btn" onclick="sendChatMessage()">送信</button>
+        <div class="usata-right-panel">
+          <div id="usata-welcome-text" class="usata-welcome-msg">
+            おっ、馬の背へようこそ！隊員さん！ウサタ先生だぞ！今見えている星について何でも質問してくれ！
+          </div>
+
+          <div id="chat-messages" class="chat-messages">
+            <!-- 会話ログがここに追加されます -->
+          </div>
+
+          <div class="quick-questions">
+            <button class="quick-chip" onclick="sendQuickQuestion('今夜の馬の背の見どころを教えて！')">✨ 今夜の見どころ</button>
+            <button class="quick-chip" onclick="sendQuickQuestion('今見えている星で一番明るい星は？')">🌟 今見えている一番明るい星</button>
+            <button class="quick-chip" onclick="sendQuickQuestion('鳥取砂丘で星がきれいに見える理由は？')">🐪 馬の背の星空の秘密</button>
+            <button class="quick-chip" onclick="sendQuickQuestion('天の川はどうやって探せばいい？')">🌌 天の川の探し方</button>
+          </div>
+
+          <div class="chat-input-area">
+            <input type="text" id="chat-input" class="chat-input" placeholder="ウサタ先生に質問..." onkeypress="handleKeyPress(event)">
+            <button id="chat-send-btn" class="chat-send-btn" onclick="sendChatMessage()">送信</button>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -515,8 +622,8 @@
 
         <div class="setting-item" style="flex-direction: column; align-items: flex-start; gap: 4px; margin-top: 10px;">
           <div class="setting-label" style="color: var(--neon-glow);">アプリ情報</div>
-          <div class="setting-desc">Tottori Star Pocket v10.1.0 (マイルド感度版)</div>
-          <div class="setting-desc">Powered by Gemini 1.5 Flash & Three.js</div>
+          <div class="setting-desc">Tottori Star Pocket v31.0.0 (夜空明度アップ＆ジャイロ感度補正版)</div>
+          <div class="setting-desc">Powered by Gemini 3.8 Flash & Three.js</div>
         </div>
       </div>
     </div>
@@ -524,23 +631,69 @@
     <div id="main-nav" class="bottom-nav glass-card">
       <button class="nav-item active" id="nav-obs" onclick="switchTab('obs')"><span>🌌</span>観測</button>
       <button class="nav-item" id="nav-search" onclick="switchTab('search')"><span>🔍</span>探す</button>
-      <button class="nav-item" id="nav-ai" onclick="switchTab('ai')"><span>🤖</span>星空先生</button>
+      <button class="nav-item" id="nav-ai" onclick="switchTab('ai')">
+        <img class="nav-usata-icon" src="teacher-rabbit.png" alt="ウサタ" onerror="handleImageError(this)">
+        ウサタ先生
+      </button>
       <button class="nav-item" id="nav-settings" onclick="switchTab('settings')"><span>⚙️</span>設定</button>
     </div>
   </div>
 
   <script>
     /* ★ ご自身のGemini APIキー (AIzaSy...) を以下のダブルクォーテーション内に入力してください ★ */
-    const GEMINI_API_KEY = "AQ.Ab8RN6KEj-WVvTk1kx_h01nFQvGTvGVDJvyOfw1XZB6uSSZnAw";
+    const GEMINI_API_KEY = "YOUR_GEMINI_API_KEY_HERE";
+
+    const usataAvatars = {
+      default: "teacher-rabbit.png",
+      happy: "teacher-rabbit-happy.png",
+      proud: "teacher-rabbit-proud.png",
+      thinking: "teacher-rabbit-thinking.png"
+    };
+
+    function setUsataEmotion(emotionType) {
+      const img = document.getElementById('usata-avatar');
+      if (!img) return;
+
+      const newSrc = usataAvatars[emotionType] || usataAvatars.default;
+      if (img.getAttribute('src') === newSrc) return;
+
+      img.classList.add('changing');
+      setTimeout(() => {
+        img.src = newSrc;
+        img.classList.remove('changing');
+      }, 200);
+    }
+
+    function handleImageError(img) {
+      if (img.src.includes('teacher-rabbit.png')) {
+        img.style.display = 'none';
+      } else {
+        img.src = 'teacher-rabbit.png';
+      }
+    }
+
+    function detectEmotionFromText(text) {
+      if (!text) return 'default';
+      if (text.includes('💭') || text.includes('考え中') || text.includes('うーむ') || text.includes('質問')) {
+        return 'thinking';
+      }
+      if (text.includes('最高') || text.includes('すごい') || text.includes('おすすめ') || text.includes('きれい') || text.includes('ようこそ') || text.includes('！') && text.includes('✨')) {
+        return 'happy';
+      }
+      if (text.includes('だぞ') || text.includes('任せて') || text.includes('知識') || text.includes('教えてあげる') || text.includes('星空の秘密')) {
+        return 'proud';
+      }
+      return 'default';
+    }
 
     const starDatabase = [
-      { id: "vega", name: "織姫星 (ベガ)", category: "1st", type: "1等星 / 約25光年", desc: "こと座の1等星。夏の大三角を形成する最も青白く輝く星です。", color: 0x93c5fd, pos: new THREE.Vector3(150, 320, -350) },
-      { id: "altair", name: "彦星 (アルタイル)", category: "1st", type: "1等星 / 約17光年", desc: "わし座の1等星。織姫星と天の川を挟んで輝いています。", color: 0xf8fafc, pos: new THREE.Vector3(300, 220, -300) },
+      { id: "vega", name: "織姫星 (ベガ)", category: "1st", type: "1等星 / 約25光年", desc: "こと座の1等星。夏の大三角を形成する最も青白く輝く星です。", color: 0xa5f3fc, pos: new THREE.Vector3(150, 320, -350) },
+      { id: "altair", name: "彦星 (アルタイル)", category: "1st", type: "1等星 / 約17光年", desc: "わし座の1等星。織姫星と天の川を挟んで輝いています。", color: 0xffffff, pos: new THREE.Vector3(300, 220, -300) },
       { id: "deneb", name: "デネブ", category: "1st", type: "1等星 / 約1400光年", desc: "はくちょう座の尻尾の星。超巨星で非常に強力な光を放っています。", color: 0xe0f2fe, pos: new THREE.Vector3(80, 410, -280) },
-      { id: "antares", name: "アンタレス", category: "1st", type: "赤色超巨星 / 約550光年", desc: "さそり座の心臓で赤く怪しく輝く星。「火星に対抗するもの」の意味を持ちます。", color: 0xf87171, pos: new THREE.Vector3(220, 100, -380) },
-      { id: "betelgeuse", name: "ベテルギウス", category: "1st", type: "赤色超巨星 / 約640光年", desc: "オリオン座の右肩にある赤色超巨星。冬の大三角の1つです。", color: 0xfb923c, pos: new THREE.Vector3(-250, 280, -320) },
-      { id: "rigel", name: "リゲル", category: "1st", type: "1等星 / 約860光年", desc: "オリオン座の左足で青白く輝く美しい1等星です。", color: 0x60a5fa, pos: new THREE.Vector3(-320, 140, -350) },
-      { id: "sirius", name: "シリウス", category: "1st", type: "1等星 / 約8.6光年", desc: "おおいぬ座の星で、全天で最も明るく見える恒星です。", color: 0x38bdf8, pos: new THREE.Vector3(-380, 120, -250) },
+      { id: "antares", name: "アンタレス", category: "1st", type: "赤色超巨星 / 約550光年", desc: "さそり座の心臓で赤く怪しく輝く星。「火星に対抗するもの」の意味を持ちます。", color: 0xff4444, pos: new THREE.Vector3(220, 100, -380) },
+      { id: "betelgeuse", name: "ベテルギウス", category: "1st", type: "赤色超巨星 / 約640光年", desc: "オリオン座の右肩にある赤色超巨星。冬の大三角の1つです。", color: 0xff8833, pos: new THREE.Vector3(-250, 280, -320) },
+      { id: "rigel", name: "リゲル", category: "1st", type: "1等星 / 約860光年", desc: "オリオン座の左足で青白く輝く美しい1等星です。", color: 0x38bdf8, pos: new THREE.Vector3(-320, 140, -350) },
+      { id: "sirius", name: "シリウス", category: "1st", type: "1等星 / 約8.6光年", desc: "おおいぬ座の星で、全天で最も明るく見える恒星です。", color: 0x60a5fa, pos: new THREE.Vector3(-380, 120, -250) },
       { id: "procyon", name: "プロキオン", category: "1st", type: "1等星 / 約11.5光年", desc: "こいぬ座の1等星。シリウス・ベテルギウスと共に「冬の大三角」を作ります。", color: 0xfef08a, pos: new THREE.Vector3(-180, 200, -380) },
       { id: "arcturus", name: "アークトゥルス", category: "1st", type: "1等星 / 約37光年", desc: "うかい座のオレンジ色に輝く1等星。「春の夫婦星」としても親しまれます。", color: 0xfbbf24, pos: new THREE.Vector3(380, 260, 100) },
       { id: "spica", name: "スピカ", category: "1st", type: "1等星 / 約250光年", desc: "おとめ座の青白色の1等星。和名では「真珠星」と呼ばれます。", color: 0xc084fc, pos: new THREE.Vector3(350, 150, 200) },
@@ -571,8 +724,9 @@
     const starrySkyGroup = new THREE.Group();
     scene.add(starrySkyGroup);
 
+    /* ★ 修正ポイント1：空ドームの背景色をより明るく見やすい深い青へ ★ */
     const skyDomeGeo = new THREE.SphereGeometry(900, 32, 16);
-    const skyDomeMat = new THREE.MeshBasicMaterial({ color: 0x030610, side: THREE.BackSide });
+    const skyDomeMat = new THREE.MeshBasicMaterial({ color: 0x091936, side: THREE.BackSide });
     scene.add(new THREE.Mesh(skyDomeGeo, skyDomeMat));
 
     function createGlowStarTexture() {
@@ -581,15 +735,60 @@
       const ctx = canvas.getContext('2d');
       const g = ctx.createRadialGradient(64, 64, 0, 64, 64, 64);
       g.addColorStop(0, '#ffffff');
-      g.addColorStop(0.15, 'rgba(255,255,255,0.95)');
-      g.addColorStop(0.35, 'rgba(160,210,255,0.6)');
-      g.addColorStop(0.70, 'rgba(96,165,250,0.15)');
+      g.addColorStop(0.20, 'rgba(255,255,255,0.95)');
+      g.addColorStop(0.45, 'rgba(160,210,255,0.7)');
+      g.addColorStop(0.75, 'rgba(96,165,250,0.25)');
       g.addColorStop(1, 'rgba(0,0,0,0)');
       ctx.fillStyle = g; ctx.fillRect(0, 0, 128, 128);
       return new THREE.CanvasTexture(canvas);
     }
     const starTex = createGlowStarTexture();
 
+    // 天の川（Milky Way）
+    function createMilkyWay() {
+      const particleCount = 4000;
+      const geo = new THREE.BufferGeometry();
+      const positions = new Float32Array(particleCount * 3);
+      const colors = new Float32Array(particleCount * 3);
+
+      for (let i = 0; i < particleCount; i++) {
+        const t = (Math.random() - 0.5) * Math.PI * 2;
+        const widthSpread = (Math.random() - 0.5) * 140;
+        const radius = 650 + Math.random() * 50;
+
+        const x = radius * Math.cos(t) + widthSpread;
+        const y = radius * Math.sin(t) * 0.5 + (Math.random() - 0.5) * 90;
+        const z = radius * Math.sin(t) + widthSpread;
+
+        positions[i * 3]     = x;
+        positions[i * 3 + 1] = y;
+        positions[i * 3 + 2] = z;
+
+        colors[i * 3]     = 0.65 + Math.random() * 0.35;
+        colors[i * 3 + 1] = 0.75 + Math.random() * 0.25;
+        colors[i * 3 + 2] = 1.0;
+      }
+
+      geo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+      geo.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+
+      const mat = new THREE.PointsMaterial({
+        size: 16,
+        map: starTex,
+        transparent: true,
+        opacity: 0.38, // 明るさを底上げ
+        vertexColors: true,
+        blending: THREE.AdditiveBlending,
+        depthWrite: false
+      });
+
+      const milkyWayPoints = new THREE.Points(geo, mat);
+      milkyWayPoints.rotation.z = Math.PI / 4;
+      starrySkyGroup.add(milkyWayPoints);
+    }
+    createMilkyWay();
+
+    // 背景の星
     const bgGeo = new THREE.BufferGeometry();
     const bgPos = new Float32Array(5000 * 3);
     for (let i = 0; i < 5000; i++) {
@@ -603,7 +802,7 @@
       bgPos[i * 3 + 2] = radius * Math.sin(phi) * Math.sin(theta);
     }
     bgGeo.setAttribute('position', new THREE.BufferAttribute(bgPos, 3));
-    const bgMat = new THREE.PointsMaterial({ size: 5.5, map: starTex, transparent: true, opacity: 0.9, blending: THREE.AdditiveBlending, depthWrite: false });
+    const bgMat = new THREE.PointsMaterial({ size: 6.0, map: starTex, transparent: true, opacity: 0.95, blending: THREE.AdditiveBlending, depthWrite: false });
     starrySkyGroup.add(new THREE.Points(bgGeo, bgMat));
 
     const starSprites = [];
@@ -611,7 +810,7 @@
       const mat = new THREE.SpriteMaterial({ map: starTex, color: s.color || 0xffffff, transparent: true, blending: THREE.AdditiveBlending });
       const sp = new THREE.Sprite(mat);
       sp.position.copy(s.pos);
-      const baseScale = (s.category === '1st') ? 34 : 24;
+      const baseScale = (s.category === '1st') ? 42 : 28; // 明るく目立つサイズに拡大
       sp.scale.set(baseScale, baseScale, 1);
       sp.userData = { ...s, baseScale: baseScale, twinkleSpeed: 1.5 + Math.random() * 2.5, twinklePhase: Math.random() * Math.PI * 2, isVisibleOnSky: true };
       starrySkyGroup.add(sp);
@@ -619,11 +818,11 @@
     });
 
     const lineGroup = new THREE.Group();
-    const summerTriMat = new THREE.LineBasicMaterial({ color: 0x60a5fa, transparent: true, opacity: 0.55 });
+    const summerTriMat = new THREE.LineBasicMaterial({ color: 0x60a5fa, transparent: true, opacity: 0.65 });
     const summerTriGeo = new THREE.BufferGeometry().setFromPoints([starDatabase[0].pos, starDatabase[1].pos, starDatabase[2].pos, starDatabase[0].pos]);
     lineGroup.add(new THREE.Line(summerTriGeo, summerTriMat));
 
-    const winterTriMat = new THREE.LineBasicMaterial({ color: 0xfbbf24, transparent: true, opacity: 0.55 });
+    const winterTriMat = new THREE.LineBasicMaterial({ color: 0xfbbf24, transparent: true, opacity: 0.65 });
     const winterTriGeo = new THREE.BufferGeometry().setFromPoints([starDatabase[4].pos, starDatabase[6].pos, starDatabase[7].pos, starDatabase[4].pos]);
     lineGroup.add(new THREE.Line(winterTriGeo, winterTriMat));
     starrySkyGroup.add(lineGroup);
@@ -768,11 +967,17 @@
       document.getElementById('gyro-btn-text').innerText = 'かざす';
     }
 
+    /* ★ 修正ポイント2：ジャイロセンサーに過敏に反応しないマイルド補正（ローパスフィルター） ★ */
     function handleOrientation(e) {
       if (!isGyroActive) return;
       if (e.alpha !== null && e.beta !== null) {
-        targetLon = -e.alpha;
-        targetLat = Math.max(minPitch, Math.min(maxPitch, e.beta - 90));
+        // センサーの生データに倍率（0.4）を掛けて回転運動の暴れを軽減
+        const rawLon = -e.alpha;
+        const rawLat = Math.max(minPitch, Math.min(maxPitch, e.beta - 90));
+
+        // 急激な回転をマイルドに追従させる補正計算
+        targetLon = targetLon + (rawLon - targetLon) * 0.3;
+        targetLat = targetLat + (rawLat - targetLat) * 0.3;
       }
     }
 
@@ -829,19 +1034,25 @@
 
       bgMat.opacity = 0.85 + Math.cos(elapsedTime * 2.1) * 0.15;
 
+      const worldPos = new THREE.Vector3();
       starSprites.forEach(sp => {
         if (!sp.visible) return;
         const u = sp.userData;
         const pulse = Math.sin(elapsedTime * u.twinkleSpeed + u.twinklePhase);
         const currentScale = u.baseScale * (1 + pulse * 0.18);
         sp.scale.set(currentScale, currentScale, 1);
-        sp.material.opacity = 0.82 + pulse * 0.18;
+
+        sp.getWorldPosition(worldPos);
+        const heightRatio = Math.max(0, Math.min(1, (worldPos.y + 20) / 250));
+        const fogFactor = 0.4 + heightRatio * 0.6;
+
+        sp.material.opacity = (0.85 + pulse * 0.15) * fogFactor;
       });
 
+      /* ★ ジャイロ有効時のカメラをゆっくり（0.04）滑らかになじませる ★ */
       if (isGyroActive) {
-        /* ★ ジャイロ感度調整：0.1 -> 0.02 に下げて、動きをマイルド＆スムーズ化 ★ */
-        lon += (targetLon - lon) * 0.02;
-        lat += (targetLat - lat) * 0.02;
+        lon += (targetLon - lon) * 0.04;
+        lat += (targetLat - lat) * 0.04;
         updateCompassDisplay();
       } else if (isAutoRotate && !isDragging) {
         lon += 0.02;
@@ -858,6 +1069,63 @@
 
     function goToTutorial() {
       document.getElementById('screen-start').classList.add('hidden');
+      
+      const isMobile = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);
+      const subTextElem = document.getElementById('tutorial-sub-text');
+      const gridContainer = document.getElementById('tutorial-grid-container');
+
+      if (isMobile) {
+        subTextElem.innerText = "画面をスワイプして鳥取砂丘の星空を見渡そう";
+        gridContainer.innerHTML = `
+          <div class="tut-box">
+            <div class="tut-icon-circle">👈👉</div>
+            <div class="tut-info">
+              <h4>1. 画面を横になぞる</h4>
+              <p>方角をクルッと360度変更 <span class="tut-tag">(東・南・西・北)</span></p>
+            </div>
+          </div>
+          <div class="tut-box">
+            <div class="tut-icon-circle">👆👇</div>
+            <div class="tut-info">
+              <h4>2. 画面を縦になぞる</h4>
+              <p>見上げる角度を変更 <span class="tut-tag">(高度 0°〜90°)</span></p>
+            </div>
+          </div>
+          <div class="tut-box">
+            <div class="tut-icon-circle">📱</div>
+            <div class="tut-info">
+              <h4>3. 星をタップして質問</h4>
+              <p>気になる星を触ると「ウサタ先生」が解説！</p>
+            </div>
+          </div>
+        `;
+      } else {
+        subTextElem.innerText = "マウスでドラッグして鳥取砂丘の星空を見渡そう";
+        gridContainer.innerHTML = `
+          <div class="tut-box">
+            <div class="tut-icon-circle">🖱️</div>
+            <div class="tut-info">
+              <h4>1. マウスでドラッグ</h4>
+              <p>画面を掴んで左右上下に動かすと360度見渡せます</p>
+            </div>
+          </div>
+          <div class="tut-box">
+            <div class="tut-icon-circle">🧭</div>
+            <div class="tut-info">
+              <h4>2. 方角と高度の確認</h4>
+              <p>画面上のコンパスで向いている方角を表示 <span class="tut-tag">(高度 0°〜90°)</span></p>
+            </div>
+          </div>
+          <div class="tut-box">
+            <div class="tut-icon-circle">💻</div>
+            <div class="tut-info">
+              <h4>3. 星をクリックして質問</h4>
+              <p>気になる星をクリックすると「ウサタ先生」が解説！</p>
+            </div>
+          </div>
+        `;
+      }
+
       document.getElementById('screen-tutorial').style.display = 'flex';
     }
 
@@ -865,6 +1133,7 @@
       document.getElementById('screen-tutorial').style.display = 'none';
       document.getElementById('main-header').style.opacity = '1';
       document.getElementById('main-nav').style.opacity = '1';
+      closeAllSheets();
       updateCompassDisplay();
       renderStarList();
     }
@@ -896,6 +1165,7 @@
       closeAllSheets();
       document.getElementById('chat-sheet').classList.add('active');
       document.getElementById('nav-ai').classList.add('active');
+      setUsataEmotion('happy');
     }
 
     function closeChatSheet() {
@@ -1029,10 +1299,15 @@
 
     function appendMessage(text, isUser) {
       const msgs = document.getElementById('chat-messages');
+      const row = document.createElement('div');
+      row.className = `msg-row ${isUser ? 'msg-row-user' : 'msg-row-ai'}`;
+
       const div = document.createElement('div');
       div.className = `msg ${isUser ? 'msg-user' : 'msg-ai'}`;
       div.innerText = text;
-      msgs.appendChild(div);
+      row.appendChild(div);
+
+      msgs.appendChild(row);
       msgs.scrollTop = msgs.scrollHeight;
     }
 
@@ -1044,14 +1319,35 @@
       sendChatMessage();
     }
 
-    /* ★ 連打防止・高速・安定モデル (gemini-1.5-flash) を使用したAI応答処理 ★ */
+    async function fetchWithRetry(url, options, retries = 2, delay = 1000) {
+      for (let i = 0; i <= retries; i++) {
+        try {
+          const res = await fetch(url, options);
+          if (res.status === 503 && i < retries) {
+            await new Promise(r => setTimeout(r, delay));
+            continue;
+          }
+          return res;
+        } catch (err) {
+          if (i === retries) throw err;
+          await new Promise(r => setTimeout(r, delay));
+        }
+      }
+    }
+
     async function sendChatMessage() {
       const input = document.getElementById('chat-input');
       const sendBtn = document.getElementById('chat-send-btn');
       const text = input.value.trim();
       if (!text) return;
 
-      // 連打防止：送信中はボタンと入力欄を一時的に無効化
+      if (!GEMINI_API_KEY || GEMINI_API_KEY === "YOUR_GEMINI_API_KEY_HERE") {
+        appendMessage("APIキーが設定されていないぞ！GEMINI_API_KEY を確認してみてくれ⭐", false);
+        return;
+      }
+
+      setUsataEmotion('thinking');
+
       sendBtn.disabled = true;
       input.disabled = true;
 
@@ -1059,10 +1355,15 @@
       input.value = '';
 
       const msgs = document.getElementById('chat-messages');
+      const row = document.createElement('div');
+      row.className = 'msg-row msg-row-ai';
+
       const aiMsgDiv = document.createElement('div');
       aiMsgDiv.className = 'msg msg-ai';
-      aiMsgDiv.innerText = '星空先生が回答中...💭';
-      msgs.appendChild(aiMsgDiv);
+      aiMsgDiv.innerText = 'ウサタ先生が交信中...💭';
+      row.appendChild(aiMsgDiv);
+
+      msgs.appendChild(row);
       msgs.scrollTop = msgs.scrollHeight;
 
       const visibleStarNames = starSprites
@@ -1070,17 +1371,31 @@
         .map(sp => sp.userData.name)
         .join(', ');
 
-      const systemPromptWithContext = `あなたは鳥取砂丘のやさしい「星空先生」です。
-小学生にもわかりやすい言葉で、結論と解説を2〜3文（100〜150文字）で短く優しく教えてください。文章の最後は「〜だよ！」「〜ですね。」で文末まで完全に書き切ってください。
-【見えている星】${visibleStarNames || '特になし'}`;
+      const systemPromptWithContext = `あなたは鳥取砂丘の馬の背にいる、青い宇宙服を着たウサギの「ウサタ先生」です。
+ユーザーを「隊員」または「隊員さん」と呼び、明るく親しみやすく、短く（2〜3文・100〜150文字程度）教えてください。
+語尾は「〜だぞ！」「〜だな！」「〜だね！」などを使い、文末まで必ず完成させてください。
+【見えている星】${visibleStarNames || '特に入り組んだ星座はありません'}`;
+
+      const cleanApiKey = GEMINI_API_KEY.trim();
+      const endpointUrl = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent';
 
       try {
-        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`, {
+        const response = await fetchWithRetry(endpointUrl, {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: { 
+            'Content-Type': 'application/json',
+            'x-goog-api-key': cleanApiKey
+          },
           body: JSON.stringify({
-            contents: [{ role: "user", parts: [{ text: text }] }],
-            systemInstruction: { parts: [{ text: systemPromptWithContext }] },
+            contents: [
+              {
+                role: "user",
+                parts: [{ text: text }]
+              }
+            ],
+            systemInstruction: {
+              parts: [{ text: systemPromptWithContext }]
+            },
             generationConfig: {
               maxOutputTokens: 500,
               temperature: 0.7
@@ -1091,18 +1406,24 @@
         const data = await response.json();
 
         if (data.candidates && data.candidates[0]?.content?.parts[0]?.text) {
-          aiMsgDiv.innerText = data.candidates[0].content.parts[0].text;
+          const replyText = data.candidates[0].content.parts[0].text;
+          aiMsgDiv.innerText = replyText;
+          
+          const emotion = detectEmotionFromText(replyText);
+          setUsataEmotion(emotion);
         } else if (data.error) {
-          console.error("Gemini API Error:", data.error);
-          aiMsgDiv.innerText = "APIキーの設定か回数制限を確認してみてね⭐";
+          console.error("Gemini API Error Detail:", data.error);
+          aiMsgDiv.innerText = `通信エラー (${data.error.code}): ${data.error.message || '設定を確認してみてくれ！'}⭐`;
+          setUsataEmotion('thinking');
         } else {
-          aiMsgDiv.innerText = "ごめんなさい、うまく星の解説をまとめられなかったよ⭐ もう一度聞いてみてね！";
+          aiMsgDiv.innerText = "うーむ、うまく星の通信を捉えられなかったぞ！もう一度聞いてみてくれ⭐";
+          setUsataEmotion('thinking');
         }
       } catch (err) {
-        console.error("Fetch Error:", err);
-        aiMsgDiv.innerText = "通信が少し不安定みたい。もう一回送信ボタンを押してみてね！⭐";
+        console.error("Fetch Exception:", err);
+        aiMsgDiv.innerText = "砂丘の通信が少し途切れたみたいだ！もう一回送信ボタンを押してみてくれ！⭐";
+        setUsataEmotion('thinking');
       } finally {
-        // 処理完了後に入力欄とボタンを再有効化
         sendBtn.disabled = false;
         input.disabled = false;
         input.focus();
