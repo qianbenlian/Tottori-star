@@ -1470,35 +1470,25 @@
       updateRealtimeSkyPosition();
     }
 
-    function fetchGPSLocation() {
-      if (!navigator.geolocation) {
-        alert("お使いの端末はGPS機能に対応していません⭐");
-        return;
-      }
+   // 【変更後：南半球シドニーテスト用】
+function fetchGPSLocation() {
+  currentLocationMode = 'gps';
+  // 南半球（オーストラリア・シドニー付近）の座標をセット
+  currentLat = -33.8667; 
+  currentLon = 151.2072;
 
-      document.getElementById('loc-btn-gps').innerText = "📍 位置情報を取得中...";
+  document.getElementById('current-location-label').innerText = `📍 シドニー (南半球テスト)`;
+  document.getElementById('loc-btn-dune').classList.remove('active');
+  document.getElementById('loc-btn-gps').classList.add('active');
 
-      navigator.geolocation.getCurrentPosition((pos) => {
-        currentLocationMode = 'gps';
-        currentLat = pos.coords.latitude;
-        currentLon = pos.coords.longitude;
+  const duneElem = document.getElementById('dune-silhouette');
+  if (duneElem) duneElem.classList.add('is-hidden');
 
-        document.getElementById('current-location-label').innerText = `📍 現在地 (${currentLat.toFixed(2)}°, ${currentLon.toFixed(2)}°)`;
-        document.getElementById('loc-btn-dune').classList.remove('active');
-        document.getElementById('loc-btn-gps').classList.add('active');
-        document.getElementById('loc-btn-gps').innerText = "📍 GPSで現在地を登録・切り替え";
-
-        const duneElem = document.getElementById('dune-silhouette');
-        if (duneElem) duneElem.classList.add('is-hidden');
-
-        document.getElementById('location-modal').style.display = 'none';
-        updateRealtimeSkyPosition();
-      }, (err) => {
-        console.error(err);
-        alert("位置情報の取得に失敗しました。端末の設定で位置情報アクセスを許可してください⭐");
-        document.getElementById('loc-btn-gps').innerText = "📍 GPSで現在地を登録・切り替え";
-      });
-    }
+  document.getElementById('location-modal').style.display = 'none';
+  
+  // 星の配置を即座に再計算して描画
+  updateRealtimeSkyPosition();
+}
 
     function setCustomTime(mode) {
       timeMode = mode;
