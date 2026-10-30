@@ -257,13 +257,9 @@
     .tut-action-btn {
       width: 100%; background: linear-gradient(135deg, #fde047 0%, #eab308 100%); color: #0f172a; border: none; border-radius: 30px;
       padding: 16px 24px; font-size: 16px; font-weight: 800; letter-spacing: 1px; cursor: pointer; box-shadow: 0 4px 20px rgba(234, 179, 8, 0.4);
-      display: flex; align-items: center; justify-content: center; gap: 8px; margin-bottom: 12px; transition: transform 0.2s, filter 0.2s;
+      display: flex; align-items: center; justify-content: center; gap: 8px; margin-bottom: 16px; transition: transform 0.2s, filter 0.2s;
     }
     .tut-action-btn:active { transform: scale(0.97); filter: brightness(0.95); }
-
-    .tut-dots { display: flex; justify-content: center; gap: 6px; margin-bottom: 16px; }
-    .tut-dot { width: 6px; height: 6px; border-radius: 50%; background: rgba(255, 255, 255, 0.2); }
-    .tut-dot.active { background: #f8fafc; width: 8px; height: 8px; }
 
     /* Header & UI Elements */
     .header {
@@ -273,6 +269,10 @@
     .time-chip {
       background: rgba(56, 189, 248, 0.2); border: 1px solid var(--glass-border); border-radius: 10px;
       padding: 2px 6px; font-size: 10px; color: var(--neon-glow); cursor: pointer; margin-left: 4px;
+    }
+    .location-btn {
+      background: rgba(251, 191, 36, 0.2); border: 1px solid var(--accent-gold); border-radius: 10px;
+      padding: 2px 8px; font-size: 10px; color: var(--accent-gold); cursor: pointer; margin-left: 6px; font-weight: 600;
     }
     .compass-card {
       background: rgba(15, 32, 67, 0.6); border: 1px solid var(--glass-border); border-radius: 14px;
@@ -293,6 +293,10 @@
       padding: 8px; font-size: 12px; color: var(--text-main); cursor: pointer; text-align: center;
     }
     .time-opt-btn.active { background: var(--primary-blue); color: #fff; border-color: var(--neon-glow); }
+
+    .location-modal {
+      position: absolute; top: 52px; left: 12px; right: 12px; padding: 16px; z-index: 35; display: none; flex-direction: column; gap: 10px;
+    }
 
     .star-sheet, .chat-sheet, .search-sheet, .settings-sheet {
       position: absolute;
@@ -751,21 +755,16 @@
       <button class="tut-action-btn" onclick="startObservation()">
         星空を見に行く <span>›</span>
       </button>
-
-      <div class="tut-dots">
-        <div class="tut-dot active"></div>
-        <div class="tut-dot"></div>
-        <div class="tut-dot"></div>
-      </div>
     </div>
   </div>
 
   <div class="ui-layer">
     <div id="main-header" class="header glass-card">
       <div>
-        <div style="font-size: 12px; font-weight: 600; display:flex; align-items:center;">
-          <span>🪐 観測時間:</span>
-          <button class="time-chip" onclick="toggleTimeModal()">🕒 変更</button>
+        <div style="font-size: 12px; font-weight: 600; display:flex; align-items:center; flex-wrap:wrap; gap:4px;">
+          <span id="current-location-label">🐪 鳥取砂丘・馬の背</span>
+          <button class="location-btn" onclick="toggleLocationModal()">📍 切り替え</button>
+          <button class="time-chip" onclick="toggleTimeModal()">🕒 時間</button>
         </div>
         <div id="current-datetime-display" style="font-size: 10px; color: var(--accent-gold); margin-top: 1px;">----/--/-- --:--</div>
       </div>
@@ -780,6 +779,15 @@
       <button id="gyro-toggle-btn" class="gyro-btn" onclick="toggleGyroMode()">
         <span>📱</span><span id="gyro-btn-text">かざす</span>
       </button>
+    </div>
+
+    <!-- 観測場所切り替え modal -->
+    <div id="location-modal" class="glass-card location-modal">
+      <div style="font-size: 12px; font-weight: 600; color: var(--neon-glow); margin-bottom: 6px;">📍 観測地の選択</div>
+      <div style="display:flex; flex-direction:column; gap:8px;">
+        <button class="time-opt-btn active" id="loc-btn-dune" onclick="switchToDuneLocation()">🐪 日本一きれいな星空：鳥取砂丘 (馬の背)</button>
+        <button class="time-opt-btn" id="loc-btn-gps" onclick="fetchGPSLocation()">📍 GPSで現在地を登録・切り替え</button>
+      </div>
     </div>
 
     <div id="time-modal" class="glass-card time-modal">
@@ -951,7 +959,7 @@
 
         <div class="setting-item" style="flex-direction: column; align-items: flex-start; gap: 4px; margin-top: 10px;">
           <div class="setting-label" style="color: var(--neon-glow);">アプリ情報</div>
-          <div class="setting-desc">Tottori Star Pocket v58.0.0 (Gemini 3.8 Flash 最適化版)</div>
+          <div class="setting-desc">Tottori Star Pocket v60.0.0 (UIレイアウト調整版)</div>
           <div class="setting-desc">Powered by Gemini 3.8 Flash & Three.js</div>
         </div>
       </div>
@@ -971,6 +979,11 @@
   <script>
     /* ★ ご自身のGemini APIキー (AIzaSy...) を以下のダブルクォーテーション内に入力してください ★ */
     const GEMINI_API_KEY = "AQ.Ab8RN6IvoEINJC-SeVpGZsAoXfDxBOCEUd2_y14yl4DJsOz6IQ";
+
+    /* 位置情報管理 */
+    let currentLocationMode = 'dune'; // 'dune' or 'gps'
+    let currentLat = 35.5398; // 鳥取砂丘の緯度
+    let currentLon = 134.2325; // 鳥取砂丘の経度
 
     const usataAvatars = {
       default: "./teacher-rabbit.png",
@@ -1325,8 +1338,13 @@
       const dayProgressSeconds = (now.getHours() * 3600) + (now.getMinutes() * 60) + now.getSeconds();
       const dailyAngle = (dayProgressSeconds / 86400) * Math.PI * 2;
 
-      const currentRotationY = -(seasonAngle + dailyAngle);
+      /* 緯度・経度オフセット計算 */
+      const lonOffsetRad = (currentLon - 134.2325) * (Math.PI / 180);
+      const latOffsetRad = (currentLat - 35.5398) * (Math.PI / 180);
+
+      const currentRotationY = -(seasonAngle + dailyAngle + lonOffsetRad);
       starrySkyGroup.rotation.y = currentRotationY;
+      starrySkyGroup.rotation.x = latOffsetRad;
 
       const worldPos = new THREE.Vector3();
       starSprites.forEach(sp => {
@@ -1343,9 +1361,62 @@
     setInterval(updateRealtimeSkyPosition, 1000);
     updateRealtimeSkyPosition();
 
+    function toggleLocationModal() {
+      const modal = document.getElementById('location-modal');
+      document.getElementById('time-modal').style.display = 'none';
+      modal.style.display = (modal.style.display === 'flex') ? 'none' : 'flex';
+    }
+
     function toggleTimeModal() {
       const modal = document.getElementById('time-modal');
+      document.getElementById('location-modal').style.display = 'none';
       modal.style.display = (modal.style.display === 'flex') ? 'none' : 'flex';
+    }
+
+    function switchToDuneLocation() {
+      currentLocationMode = 'dune';
+      currentLat = 35.5398;
+      currentLon = 134.2325;
+
+      document.getElementById('current-location-label').innerText = "🐪 鳥取砂丘・馬の背";
+      document.getElementById('loc-btn-dune').classList.add('active');
+      document.getElementById('loc-btn-gps').classList.remove('active');
+
+      const duneElem = document.getElementById('dune-silhouette');
+      if (duneElem && minPitch > -10) duneElem.classList.remove('is-hidden');
+
+      document.getElementById('location-modal').style.display = 'none';
+      updateRealtimeSkyPosition();
+    }
+
+    function fetchGPSLocation() {
+      if (!navigator.geolocation) {
+        alert("お使いの端末はGPS機能に対応していません⭐");
+        return;
+      }
+
+      document.getElementById('loc-btn-gps').innerText = "📍 位置情報を取得中...";
+
+      navigator.geolocation.getCurrentPosition((pos) => {
+        currentLocationMode = 'gps';
+        currentLat = pos.coords.latitude;
+        currentLon = pos.coords.longitude;
+
+        document.getElementById('current-location-label').innerText = `📍 現在地 (${currentLat.toFixed(2)}°, ${currentLon.toFixed(2)}°)`;
+        document.getElementById('loc-btn-dune').classList.remove('active');
+        document.getElementById('loc-btn-gps').classList.add('active');
+        document.getElementById('loc-btn-gps').innerText = "📍 GPSで現在地を登録・切り替え";
+
+        const duneElem = document.getElementById('dune-silhouette');
+        if (duneElem) duneElem.classList.add('is-hidden');
+
+        document.getElementById('location-modal').style.display = 'none';
+        updateRealtimeSkyPosition();
+      }, (err) => {
+        console.error(err);
+        alert("位置情報の取得に失敗しました。端末の設定で位置情報アクセスを許可してください⭐");
+        document.getElementById('loc-btn-gps').innerText = "📍 GPSで現在地を登録・切り替え";
+      });
     }
 
     function setCustomTime(mode) {
@@ -1364,7 +1435,7 @@
       if (mode === 'dune') {
         minPitch = -5;
         maxPitch = 85;
-        if (duneElem) duneElem.classList.remove('is-hidden');
+        if (duneElem && currentLocationMode === 'dune') duneElem.classList.remove('is-hidden');
         document.getElementById('mode-dune').classList.add('active');
       } else {
         minPitch = -89;
@@ -1574,6 +1645,7 @@
       document.getElementById('search-sheet').classList.remove('active');
       document.getElementById('settings-sheet').classList.remove('active');
       document.getElementById('time-modal').style.display = 'none';
+      document.getElementById('location-modal').style.display = 'none';
       document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
     }
 
@@ -1708,7 +1780,7 @@
         openStarSheet({
           name: star.name,
           type: star.type,
-          desc: `${star.desc}\n\n※この星は現在の鳥取の時刻では馬の背の地平線より下に沈んでいるため、今夜は観測できません⭐`
+          desc: `${star.desc}\n\n※この星は現在の観測地の時刻では地平線より下に沈んでいるため、今夜は観測できません⭐`
         });
         return;
       }
@@ -1832,8 +1904,10 @@
         .map(sp => sp.userData.name)
         .join(', ');
 
+      const locName = (currentLocationMode === 'dune') ? '鳥取砂丘の馬の背' : 'ユーザーの現在地';
+
       /* ★ 高速化と詳細さを両立するプロンプト設計 ★ */
-      const systemPromptWithContext = `あなたは鳥取砂丘の馬の背にいる天文学ガイド「ウサタ先生」（ウサギ）です。
+      const systemPromptWithContext = `あなたは${locName}にいる天文学ガイド「ウサタ先生」（ウサギ）です。
 元気で親しみやすい口調（〜だぞ！、〜だな！等）で回答してください。
 
 【回答ルール】
@@ -1846,7 +1920,6 @@
 【現在空に見える主要な星】${visibleStarNames || '特に入り組んだ星座はありません'}`;
 
       const cleanApiKey = GEMINI_API_KEY.trim();
-      // 最新の推奨モデルを利用
       const endpointUrl = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent';
 
       try {
@@ -1867,7 +1940,7 @@
               parts: [{ text: systemPromptWithContext }]
             },
             generationConfig: {
-              maxOutputTokens: 1000, // 途切れ防止のため十分な長さを確保
+              maxOutputTokens: 1000,
               temperature: 0.6
             }
           })
