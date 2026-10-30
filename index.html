@@ -62,9 +62,9 @@
       bottom: 0;
       left: 0;
       width: 100%;
-      height: 28vh;
-      min-height: 180px;
-      max-height: 260px;
+      height: 35vh;
+      min-height: 240px;
+      max-height: 340px;
       pointer-events: none;
       z-index: 15;
       overflow: hidden;
@@ -846,7 +846,7 @@
 
         <div class="setting-item" style="flex-direction: column; align-items: flex-start; gap: 4px; margin-top: 10px;">
           <div class="setting-label" style="color: var(--neon-glow);">アプリ情報</div>
-          <div class="setting-desc">Tottori Star Pocket v54.0.0 (砂丘シルエット完全復元版)</div>
+          <div class="setting-desc">Tottori Star Pocket v55.0.0 (砂丘シルエット高域配置版)</div>
           <div class="setting-desc">Powered by Gemini 3.8 Flash & Three.js</div>
         </div>
       </div>
@@ -1306,10 +1306,10 @@
 
       const duneElem = document.getElementById('dune-silhouette');
       if (duneElem && !duneElem.classList.contains('is-hidden')) {
-        // 高度に合わせて砂丘が画面下に滑らかに移動
-        const shiftFactor = Math.max(0, Math.min(1, (altDeg - 10) / 40));
-        const translateYPercentage = shiftFactor * 85;
-        const opacityValue = 1 - (shiftFactor * 0.85);
+        // 見上げる高度に合わせて砂丘が下へスライド（基準を引き上げてしっかり見やすく配置）
+        const shiftFactor = Math.max(0, Math.min(1, (altDeg - 15) / 45));
+        const translateYPercentage = shiftFactor * 75;
+        const opacityValue = 1 - (shiftFactor * 0.75);
         duneElem.style.transform = `translateY(${translateYPercentage}%)`;
         duneElem.style.opacity = opacityValue;
       }
