@@ -538,7 +538,7 @@
 
     .bottom-nav {
       position: absolute; bottom: max(10px, env(safe-area-inset-bottom)); left: 12px; right: 12px; height: 54px;
-      display: flex; justify-content: space-around; align-items: center; padding: 4px; z-index: 40; opacity: 0; transition: opacity 0.5s;
+      display: flex; justify-space-around: align-items: center; padding: 4px; z-index: 40; opacity: 0; transition: opacity 0.5s;
       background: rgba(6, 18, 41, 0.85); border: 1px solid var(--glass-border);
     }
     .nav-item { display: flex; flex-direction: column; align-items: center; font-size: 10px; color: var(--text-sub); cursor: pointer; background: none; border: none; gap: 2px; }
@@ -753,7 +753,7 @@
           <span>⭐</span> ワンポイント
         </div>
         <ul class="tut-point-list">
-          <li>ジャイロ操作がうまく動かない場合は、画面をタップしてからもう一度お試しください。</li>
+          <li>ジャイロ操作がうまく動かない場合は、画面をタップしてからもう一度お試しく​​ださい。</li>
           <li>どちらの操作でも、右上の「かざす」ボタン等で方向をリセットできます。</li>
           <li>安心してお使いいただけるよう、個人情報の取得は行いません。</li>
         </ul>
@@ -906,18 +906,6 @@
       </div>
 
       <div class="setting-group">
-        <!-- ★ 追加設定: AI回答モード設定 ★ -->
-        <div class="setting-item" style="flex-direction: column; align-items: flex-start; gap: 6px;">
-          <div>
-            <div class="setting-label">🤖 AI回答の長さ・応答速度</div>
-            <div class="setting-desc">ウサタ先生の返答スピードと要約スタイルを切り替え</div>
-          </div>
-          <div class="mode-selector" style="width: 100%;">
-            <button class="mode-btn active" id="ai-mode-fast" onclick="setAiResponseMode('fast')">⚡ プレゼン用 (爆速・短文要約)</button>
-            <button class="mode-btn" id="ai-mode-normal" onclick="setAiResponseMode('normal')">📖 通常 (じっくり解説)</button>
-          </div>
-        </div>
-
         <div class="setting-item" style="flex-direction: column; align-items: flex-start; gap: 6px;">
           <div style="width: 100%; display: flex; justify-content: space-between; align-items: center;">
             <div>
@@ -979,7 +967,7 @@
 
         <div class="setting-item" style="flex-direction: column; align-items: flex-start; gap: 4px; margin-top: 10px;">
           <div class="setting-label" style="color: var(--neon-glow);">アプリ情報</div>
-          <div class="setting-desc">Tottori Star Pocket v64.0.0 (AIスピード設定搭載版)</div>
+          <div class="setting-desc">Tottori Star Pocket v65.0.0</div>
           <div class="setting-desc">Powered by Gemini 3.8 Flash & Three.js</div>
         </div>
       </div>
@@ -1004,21 +992,6 @@
     let currentLocationMode = 'dune'; // 'dune' or 'gps'
     let currentLat = 35.5398; // 鳥取砂丘の緯度
     let currentLon = 134.2325; // 鳥取砂丘の経度
-
-    /* AI応答モード管理 ('fast': 爆速要約, 'normal': じっくり解説) */
-    let aiResponseMode = 'fast';
-
-    function setAiResponseMode(mode) {
-      aiResponseMode = mode;
-      document.getElementById('ai-mode-fast').classList.remove('active');
-      document.getElementById('ai-mode-normal').classList.remove('active');
-
-      if (mode === 'fast') {
-        document.getElementById('ai-mode-fast').classList.add('active');
-      } else {
-        document.getElementById('ai-mode-normal').classList.add('active');
-      }
-    }
 
     const usataAvatars = {
       default: "./teacher-rabbit.png",
@@ -1999,33 +1972,16 @@
 
       const locName = (currentLocationMode === 'dune') ? '鳥取砂丘の馬の背' : 'ユーザーの現在地';
 
-      /* ★ aiResponseMode の値に応じてプロンプトと出力トークン数を可変させる ★ */
-      let systemPromptWithContext = "";
-      let maxTokens = 250;
-
-      if (aiResponseMode === 'fast') {
-        // ⚡ プレゼン用爆速モード (要約スタイル)
-        maxTokens = 220;
-        systemPromptWithContext = `あなたは${locName}にいる天文学ガイド「ウサタ先生」（ウサギ）です。
+      /* スピーディーかつ要約された親しみやすいプロンプト設定 */
+      const maxTokens = 250;
+      const systemPromptWithContext = `あなたは${locName}にいる天文学ガイド「ウサタ先生」（ウサギ）です。
 語尾は「〜だぞ！」「〜だな！」を使い、以下のルールで回答してください。
 
 【回答ルール】
-1. 箇条書きを使わず、要点だけを【100〜120文字程度】でサクッと短く要約して答える。
-2. 初心者にもパッと理解できる分かりやすい言葉を使う。
+1. 箇条書きを使わず、要点だけを【120〜150文字程度】でサクッと短く要約して答える。
+2. スマホ画面で一目で読める分かりやすい言葉で最後までしっかり答える。
 
 【現在空に見える主要な星】${visibleStarNames || '特になし'}`;
-      } else {
-        // 📖 通常モード (じっくり詳細解説)
-        maxTokens = 800;
-        systemPromptWithContext = `あなたは${locName}にいる天文学ガイド「ウサタ先生」（ウサギ）です。
-元気で親しみやすい口調（〜だぞ！、〜だな！等）で回答してください。
-
-【回答ルール】
-1. 冒頭で一言元気に答える。
-2. 質問の天体やテーマについて箇条書きを使ってわかりやすく丁寧に解説する。
-
-【現在空に見える主要な星】${visibleStarNames || '特に入り組んだ星座はありません'}`;
-      }
 
       const cleanApiKey = GEMINI_API_KEY.trim();
       const endpointUrl = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent';
