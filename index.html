@@ -185,7 +185,7 @@
     }
     .btn-primary:active { transform: scale(0.95); }
 
-    /* ★★★ 画像スタイルのチュートリアル画面 ★★★ */
+    /* チュートリアル画面 */
     .screen-tutorial {
       position: absolute;
       top: 0; left: 0; width: 100%; height: 100%; height: 100dvh;
@@ -198,179 +198,72 @@
     }
 
     .tut-header {
-      position: relative;
-      text-align: center;
-      margin-bottom: 16px;
-      margin-top: 10px;
+      position: relative; text-align: center; margin-bottom: 16px; margin-top: 10px;
     }
     .tut-back-btn {
-      position: absolute;
-      left: 0; top: 0;
-      width: 36px; height: 36px;
-      border-radius: 50%;
-      background: rgba(255, 255, 255, 0.08);
-      border: 1px solid rgba(255, 255, 255, 0.15);
-      color: #fff;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 18px; cursor: pointer;
+      position: absolute; left: 0; top: 0; width: 36px; height: 36px; border-radius: 50%;
+      background: rgba(255, 255, 255, 0.08); border: 1px solid rgba(255, 255, 255, 0.15); color: #fff;
+      display: flex; align-items: center; justify-content: center; font-size: 18px; cursor: pointer;
     }
     .tut-brand-title {
-      font-size: 20px; font-weight: 700; letter-spacing: 1px; color: #f8fafc;
-      font-family: serif; text-shadow: 0 0 10px rgba(186, 230, 253, 0.5);
+      font-size: 20px; font-weight: 700; letter-spacing: 1px; color: #f8fafc; font-family: serif; text-shadow: 0 0 10px rgba(186, 230, 253, 0.5);
     }
-    .tut-brand-sub {
-      font-size: 11px; color: #94a3b8; margin-top: 2px;
-    }
-    .tut-main-title {
-      font-size: 22px; font-weight: 800; color: #ffffff; margin-top: 18px; margin-bottom: 6px; letter-spacing: 0.5px;
-    }
-    .tut-main-desc {
-      font-size: 12px; color: #cbd5e1; line-height: 1.5; max-width: 340px; margin: 0 auto;
-    }
+    .tut-brand-sub { font-size: 11px; color: #94a3b8; margin-top: 2px; }
+    .tut-main-title { font-size: 22px; font-weight: 800; color: #ffffff; margin-top: 18px; margin-bottom: 6px; letter-spacing: 0.5px; }
+    .tut-main-desc { font-size: 12px; color: #cbd5e1; line-height: 1.5; max-width: 340px; margin: 0 auto; }
 
-    /* チュートリアルカード */
     .tut-card-box {
-      background: rgba(15, 23, 42, 0.65);
-      border: 1px solid rgba(56, 189, 248, 0.3);
-      border-radius: 20px;
-      padding: 16px;
-      margin-top: 14px;
-      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5), inset 0 0 12px rgba(56, 189, 248, 0.08);
-      position: relative;
+      background: rgba(15, 23, 42, 0.65); border: 1px solid rgba(56, 189, 248, 0.3); border-radius: 20px;
+      padding: 16px; margin-top: 14px; box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5), inset 0 0 12px rgba(56, 189, 248, 0.08); position: relative;
     }
-    .tut-card-head {
-      display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px;
-    }
+    .tut-card-head { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px; }
     .tut-step-badge {
-      display: inline-flex; align-items: center; justify-content: center;
-      width: 24px; height: 24px; border-radius: 50%;
-      background: #3b82f6; color: #fff; font-size: 13px; font-weight: 800;
-      margin-right: 8px; flex-shrink: 0;
+      display: inline-flex; align-items: center; justify-content: center; width: 24px; height: 24px; border-radius: 50%;
+      background: #3b82f6; color: #fff; font-size: 13px; font-weight: 800; margin-right: 8px; flex-shrink: 0;
     }
-    .tut-card-title-row {
-      display: flex; align-items: center; gap: 6px; flex-wrap: wrap;
-    }
-    .tut-card-title {
-      font-size: 16px; font-weight: 700; color: #ffffff;
-    }
-    .tut-card-tag {
-      font-size: 11px; color: #38bdf8; font-weight: 600;
-    }
-    .tut-card-desc {
-      font-size: 11px; color: #94a3b8; line-height: 1.5; margin-bottom: 12px;
-    }
+    .tut-card-title-row { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+    .tut-card-title { font-size: 16px; font-weight: 700; color: #ffffff; }
+    .tut-card-tag { font-size: 11px; color: #38bdf8; font-weight: 600; }
+    .tut-card-desc { font-size: 11px; color: #94a3b8; line-height: 1.5; margin-bottom: 12px; }
 
-    .tut-card-content {
-      display: grid;
-      grid-template-columns: 1.1fr 1fr;
-      gap: 10px;
-      align-items: center;
-    }
+    .tut-card-content { display: grid; grid-template-columns: 1.1fr 1fr; gap: 10px; align-items: center; }
     .tut-illustration-box {
-      background: rgba(2, 6, 23, 0.5);
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      border-radius: 14px;
-      padding: 10px;
-      display: flex; justify-content: center; align-items: center;
-      min-height: 100px;
+      background: rgba(2, 6, 23, 0.5); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 14px;
+      padding: 10px; display: flex; justify-content: center; align-items: center; min-height: 100px;
     }
-    .tut-usage-subcard {
-      background: rgba(15, 23, 42, 0.8);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      border-radius: 12px;
-      padding: 10px 12px;
-    }
-    .tut-usage-title {
-      font-size: 11px; font-weight: 700; color: #38bdf8; margin-bottom: 6px;
-    }
-    .tut-usage-list {
-      font-size: 10px; color: #cbd5e1; line-height: 1.6; list-style: none;
-    }
-    .tut-usage-list li {
-      display: flex; gap: 4px; margin-bottom: 3px;
-    }
-    .tut-usage-num {
-      color: #94a3b8; flex-shrink: 0;
-    }
+    .tut-usage-subcard { background: rgba(15, 23, 42, 0.8); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 12px; padding: 10px 12px; }
+    .tut-usage-title { font-size: 11px; font-weight: 700; color: #38bdf8; margin-bottom: 6px; }
+    .tut-usage-list { font-size: 10px; color: #cbd5e1; line-height: 1.6; list-style: none; }
+    .tut-usage-list li { display: flex; gap: 4px; margin-bottom: 3px; }
+    .tut-usage-num { color: #94a3b8; flex-shrink: 0; }
 
-    /* 操作切り替えセクション */
-    .tut-switch-section {
-      text-align: center; margin-top: 20px; margin-bottom: 16px;
-    }
-    .tut-section-divider {
-      position: relative; margin: 12px 0; display: flex; align-items: center; justify-content: center;
-    }
-    .tut-section-divider::before, .tut-section-divider::after {
-      content: ''; flex: 1; height: 1px; background: linear-gradient(90deg, transparent, rgba(251, 191, 36, 0.4), transparent);
-    }
-    .tut-switch-title {
-      font-size: 14px; font-weight: 700; color: #fbbf24; padding: 0 12px;
-    }
-    .tut-switch-desc {
-      font-size: 11px; color: #94a3b8; margin-bottom: 12px;
-    }
-    .tut-switch-pills {
-      display: flex; justify-content: center; align-items: center; gap: 10px;
-    }
+    .tut-switch-section { text-align: center; margin-top: 20px; margin-bottom: 16px; }
+    .tut-section-divider { position: relative; margin: 12px 0; display: flex; align-items: center; justify-content: center; }
+    .tut-section-divider::before, .tut-section-divider::after { content: ''; flex: 1; height: 1px; background: linear-gradient(90deg, transparent, rgba(251, 191, 36, 0.4), transparent); }
+    .tut-switch-title { font-size: 14px; font-weight: 700; color: #fbbf24; padding: 0 12px; }
+    .tut-switch-desc { font-size: 11px; color: #94a3b8; margin-bottom: 12px; }
+    .tut-switch-pills { display: flex; justify-content: center; align-items: center; gap: 10px; }
     .tut-pill-btn {
-      background: rgba(30, 41, 59, 0.8); border: 1px solid rgba(56, 189, 248, 0.4);
-      border-radius: 20px; padding: 8px 16px; display: flex; align-items: center; gap: 6px;
-      font-size: 11px; color: #f8fafc; font-weight: 600;
+      background: rgba(30, 41, 59, 0.8); border: 1px solid rgba(56, 189, 248, 0.4); border-radius: 20px;
+      padding: 8px 16px; display: flex; align-items: center; gap: 6px; font-size: 11px; color: #f8fafc; font-weight: 600;
     }
 
-    /* ワンポイント */
-    .tut-point-box {
-      background: rgba(15, 23, 42, 0.7);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      border-radius: 16px;
-      padding: 14px 16px;
-      margin-top: 14px;
-      margin-bottom: 24px;
-    }
-    .tut-point-title {
-      font-size: 13px; font-weight: 700; color: #fbbf24; display: flex; align-items: center; gap: 6px; margin-bottom: 8px;
-    }
-    .tut-point-list {
-      font-size: 10px; color: #94a3b8; line-height: 1.6; list-style: none;
-    }
-    .tut-point-list li {
-      position: relative; padding-left: 10px; margin-bottom: 4px;
-    }
-    .tut-point-list li::before {
-      content: "・"; position: absolute; left: 0; color: #94a3b8;
-    }
+    .tut-point-box { background: rgba(15, 23, 42, 0.7); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 16px; padding: 14px 16px; margin-top: 14px; margin-bottom: 24px; }
+    .tut-point-title { font-size: 13px; font-weight: 700; color: #fbbf24; display: flex; align-items: center; gap: 6px; margin-bottom: 8px; }
+    .tut-point-list { font-size: 10px; color: #94a3b8; line-height: 1.6; list-style: none; }
+    .tut-point-list li { position: relative; padding-left: 10px; margin-bottom: 4px; }
+    .tut-point-list li::before { content: "・"; position: absolute; left: 0; color: #94a3b8; }
 
-    /* ボトム固定風ボタン */
     .tut-action-btn {
-      width: 100%;
-      background: linear-gradient(135deg, #fde047 0%, #eab308 100%);
-      color: #0f172a;
-      border: none;
-      border-radius: 30px;
-      padding: 16px 24px;
-      font-size: 16px;
-      font-weight: 800;
-      letter-spacing: 1px;
-      cursor: pointer;
-      box-shadow: 0 4px 20px rgba(234, 179, 8, 0.4);
-      display: flex; align-items: center; justify-content: center; gap: 8px;
-      margin-bottom: 12px;
-      transition: transform 0.2s, filter 0.2s;
+      width: 100%; background: linear-gradient(135deg, #fde047 0%, #eab308 100%); color: #0f172a; border: none; border-radius: 30px;
+      padding: 16px 24px; font-size: 16px; font-weight: 800; letter-spacing: 1px; cursor: pointer; box-shadow: 0 4px 20px rgba(234, 179, 8, 0.4);
+      display: flex; align-items: center; justify-content: center; gap: 8px; margin-bottom: 12px; transition: transform 0.2s, filter 0.2s;
     }
-    .tut-action-btn:active {
-      transform: scale(0.97);
-      filter: brightness(0.95);
-    }
+    .tut-action-btn:active { transform: scale(0.97); filter: brightness(0.95); }
 
-    .tut-dots {
-      display: flex; justify-content: center; gap: 6px; margin-bottom: 16px;
-    }
-    .tut-dot {
-      width: 6px; height: 6px; border-radius: 50%; background: rgba(255, 255, 255, 0.2);
-    }
-    .tut-dot.active {
-      background: #f8fafc; width: 8px; height: 8px;
-    }
+    .tut-dots { display: flex; justify-content: center; gap: 6px; margin-bottom: 16px; }
+    .tut-dot { width: 6px; height: 6px; border-radius: 50%; background: rgba(255, 255, 255, 0.2); }
+    .tut-dot.active { background: #f8fafc; width: 8px; height: 8px; }
 
     /* Header & UI Elements */
     .header {
@@ -612,27 +505,12 @@
     .setting-desc { font-size: 11px; color: var(--text-sub); margin-top: 2px; }
 
     .range-slider-box {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      width: 100%;
-      margin-top: 6px;
+      display: flex; align-items: center; gap: 10px; width: 100%; margin-top: 6px;
     }
-    .range-slider {
-      flex: 1;
-      accent-color: var(--primary-blue);
-      cursor: pointer;
-    }
+    .range-slider { flex: 1; accent-color: var(--primary-blue); cursor: pointer; }
     .slider-val-badge {
-      font-size: 12px;
-      font-weight: 700;
-      color: var(--neon-glow);
-      background: rgba(56, 189, 248, 0.2);
-      border: 1px solid var(--glass-border);
-      padding: 2px 8px;
-      border-radius: 10px;
-      min-width: 32px;
-      text-align: center;
+      font-size: 12px; font-weight: 700; color: var(--neon-glow); background: rgba(56, 189, 248, 0.2);
+      border: 1px solid var(--glass-border); padding: 2px 8px; border-radius: 10px; min-width: 32px; text-align: center;
     }
 
     .mode-selector { display: flex; gap: 6px; margin-top: 6px; }
@@ -647,103 +525,45 @@
     input:checked + .slider:before { transform: translateX(20px); }
 
     .bottom-nav {
-      position: absolute;
-      bottom: max(10px, env(safe-area-inset-bottom));
-      left: 12px;
-      right: 12px;
-      height: 54px;
-      display: flex;
-      justify-content: space-around;
-      align-items: center;
-      padding: 4px;
-      z-index: 40;
-      opacity: 0;
-      transition: opacity 0.5s;
-      background: rgba(6, 18, 41, 0.85);
-      border: 1px solid var(--glass-border);
+      position: absolute; bottom: max(10px, env(safe-area-inset-bottom)); left: 12px; right: 12px; height: 54px;
+      display: flex; justify-content: space-around; align-items: center; padding: 4px; z-index: 40; opacity: 0; transition: opacity 0.5s;
+      background: rgba(6, 18, 41, 0.85); border: 1px solid var(--glass-border);
     }
     .nav-item { display: flex; flex-direction: column; align-items: center; font-size: 10px; color: var(--text-sub); cursor: pointer; background: none; border: none; gap: 2px; }
     .nav-item span { font-size: 18px; }
     .nav-item.active { color: var(--neon-glow); font-weight: 600; }
 
     .nav-usata-icon {
-      width: 22px;
-      height: 22px;
-      border-radius: 50%;
-      object-fit: cover;
-      border: 1.5px solid var(--glass-border);
-      background: rgba(255, 255, 255, 0.1);
-      transition: border-color 0.3s, transform 0.2s;
+      width: 22px; height: 22px; border-radius: 50%; object-fit: cover; border: 1.5px solid var(--glass-border);
+      background: rgba(255, 255, 255, 0.1); transition: border-color 0.3s, transform 0.2s;
     }
     .nav-item.active .nav-usata-icon {
-      border-color: var(--neon-glow);
-      box-shadow: 0 0 10px rgba(56, 189, 248, 0.8);
-      transform: scale(1.1);
+      border-color: var(--neon-glow); box-shadow: 0 0 10px rgba(56, 189, 248, 0.8); transform: scale(1.1);
     }
 
     /* ★ PC・タブレット（768px以上）向け大画面レイアウト ★ */
     @media (min-width: 768px) {
       .chat-sheet {
-        left: 50%;
-        transform: translate(-50%, 180%);
-        width: 820px;
-        max-width: 90vw;
-        height: 80vh;
-        max-height: 700px;
+        left: 50%; transform: translate(-50%, 180%); width: 820px; max-width: 90vw; height: 80vh; max-height: 700px;
       }
-      .chat-sheet.active {
-        transform: translate(-50%, 0);
-      }
+      .chat-sheet.active { transform: translate(-50%, 0); }
       .chat-body-container {
-        display: grid;
-        grid-template-columns: 240px 1fr;
-        grid-template-rows: auto 1fr;
-        gap: 16px;
-        align-items: start;
+        display: grid; grid-template-columns: 240px 1fr; grid-template-rows: auto 1fr; gap: 16px; align-items: start;
       }
       .ai-hero-banner {
-        grid-column: 1;
-        grid-row: 1 / span 2;
-        flex-direction: column;
-        justify-content: center;
-        text-align: center;
-        padding: 24px 16px;
-        height: 100%;
+        grid-column: 1; grid-row: 1 / span 2; flex-direction: column; justify-content: center; text-align: center; padding: 24px 16px; height: 100%;
       }
-      .ai-hero-avatar-box {
-        width: 110px;
-        height: 110px;
-        border-radius: 30px;
-        margin-bottom: 8px;
-      }
-      .ai-hero-avatar-img {
-        width: 85px;
-        height: 85px;
-      }
-      .quick-questions-section {
-        grid-column: 2;
-        grid-row: 1;
-      }
-      .chat-messages {
-        grid-column: 2;
-        grid-row: 2;
-      }
+      .ai-hero-avatar-box { width: 110px; height: 110px; border-radius: 30px; margin-bottom: 8px; }
+      .ai-hero-avatar-img { width: 85px; height: 85px; }
+      .quick-questions-section { grid-column: 2; grid-row: 1; }
+      .chat-messages { grid-column: 2; grid-row: 2; }
       .star-sheet, .search-sheet, .settings-sheet {
-        left: 50%;
-        transform: translate(-50%, 180%);
-        width: 600px;
-        max-width: 90vw;
+        left: 50%; transform: translate(-50%, 180%); width: 600px; max-width: 90vw;
       }
-      .star-sheet.active, .search-sheet.active, .settings-sheet.active {
-        transform: translate(-50%, 0);
-      }
+      .star-sheet.active, .search-sheet.active, .settings-sheet.active { transform: translate(-50%, 0); }
 
-      .screen-tutorial {
-        align-items: center;
-      }
-      .tut-container-inner {
-        max-width: 520px; width: 100%; margin: 0 auto;
-      }
+      .screen-tutorial { align-items: center; }
+      .tut-container-inner { max-width: 520px; width: 100%; margin: 0 auto; }
     }
 
     .hidden { opacity: 0 !important; pointer-events: none !important; visibility: hidden; }
@@ -801,7 +621,7 @@
     <button class="btn-primary" onclick="goToTutorial()">馬の背から見上げる ✦</button>
   </div>
 
-  <!-- ★★★ 画像を再現した最新チュートリアル画面 ★★★ -->
+  <!-- チュートリアル画面 -->
   <div id="screen-tutorial" class="screen-tutorial">
     <div class="tut-container-inner">
       <div class="tut-header">
@@ -822,7 +642,6 @@
               <span class="tut-card-tag">(おすすめ)</span>
             </div>
           </div>
-          <!-- センサーアイコン -->
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#38bdf8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <circle cx="12" cy="12" r="3"></circle>
             <path d="M12 21a9 9 0 0 0 9-9c0-2.5-1-4.8-2.6-6.5"></path>
@@ -835,7 +654,6 @@
 
         <div class="tut-card-content">
           <div class="tut-illustration-box">
-            <!-- 横持ちスマホアイコン -->
             <svg width="110" height="60" viewBox="0 0 120 70" fill="none" stroke="#38bdf8" stroke-width="1.8">
               <path d="M20 15 Q 10 5 2 20" stroke="#38bdf8" stroke-width="1.5" stroke-dasharray="2 2" />
               <path d="M100 15 Q 110 5 118 20" stroke="#38bdf8" stroke-width="1.5" stroke-dasharray="2 2" />
@@ -865,7 +683,6 @@
               <span class="tut-card-title">スワイプ / タッチ操作</span>
             </div>
           </div>
-          <!-- タッチアイコン -->
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#38bdf8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <path d="M18 11V6a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v0"></path>
             <path d="M14 10V4a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v6"></path>
@@ -879,14 +696,11 @@
 
         <div class="tut-card-content">
           <div class="tut-illustration-box">
-            <!-- 縦持ちスマホ＆スワイプ矢印イラスト -->
             <svg width="100" height="70" viewBox="0 0 100 80" fill="none" stroke="#38bdf8" stroke-width="1.8">
               <rect x="20" y="10" width="40" height="60" rx="6" fill="#0f172a" stroke="#38bdf8" stroke-width="2" />
-              <!-- 十字矢印 -->
               <path d="M 40 25 L 40 55 M 25 40 L 55 40" stroke="#38bdf8" stroke-width="1.5" />
               <path d="M 40 25 L 37 29 M 40 25 L 43 29" stroke="#38bdf8" stroke-width="1.5" />
               <path d="M 40 55 L 37 51 M 40 55 L 43 51" stroke="#38bdf8" stroke-width="1.5" />
-              <!-- タッチハンド -->
               <circle cx="75" cy="40" r="6" stroke="#38bdf8" stroke-dasharray="2 2" />
               <path d="M 75 40 L 85 55" stroke="#38bdf8" stroke-width="2" />
             </svg>
@@ -1137,7 +951,7 @@
 
         <div class="setting-item" style="flex-direction: column; align-items: flex-start; gap: 4px; margin-top: 10px;">
           <div class="setting-label" style="color: var(--neon-glow);">アプリ情報</div>
-          <div class="setting-desc">Tottori Star Pocket v56.0.0 (画像デザインチュートリアル完全再現版)</div>
+          <div class="setting-desc">Tottori Star Pocket v57.0.0 (AI高速化・詳細回答最適化版)</div>
           <div class="setting-desc">Powered by Gemini 3.8 Flash & Three.js</div>
         </div>
       </div>
@@ -1959,7 +1773,7 @@
       sendChatMessage();
     }
 
-    async function fetchWithRetry(url, options, retries = 1, delay = 600) {
+    async function fetchWithRetry(url, options, retries = 1, delay = 500) {
       for (let i = 0; i <= retries; i++) {
         try {
           const res = await fetch(url, options);
@@ -2018,13 +1832,22 @@
         .map(sp => sp.userData.name)
         .join(', ');
 
-      const systemPromptWithContext = `あなたは鳥取砂丘の馬の背にいる、青い宇宙服を着たウサギの天文学ガイド「ウサタ先生」です。
-ユーザー（隊員さん）の質問に対して、明るく元気な口調（〜だぞ！、〜だな！等）で答えてください。
-天体や星座についての質問には、明るさ・距離・星座の成り立ち・観察のコツなど【詳細でためになる具体的データ】を織り交ぜて、読みやすく端的に（150〜250文字程度）解説してください。
-【現在見えている星】${visibleStarNames || '特に入り組んだ星座はありません'}`;
+      /* ★ 高速化と詳細さを両立するプロンプト設計 ★ */
+      const systemPromptWithContext = `あなたは鳥取砂丘の馬の背にいる天文学ガイド「ウサタ先生」（ウサギ）です。
+元気で親しみやすい口調（〜だぞ！、〜だな！等）で回答してください。
+
+【回答ルール】
+1. 冒頭で一言元気に答える。
+2. 質問の天体やテーマについて、以下の項目を「箇条書き」を使って簡潔・具体的にまとめる（長文を避け箇条書きにすることで読みやすく生成速度を上げます）。
+   ・分類 / 距離 / 明るさなどの基本データ
+   ・見つけ方や星座のストーリー・雑学
+3. 回答が途中で切れないよう、トータルで300文字前後に手際よくまとめて最後まで完成させてください。
+
+【現在空に見える主要な星】${visibleStarNames || '特に入り組んだ星座はありません'}`;
 
       const cleanApiKey = GEMINI_API_KEY.trim();
-      const endpointUrl = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent';
+      // 高速処理モデルを利用
+      const endpointUrl = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent';
 
       try {
         const response = await fetchWithRetry(endpointUrl, {
@@ -2044,8 +1867,8 @@
               parts: [{ text: systemPromptWithContext }]
             },
             generationConfig: {
-              maxOutputTokens: 320,
-              temperature: 0.6
+              maxOutputTokens: 600, // 途中で途切れないよう余裕を持たせる
+              temperature: 0.5      // テンポよく正確なデータを返す設定
             }
           })
         });
