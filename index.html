@@ -56,22 +56,26 @@
       touch-action: none;
     }
 
+    /* ★ 鳥取砂丘（馬の背）シルエット ★ */
     .dune-silhouette {
       position: fixed;
       bottom: 0;
       left: 0;
       width: 100%;
-      height: 22vh;
-      max-height: 200px;
+      height: 28vh;
+      min-height: 180px;
+      max-height: 260px;
       pointer-events: none;
       z-index: 15;
       overflow: hidden;
       transition: transform 0.3s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.3s ease, visibility 0.3s;
       transform-origin: bottom center;
+      transform: translateY(0%);
+      opacity: 1;
     }
     .dune-silhouette.is-hidden {
-      opacity: 0;
-      visibility: hidden;
+      opacity: 0 !important;
+      visibility: hidden !important;
     }
     .dune-svg {
       position: absolute;
@@ -79,7 +83,7 @@
       left: 0;
       width: 100%;
       height: 100%;
-      filter: drop-shadow(0 -4px 16px rgba(0, 0, 0, 0.9));
+      filter: drop-shadow(0 -6px 20px rgba(0, 0, 0, 0.95));
     }
 
     .planetarium-grid {
@@ -528,6 +532,64 @@
       transform: scale(1.1);
     }
 
+    /* ★ PC・タブレット（768px以上）向け大画面レイアウト ★ */
+    @media (min-width: 768px) {
+      .chat-sheet {
+        left: 50%;
+        transform: translate(-50%, 180%);
+        width: 820px;
+        max-width: 90vw;
+        height: 80vh;
+        max-height: 700px;
+      }
+      .chat-sheet.active {
+        transform: translate(-50%, 0);
+      }
+      .chat-body-container {
+        display: grid;
+        grid-template-columns: 240px 1fr;
+        grid-template-rows: auto 1fr;
+        gap: 16px;
+        align-items: start;
+      }
+      .ai-hero-banner {
+        grid-column: 1;
+        grid-row: 1 / span 2;
+        flex-direction: column;
+        justify-content: center;
+        text-align: center;
+        padding: 24px 16px;
+        height: 100%;
+      }
+      .ai-hero-avatar-box {
+        width: 110px;
+        height: 110px;
+        border-radius: 30px;
+        margin-bottom: 8px;
+      }
+      .ai-hero-avatar-img {
+        width: 85px;
+        height: 85px;
+      }
+      .quick-questions-section {
+        grid-column: 2;
+        grid-row: 1;
+      }
+      .chat-messages {
+        grid-column: 2;
+        grid-row: 2;
+      }
+      .star-sheet, .search-sheet, .settings-sheet {
+        left: 50%;
+        transform: translate(-50%, 180%);
+        width: 600px;
+        max-width: 90vw;
+      }
+      .star-sheet.active, .search-sheet.active, .settings-sheet.active {
+        transform: translate(-50%, 0);
+      }
+    }
+
     .hidden { opacity: 0 !important; pointer-events: none !important; visibility: hidden; }
   </style>
 
@@ -537,36 +599,37 @@
 
   <div id="canvas-container"></div>
   
+  <!-- 鳥取砂丘（馬の背）シルエット SVG -->
   <div id="dune-silhouette" class="dune-silhouette">
     <svg class="dune-svg" viewBox="0 0 1440 320" preserveAspectRatio="none">
       <defs>
         <linearGradient id="duneGlow" x1="0%" y1="0%" x2="100%" y2="0%">
-          <stop offset="0%" stop-color="rgba(217, 119, 6, 0.15)" />
-          <stop offset="35%" stop-color="rgba(251, 191, 36, 0.75)" />
-          <stop offset="70%" stop-color="rgba(245, 158, 11, 0.3)" />
-          <stop offset="100%" stop-color="rgba(180, 83, 9, 0.1)" />
+          <stop offset="0%" stop-color="rgba(217, 119, 6, 0.25)" />
+          <stop offset="35%" stop-color="rgba(251, 191, 36, 0.85)" />
+          <stop offset="70%" stop-color="rgba(245, 158, 11, 0.4)" />
+          <stop offset="100%" stop-color="rgba(180, 83, 9, 0.2)" />
         </linearGradient>
 
         <linearGradient id="backDuneGrad" x1="0%" y1="0%" x2="0%" y2="100%">
-          <stop offset="0%" stop-color="#15233c" />
-          <stop offset="100%" stop-color="#050a16" />
+          <stop offset="0%" stop-color="#1c2d4a" />
+          <stop offset="100%" stop-color="#070e1c" />
         </linearGradient>
 
         <linearGradient id="midDuneGrad" x1="0%" y1="0%" x2="0%" y2="100%">
-          <stop offset="0%" stop-color="#0e182a" />
-          <stop offset="100%" stop-color="#03060d" />
+          <stop offset="0%" stop-color="#111f36" />
+          <stop offset="100%" stop-color="#040812" />
         </linearGradient>
 
         <linearGradient id="frontDuneGrad" x1="0%" y1="0%" x2="0%" y2="100%">
-          <stop offset="0%" stop-color="#060b14" />
-          <stop offset="100%" stop-color="#010204" />
+          <stop offset="0%" stop-color="#080e1a" />
+          <stop offset="100%" stop-color="#010306" />
         </linearGradient>
       </defs>
 
-      <path fill="url(#backDuneGrad)" opacity="0.85" d="M0,260 Q450,220 900,240 T1440,210 L1440,320 L0,320 Z"></path>
-      <path fill="url(#midDuneGrad)" d="M0,240 Q300,185 520,205 Q980,250 1440,220 L1440,320 L0,320 Z"></path>
-      <path fill="url(#frontDuneGrad)" d="M0,255 Q380,210 680,245 Q1080,270 1440,230 L1440,320 L0,320 Z"></path>
-      <path fill="none" stroke="url(#duneGlow)" stroke-width="2.0" stroke-linecap="round" d="M0,240 Q300,185 520,205 Q980,250 1440,220"></path>
+      <path fill="url(#backDuneGrad)" opacity="0.9" d="M0,260 Q450,210 900,235 T1440,200 L1440,320 L0,320 Z"></path>
+      <path fill="url(#midDuneGrad)" d="M0,235 Q300,175 520,198 Q980,245 1440,215 L1440,320 L0,320 Z"></path>
+      <path fill="url(#frontDuneGrad)" d="M0,250 Q380,200 680,240 Q1080,265 1440,225 L1440,320 L0,320 Z"></path>
+      <path fill="none" stroke="url(#duneGlow)" stroke-width="2.5" stroke-linecap="round" d="M0,235 Q300,175 520,198 Q980,245 1440,215"></path>
     </svg>
   </div>
 
@@ -636,7 +699,7 @@
       <button class="btn-primary" style="width: 100%; padding: 10px; font-size: 13px;" onclick="openAIChatFromSheet()">ウサタ先生に聞いてみる</button>
     </div>
 
-    <!-- AIチャット画面（🤖アイコンを削除・レイアウト調整） -->
+    <!-- AIチャット画面 -->
     <div id="chat-sheet" class="glass-card chat-sheet">
       <div class="drag-handle" onclick="closeChatSheet()"></div>
       <div class="chat-header">
@@ -783,7 +846,7 @@
 
         <div class="setting-item" style="flex-direction: column; align-items: flex-start; gap: 4px; margin-top: 10px;">
           <div class="setting-label" style="color: var(--neon-glow);">アプリ情報</div>
-          <div class="setting-desc">Tottori Star Pocket v52.0.0 (応答高速化・詳細情報強化版)</div>
+          <div class="setting-desc">Tottori Star Pocket v54.0.0 (砂丘シルエット完全復元版)</div>
           <div class="setting-desc">Powered by Gemini 3.8 Flash & Three.js</div>
         </div>
       </div>
@@ -1196,12 +1259,12 @@
       if (mode === 'dune') {
         minPitch = -5;
         maxPitch = 85;
-        duneElem.classList.remove('is-hidden');
+        if (duneElem) duneElem.classList.remove('is-hidden');
         document.getElementById('mode-dune').classList.add('active');
       } else {
         minPitch = -89;
         maxPitch = 89;
-        duneElem.classList.add('is-hidden');
+        if (duneElem) duneElem.classList.add('is-hidden');
         document.getElementById('mode-free').classList.add('active');
       }
       lat = Math.max(minPitch, Math.min(maxPitch, lat));
@@ -1215,6 +1278,7 @@
 
     const targetQuaternion = new THREE.Quaternion();
 
+    /* ★ コンパス・高度・砂丘シルエット沈み込み計算 ★ */
     function updateCompassDisplay() {
       const dir = new THREE.Vector3();
       camera.getWorldDirection(dir);
@@ -1242,9 +1306,10 @@
 
       const duneElem = document.getElementById('dune-silhouette');
       if (duneElem && !duneElem.classList.contains('is-hidden')) {
-        const shiftFactor = Math.max(0, Math.min(1, (altDeg - 15) / 35));
-        const translateYPercentage = shiftFactor * 100;
-        const opacityValue = 1 - shiftFactor;
+        // 高度に合わせて砂丘が画面下に滑らかに移動
+        const shiftFactor = Math.max(0, Math.min(1, (altDeg - 10) / 40));
+        const translateYPercentage = shiftFactor * 85;
+        const opacityValue = 1 - (shiftFactor * 0.85);
         duneElem.style.transform = `translateY(${translateYPercentage}%)`;
         duneElem.style.opacity = opacityValue;
       }
@@ -1715,7 +1780,6 @@
         .map(sp => sp.userData.name)
         .join(', ');
 
-      /* ★ 応答の正確性と詳細度を高めるプロンプト設計 ★ */
       const systemPromptWithContext = `あなたは鳥取砂丘の馬の背にいる、青い宇宙服を着たウサギの天文学ガイド「ウサタ先生」です。
 ユーザー（隊員さん）の質問に対して、明るく元気な口調（〜だぞ！、〜だな！等）で答えてください。
 天体や星座についての質問には、明るさ・距離・星座の成り立ち・観察のコツなど【詳細でためになる具体的データ】を織り交ぜて、読みやすく端的に（150〜250文字程度）解説してください。
@@ -1742,7 +1806,7 @@
               parts: [{ text: systemPromptWithContext }]
             },
             generationConfig: {
-              maxOutputTokens: 320, /* 高速化のための最適値 */
+              maxOutputTokens: 320,
               temperature: 0.6
             }
           })
