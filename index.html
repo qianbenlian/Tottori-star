@@ -168,8 +168,9 @@
     .screen-start {
       position: absolute;
       top: 0; left: 0; width: 100%; height: 100%;
-      z-index: 50; display: flex; flex-direction: column; justify-content: center; align-items: center;
+      z-index: 100; display: flex; flex-direction: column; justify-content: center; align-items: center;
       text-align: center; padding: 30px; transition: opacity 0.5s ease, visibility 0.5s;
+      pointer-events: auto;
     }
     .start-logo {
       font-size: 28px; font-weight: 700; letter-spacing: 1px; margin-bottom: 8px;
@@ -182,6 +183,9 @@
       padding: 14px 36px; font-size: 15px; font-weight: 600;
       border-radius: 30px; cursor: pointer; box-shadow: 0 0 20px rgba(56, 189, 248, 0.4);
       transition: transform 0.2s, background 0.3s;
+      pointer-events: auto;
+      position: relative;
+      z-index: 101;
     }
     .btn-primary:active { transform: scale(0.95); }
 
@@ -189,12 +193,13 @@
     .screen-tutorial {
       position: absolute;
       top: 0; left: 0; width: 100%; height: 100%; height: 100dvh;
-      z-index: 60; display: none; flex-direction: column;
+      z-index: 110; display: none; flex-direction: column;
       background: radial-gradient(circle at 50% 20%, #0c1836 0%, #040814 100%);
       padding: max(16px, env(safe-area-inset-top)) 16px max(16px, env(safe-area-inset-bottom)) 16px;
       overflow-y: auto;
       -webkit-overflow-scrolling: touch;
       color: #e2e8f0;
+      pointer-events: auto;
     }
 
     .tut-header {
@@ -258,6 +263,9 @@
       width: 100%; background: linear-gradient(135deg, #fde047 0%, #eab308 100%); color: #0f172a; border: none; border-radius: 30px;
       padding: 16px 24px; font-size: 16px; font-weight: 800; letter-spacing: 1px; cursor: pointer; box-shadow: 0 4px 20px rgba(234, 179, 8, 0.4);
       display: flex; align-items: center; justify-content: center; gap: 8px; margin-bottom: 16px; transition: transform 0.2s, filter 0.2s;
+      pointer-events: auto;
+      position: relative;
+      z-index: 111;
     }
     .tut-action-btn:active { transform: scale(0.97); filter: brightness(0.95); }
 
@@ -570,7 +578,7 @@
       .tut-container-inner { max-width: 520px; width: 100%; margin: 0 auto; }
     }
 
-    .hidden { opacity: 0 !important; pointer-events: none !important; visibility: hidden; }
+    .hidden { display: none !important; opacity: 0 !important; pointer-events: none !important; visibility: hidden !important; }
   </style>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
@@ -622,14 +630,14 @@
   <div id="screen-start" class="screen-start glass-card" style="border-radius:0; border:none; background: rgba(4,10,23,0.94);">
     <div class="start-logo">Tottori Star Pocket</div>
     <div class="start-sub">鳥取砂丘・馬の背に立ち、夜空を見上げるリアリティ体験。</div>
-    <button class="btn-primary" onclick="goToTutorial()">馬の背から見上げる ✦</button>
+    <button class="btn-primary" onclick="goToTutorial(event)">馬の背から見上げる ✦</button>
   </div>
 
   <!-- チュートリアル画面 -->
   <div id="screen-tutorial" class="screen-tutorial">
     <div class="tut-container-inner">
       <div class="tut-header">
-        <button class="tut-back-btn" onclick="backToStart()">‹</button>
+        <button class="tut-back-btn" onclick="backToStart(event)">‹</button>
         <div class="tut-brand-title">✦ Tottori Star Pocket ✦</div>
         <div class="tut-brand-sub">鳥取砂丘の星空を体験しよう</div>
         <div class="tut-main-title">操作方法のご案内</div>
@@ -752,7 +760,7 @@
       </div>
 
       <!-- メインボタン -->
-      <button class="tut-action-btn" onclick="startObservation()">
+      <button class="tut-action-btn" onclick="startObservation(event)">
         星空を見に行く <span>›</span>
       </button>
     </div>
@@ -959,7 +967,7 @@
 
         <div class="setting-item" style="flex-direction: column; align-items: flex-start; gap: 4px; margin-top: 10px;">
           <div class="setting-label" style="color: var(--neon-glow);">アプリ情報</div>
-          <div class="setting-desc">Tottori Star Pocket v61.0.0 (天体高度・地平座標高精度計算版)</div>
+          <div class="setting-desc">Tottori Star Pocket v62.0.0 (ボタンクリック発火イベント修正版)</div>
           <div class="setting-desc">Powered by Gemini 3.8 Flash & Three.js</div>
         </div>
       </div>
@@ -978,7 +986,7 @@
 
   <script>
     /* ★ ご自身のGemini APIキー (AIzaSy...) を以下のダブルクォーテーション内に入力してください ★ */
-    const GEMINI_API_KEY = "AQ.Ab8RN6IvoEINJC-SeVpGZsAoXfDxBOCEUd2_y14yl4DJsOz6IQ";
+    const GEMINI_API_KEY = "YOUR_GEMINI_API_KEY_HERE";
 
     /* 位置情報管理 */
     let currentLocationMode = 'dune'; // 'dune' or 'gps'
@@ -1045,7 +1053,7 @@
       { id: "dschubba", name: "ジュバ (蠍座δ)", category: "constellation", type: "2等星 / 約490光年", desc: "さそり座の額の位置で青白く輝く2等星です。", colorHex: "#a5f3fc", ra: 240.08, dec: -22.62 },
       { id: "wei", name: "ウェイ (蠍座ε)", category: "constellation", type: "2等星 / 約65光年", desc: "さそり座の胴体中央で光るオレンジ色の星です。", colorHex: "#fbbf24", ra: 252.54, dec: -34.29 },
       { id: "sargas", name: "サルガス (蠍座θ)", category: "constellation", type: "2等星 / 約300光年", desc: "さそりの尻尾の大きなカーブの下端にある星です。", colorHex: "#e0f2fe", ra: 264.33, dec: -42.99 },
-      { id: "shaula", name: "シャウラ (蠍座λ)", category: "constellation", type: "2等星 / 約570光年", desc: "さそり座の毒針の先端で鋭く光る2等星です。", colorHex: "#38bdf8", ra: 263.40, dec: -37.0start },
+      { id: "shaula", name: "シャウラ (蠍座λ)", category: "constellation", type: "2等星 / 約570光年", desc: "さそり座の毒針の先端で鋭く光る2等星です。", colorHex: "#38bdf8", ra: 263.40, dec: -37.06 },
 
       // --- しし座 ---
       { id: "regulus", name: "レグルス", category: "1st", type: "1等星 / 約79光年", desc: "しし座の心臓に位置する青白色の1等星です。", colorHex: "#a5f3fc", ra: 152.09, dec: 11.97 },
@@ -1313,7 +1321,6 @@
 
     /* 恒星天球座標（RA/Dec）から現地緯度経度・現在時刻に基づく地平3D座標（Alt/Az）への厳密変換関数 */
     function calculateHorizontalPosition(raDeg, decDeg, latDeg, lonDeg, dateObj, radius = 400) {
-      // 1. ユリウス日(JD)の計算
       const Y = dateObj.getUTCFullYear();
       const M = dateObj.getUTCMonth() + 1;
       const D = dateObj.getUTCDate();
@@ -1328,21 +1335,17 @@
       const dayFraction = (h + m / 60 + s / 3600) / 24;
       const JD = Math.floor(365.25 * (year + 4716)) + Math.floor(30.6001 * (month + 1)) + D + dayFraction + B - 1524.5;
       
-      // 2. グリニッジ平均恒星時(GMST) の計算
       const T = (JD - 2451545.0) / 36525.0;
       let gmst = 280.46061837 + 360.98564736629 * (JD - 2451545.0) + 0.000387933 * T * T - (T * T * T) / 38710000;
       gmst = (gmst % 360 + 360) % 360;
 
-      // 3. 地方恒星時(LST) と 地方時角(HA) の計算
       const lst = (gmst + lonDeg % 360 + 360) % 360;
       let haDeg = (lst - raDeg + 360) % 360;
 
-      // Radian 変換
       const ha = haDeg * Math.PI / 180;
       const dec = decDeg * Math.PI / 180;
       const lat = latDeg * Math.PI / 180;
 
-      // 4. 高度(Altitude)と方位角(Azimuth)の計算
       const sinAlt = Math.sin(dec) * Math.sin(lat) + Math.cos(dec) * Math.cos(lat) * Math.cos(ha);
       const alt = Math.asin(sinAlt);
 
@@ -1350,7 +1353,6 @@
       let az = Math.acos(Math.max(-1, Math.min(1, cosAz)));
       if (Math.sin(ha) > 0) az = 2 * Math.PI - az;
 
-      // 5. 3D空間直交座標(X, Y, Z)へ投影 (Yが天頂・Zが北・Xが東)
       const x = radius * Math.cos(alt) * Math.sin(az);
       const y = radius * Math.sin(alt);
       const z = -radius * Math.cos(alt) * Math.cos(az);
@@ -1412,6 +1414,33 @@
     }
     setInterval(updateRealtimeSkyPosition, 1000);
     updateRealtimeSkyPosition();
+
+    function goToTutorial(e) {
+      if(e) e.stopPropagation();
+      const startScreen = document.getElementById('screen-start');
+      const tutScreen = document.getElementById('screen-tutorial');
+      if(startScreen) startScreen.classList.add('hidden');
+      if(tutScreen) tutScreen.style.display = 'flex';
+    }
+
+    function backToStart(e) {
+      if(e) e.stopPropagation();
+      const startScreen = document.getElementById('screen-start');
+      const tutScreen = document.getElementById('screen-tutorial');
+      if(tutScreen) tutScreen.style.display = 'none';
+      if(startScreen) startScreen.classList.remove('hidden');
+    }
+
+    function startObservation(e) {
+      if(e) e.stopPropagation();
+      const tutScreen = document.getElementById('screen-tutorial');
+      if(tutScreen) tutScreen.style.display = 'none';
+      document.getElementById('main-header').style.opacity = '1';
+      document.getElementById('main-nav').style.opacity = '1';
+      closeAllSheets();
+      updateCompassDisplay();
+      renderStarList();
+    }
 
     function toggleLocationModal() {
       const modal = document.getElementById('location-modal');
@@ -1669,25 +1698,6 @@
       renderer.render(scene, camera);
     }
     animate();
-
-    function goToTutorial() {
-      document.getElementById('screen-start').classList.add('hidden');
-      document.getElementById('screen-tutorial').style.display = 'flex';
-    }
-
-    function backToStart() {
-      document.getElementById('screen-tutorial').style.display = 'none';
-      document.getElementById('screen-start').classList.remove('hidden');
-    }
-
-    function startObservation() {
-      document.getElementById('screen-tutorial').style.display = 'none';
-      document.getElementById('main-header').style.opacity = '1';
-      document.getElementById('main-nav').style.opacity = '1';
-      closeAllSheets();
-      updateCompassDisplay();
-      renderStarList();
-    }
 
     function closeAllSheets() {
       document.getElementById('star-sheet').classList.remove('active');
