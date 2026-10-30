@@ -967,7 +967,7 @@
 
         <div class="setting-item" style="flex-direction: column; align-items: flex-start; gap: 4px; margin-top: 10px;">
           <div class="setting-label" style="color: var(--neon-glow);">アプリ情報</div>
-          <div class="setting-desc">Tottori Star Pocket v62.0.0 (ボタンクリック発火イベント修正版)</div>
+          <div class="setting-desc">Tottori Star Pocket v63.0.0 (GPSリアルタイム計算連動版)</div>
           <div class="setting-desc">Powered by Gemini 3.8 Flash & Three.js</div>
         </div>
       </div>
@@ -1470,25 +1470,44 @@
       updateRealtimeSkyPosition();
     }
 
-   // 【変更後：南半球シドニーテスト用】
-function fetchGPSLocation() {
-  currentLocationMode = 'gps';
-  // 南半球（オーストラリア・シドニー付近）の座標をセット
-  currentLat = -33.8667; 
-  currentLon = 151.2072;
+    function fetchGPSLocation() {
+      if (!navigator.geolocation) {
+        alert("お使いの端末はGPS機能に対応していません⭐");
+        return;
+      }
 
-  document.getElementById('current-location-label').innerText = `📍 シドニー (南半球テスト)`;
-  document.getElementById('loc-btn-dune').classList.remove('active');
-  document.getElementById('loc-btn-gps').classList.add('active');
+      const btnGps = document.getElementById('loc-btn-gps');
+      if (btnGps) btnGps.innerText = "📍 位置情報を取得中...";
 
-  const duneElem = document.getElementById('dune-silhouette');
-  if (duneElem) duneElem.classList.add('is-hidden');
+      navigator.geolocation.getCurrentPosition((pos) => {
+        currentLocationMode = 'gps';
+        currentLat = pos.coords.latitude;
+        currentLon = pos.coords.longitude;
 
-  document.getElementById('location-modal').style.display = 'none';
-  
-  // 星の配置を即座に再計算して描画
-  updateRealtimeSkyPosition();
-}
+        document.getElementById('current-location-label').innerText = `📍 現在地 (${currentLat.toFixed(2)}°, ${currentLon.toFixed(2)}°)`;
+        document.getElementById('loc-btn-dune').classList.remove('active');
+        if (btnGps) {
+          btnGps.classList.add('active');
+          btnGps.innerText = "📍 GPSで現在地を登録・切り替え";
+        }
+
+        const duneElem = document.getElementById('dune-silhouette');
+        if (duneElem) duneElem.classList.add('is-hidden');
+
+        document.getElementById('location-modal').style.display = 'none';
+        
+        // ★ 位置情報取得後に直接星空を再描画！
+        updateRealtimeSkyPosition();
+      }, (err) => {
+        console.error(err);
+        alert("位置情報の取得に失敗しました。端末の設定で位置情報アクセスを許可してください⭐");
+        if (btnGps) btnGps.innerText = "📍 GPSで現在地を登録・切り替え";
+      }, {
+        enableHighAccuracy: true,
+        timeout: 10000,
+        maximumAge: 0
+      });
+    }
 
     function setCustomTime(mode) {
       timeMode = mode;
