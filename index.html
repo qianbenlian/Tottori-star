@@ -951,7 +951,7 @@
 
         <div class="setting-item" style="flex-direction: column; align-items: flex-start; gap: 4px; margin-top: 10px;">
           <div class="setting-label" style="color: var(--neon-glow);">アプリ情報</div>
-          <div class="setting-desc">Tottori Star Pocket v57.0.0 (AI高速化・詳細回答最適化版)</div>
+          <div class="setting-desc">Tottori Star Pocket v58.0.0 (Gemini 3.8 Flash 最適化版)</div>
           <div class="setting-desc">Powered by Gemini 3.8 Flash & Three.js</div>
         </div>
       </div>
@@ -1838,16 +1838,16 @@
 
 【回答ルール】
 1. 冒頭で一言元気に答える。
-2. 質問の天体やテーマについて、以下の項目を「箇条書き」を使って簡潔・具体的にまとめる（長文を避け箇条書きにすることで読みやすく生成速度を上げます）。
+2. 質問の天体やテーマについて、以下の項目を「箇条書き」を使って見やすく具体的にまとめる。
    ・分類 / 距離 / 明るさなどの基本データ
    ・見つけ方や星座のストーリー・雑学
-3. 回答が途中で切れないよう、トータルで300文字前後に手際よくまとめて最後まで完成させてください。
+3. 途中で回答が途切れないよう最後まで文章を完成させてください。
 
 【現在空に見える主要な星】${visibleStarNames || '特に入り組んだ星座はありません'}`;
 
       const cleanApiKey = GEMINI_API_KEY.trim();
-      // 高速処理モデルを利用
-      const endpointUrl = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent';
+      // 最新の推奨モデルを利用
+      const endpointUrl = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent';
 
       try {
         const response = await fetchWithRetry(endpointUrl, {
@@ -1867,8 +1867,8 @@
               parts: [{ text: systemPromptWithContext }]
             },
             generationConfig: {
-              maxOutputTokens: 600, // 途中で途切れないよう余裕を持たせる
-              temperature: 0.5      // テンポよく正確なデータを返す設定
+              maxOutputTokens: 1000, // 途切れ防止のため十分な長さを確保
+              temperature: 0.6
             }
           })
         });
