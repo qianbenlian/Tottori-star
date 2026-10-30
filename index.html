@@ -536,9 +536,10 @@
     input:checked + .slider { background-color: var(--primary-blue); }
     input:checked + .slider:before { transform: translateX(20px); }
 
+    /* 下部ナビゲーション（修正箇所） */
     .bottom-nav {
       position: absolute; bottom: max(10px, env(safe-area-inset-bottom)); left: 12px; right: 12px; height: 54px;
-      display: flex; justify-space-around: align-items: center; padding: 4px; z-index: 40; opacity: 0; transition: opacity 0.5s;
+      display: flex; justify-content: space-around; align-items: center; padding: 4px; z-index: 40; opacity: 0; transition: opacity 0.5s;
       background: rgba(6, 18, 41, 0.85); border: 1px solid var(--glass-border);
     }
     .nav-item { display: flex; flex-direction: column; align-items: center; font-size: 10px; color: var(--text-sub); cursor: pointer; background: none; border: none; gap: 2px; }
@@ -753,7 +754,7 @@
           <span>⭐</span> ワンポイント
         </div>
         <ul class="tut-point-list">
-          <li>ジャイロ操作がうまく動かない場合は、画面をタップしてからもう一度お試しく​​ださい。</li>
+          <li>ジャイロ操作がうまく動かない場合は、画面をタップしてからもう一度お試しください。</li>
           <li>どちらの操作でも、右上の「かざす」ボタン等で方向をリセットできます。</li>
           <li>安心してお使いいただけるよう、個人情報の取得は行いません。</li>
         </ul>
