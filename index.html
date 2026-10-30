@@ -959,7 +959,7 @@
 
         <div class="setting-item" style="flex-direction: column; align-items: flex-start; gap: 4px; margin-top: 10px;">
           <div class="setting-label" style="color: var(--neon-glow);">アプリ情報</div>
-          <div class="setting-desc">Tottori Star Pocket v60.0.0 (UIレイアウト調整版)</div>
+          <div class="setting-desc">Tottori Star Pocket v61.0.0 (天体高度・地平座標高精度計算版)</div>
           <div class="setting-desc">Powered by Gemini 3.8 Flash & Three.js</div>
         </div>
       </div>
@@ -1029,72 +1029,73 @@
       return 'default';
     }
 
+    // 各主要天体の 赤緯(Declination: deg) と 赤経(Right Ascension: deg)
     const starDatabase = [
       // --- 夏の大三角 ＆ はくちょう座 ---
-      { id: "vega", name: "織姫星 (ベガ)", category: "1st", type: "1等星 / 約25光年", desc: "こと座の1等星。夏の大三角を形成する最も青白く輝く星です。", colorHex: "#a5f3fc", pos: new THREE.Vector3(150, 320, -350) },
-      { id: "altair", name: "彦星 (アルタイル)", category: "1st", type: "1等星 / 約17光年", desc: "わし座の1等星。織姫星と天の川を挟んで輝いています。", colorHex: "#ffffff", pos: new THREE.Vector3(300, 220, -300) },
-      { id: "deneb", name: "デネブ", category: "1st", type: "1等星 / 約1400光年", desc: "はくちょう座の尻尾の星。北十字星の中心ラインを飾る大巨星です。", colorHex: "#e0f2fe", pos: new THREE.Vector3(80, 410, -280) },
-      { id: "sadr", name: "サドル (白鳥座γ)", category: "constellation", type: "2等星 / 約1800光年", desc: "はくちょう座の胸にあたる星。大きな十字架（北十字）の交差点です。", colorHex: "#fde047", pos: new THREE.Vector3(100, 360, -290) },
-      { id: "albireo", name: "アルビレオ (白鳥座β)", category: "constellation", type: "3等星 / 約430光年", desc: "はくちょうのくちばし。望遠鏡で見ると「宮沢賢治の銀河鉄道」にも登場する全天一美しい二重星です。", colorHex: "#fbbf24", pos: new THREE.Vector3(130, 280, -310) },
-      { id: "gienah_cyg", name: "ギエナー (白鳥座ε)", category: "constellation", type: "2等星 / 約73光年", desc: "はくちょう座の東側の翼の先で光る星です。", colorHex: "#93c5fd", pos: new THREE.Vector3(40, 370, -250) },
+      { id: "vega", name: "織姫星 (ベガ)", category: "1st", type: "1等星 / 約25光年", desc: "こと座の1等星。夏の大三角を形成する最も青白く輝く星です。", colorHex: "#a5f3fc", ra: 279.23, dec: 38.78 },
+      { id: "altair", name: "彦星 (アルタイル)", category: "1st", type: "1等星 / 約17光年", desc: "わし座の1等星。織姫星と天の川を挟んで輝いています。", colorHex: "#ffffff", ra: 297.70, dec: 8.87 },
+      { id: "deneb", name: "デネブ", category: "1st", type: "1等星 / 約1400光年", desc: "はくちょう座の尻尾の星。北十字星の中心ラインを飾る大巨星です。", colorHex: "#e0f2fe", ra: 310.36, dec: 45.28 },
+      { id: "sadr", name: "サドル (白鳥座γ)", category: "constellation", type: "2等星 / 約1800光年", desc: "はくちょう座の胸にあたる星。大きな十字架（北十字）の交差点です。", colorHex: "#fde047", ra: 305.56, dec: 40.26 },
+      { id: "albireo", name: "アルビレオ (白鳥座β)", category: "constellation", type: "3等星 / 約430光年", desc: "はくちょうのくちばし。全天一美しい二重星です。", colorHex: "#fbbf24", ra: 292.68, dec: 27.96 },
+      { id: "gienah_cyg", name: "ギエナー (白鳥座ε)", category: "constellation", type: "2等星 / 約73光年", desc: "はくちょう座の東側の翼の先で光る星です。", colorHex: "#93c5fd", ra: 311.53, dec: 33.97 },
 
-      // --- さそり座（夏の南の空） ---
-      { id: "antares", name: "アンタレス", category: "1st", type: "赤色超巨星 / 約550光年", desc: "さそり座の心臓で赤く怪しく輝く1等星。「火星に対抗するもの」という意味を持ちます。", colorHex: "#ff4444", pos: new THREE.Vector3(220, 100, -380) },
-      { id: "graffias", name: "グラフィアス (蠍座β)", category: "constellation", type: "2等星 / 約400光年", desc: "さそりの頭部・ハサミの付け根にあたる三本角の星です。", colorHex: "#93c5fd", pos: new THREE.Vector3(200, 150, -390) },
-      { id: "dschubba", name: "ジュバ (蠍座δ)", category: "constellation", type: "2等星 / 約490光年", desc: "さそり座の額の位置で青白く輝く2等星です。", colorHex: "#a5f3fc", pos: new THREE.Vector3(210, 135, -385) },
-      { id: "wei", name: "ウェイ (蠍座ε)", category: "constellation", type: "2等星 / 約65光年", desc: "さそり座の胴体中央で優しく光るオレンジ色の星です。", colorHex: "#fbbf24", pos: new THREE.Vector3(240, 70, -370) },
-      { id: "sargas", name: "サルガス (蠍座θ)", category: "constellation", type: "2等星 / 約300光年", desc: "さそりの尻尾の大きなカーブ（釣り針）の下端にある星です。", colorHex: "#e0f2fe", pos: new THREE.Vector3(260, 40, -350) },
-      { id: "shaula", name: "シャウラ (蠍座λ)", category: "constellation", type: "2等星 / 約570光年", desc: "さそり座の毒針の先端で鋭く光る2等星です。", colorHex: "#38bdf8", pos: new THREE.Vector3(275, 55, -340) },
+      // --- さそり座 ---
+      { id: "antares", name: "アンタレス", category: "1st", type: "赤色超巨星 / 約550光年", desc: "さそり座の心臓で赤く輝く1等星です。", colorHex: "#ff4444", ra: 247.35, dec: -26.43 },
+      { id: "graffias", name: "グラフィアス (蠍座β)", category: "constellation", type: "2等星 / 約400光年", desc: "さそりの頭部にあたる三本角の星です。", colorHex: "#93c5fd", ra: 241.36, dec: -19.80 },
+      { id: "dschubba", name: "ジュバ (蠍座δ)", category: "constellation", type: "2等星 / 約490光年", desc: "さそり座の額の位置で青白く輝く2等星です。", colorHex: "#a5f3fc", ra: 240.08, dec: -22.62 },
+      { id: "wei", name: "ウェイ (蠍座ε)", category: "constellation", type: "2等星 / 約65光年", desc: "さそり座の胴体中央で光るオレンジ色の星です。", colorHex: "#fbbf24", ra: 252.54, dec: -34.29 },
+      { id: "sargas", name: "サルガス (蠍座θ)", category: "constellation", type: "2等星 / 約300光年", desc: "さそりの尻尾の大きなカーブの下端にある星です。", colorHex: "#e0f2fe", ra: 264.33, dec: -42.99 },
+      { id: "shaula", name: "シャウラ (蠍座λ)", category: "constellation", type: "2等星 / 約570光年", desc: "さそり座の毒針の先端で鋭く光る2等星です。", colorHex: "#38bdf8", ra: 263.40, dec: -37.0start },
 
-      // --- しし座（春の南の空） ---
-      { id: "regulus", name: "レグルス", category: "1st", type: "1等星 / 約79光年", desc: "しし座の心臓に位置する青白色の1等星。「小さな王」の意味を持ちます。", colorHex: "#a5f3fc", pos: new THREE.Vector3(120, 240, 350) },
-      { id: "denebola", name: "デネボラ (獅子座β)", category: "constellation", type: "2等星 / 約36光年", desc: "しし座の尻尾の星。春の大三角のひとつの角を作ります。", colorHex: "#ffffff", pos: new THREE.Vector3(220, 220, 300) },
-      { id: "algieba", name: "アルギエバ (獅子座γ)", category: "constellation", type: "2等星 / 約130光年", desc: "しし座のたてがみにあたる金色の星。「シシの鎌」のカーブを作ります。", colorHex: "#fde047", pos: new THREE.Vector3(140, 290, 330) },
-      { id: "zosma", name: "ゾスマ (獅子座δ)", category: "constellation", type: "2等星 / 約58光年", desc: "しし座の背中・腰にあたる星です。", colorHex: "#e0f2fe", pos: new THREE.Vector3(190, 260, 320) },
+      // --- しし座 ---
+      { id: "regulus", name: "レグルス", category: "1st", type: "1等星 / 約79光年", desc: "しし座の心臓に位置する青白色の1等星です。", colorHex: "#a5f3fc", ra: 152.09, dec: 11.97 },
+      { id: "denebola", name: "デネボラ (獅子座β)", category: "constellation", type: "2等星 / 約36光年", desc: "しし座の尻尾の星。春の大三角を作ります。", colorHex: "#ffffff", ra: 177.26, dec: 14.57 },
+      { id: "algieba", name: "アルギエバ (獅子座γ)", category: "constellation", type: "2等星 / 約130光年", desc: "しし座のたてがみにあたる金色の星です。", colorHex: "#fde047", ra: 154.99, dec: 19.84 },
+      { id: "zosma", name: "ゾスマ (獅子座δ)", category: "constellation", type: "2等星 / 約58光年", desc: "しし座の背中にあたる星です。", colorHex: "#e0f2fe", ra: 168.53, dec: 20.52 },
 
-      // --- ペガスス座（秋の天頂・大四角） ---
-      { id: "markab", name: "マルカブ (ペガススα)", category: "constellation", type: "2等星 / 約140光年", desc: "ペガススの大四角形の南西の角。「馬の鞍」という意味の星です。", colorHex: "#a5f3fc", pos: new THREE.Vector3(-100, 380, -250) },
-      { id: "scheat", name: "シェアト (ペガススβ)", category: "constellation", type: "2等星 / 約200光年", desc: "ペガススの大四角形の北西の角にあたる赤っぽい巨星です。", colorHex: "#f97316", pos: new THREE.Vector3(-80, 420, -220) },
-      { id: "algenib", name: "アルゲニブ (ペガススγ)", category: "constellation", type: "2等星 / 約390光年", desc: "ペガススの大四角形の南東の角にあたる青白色の星です。", colorHex: "#38bdf8", pos: new THREE.Vector3(-30, 360, -280) },
-      { id: "alpheratz", name: "アルフェラッツ (アンドロメダα)", category: "constellation", type: "2等星 / 約97光年", desc: "ペガススの大四角形の北東の角。アンドロメダ座の頭でもある共有星です。", colorHex: "#ffffff", pos: new THREE.Vector3(-20, 410, -260) },
+      // --- ペガスス座 ---
+      { id: "markab", name: "マルカブ (ペガススα)", category: "constellation", type: "2等星 / 約140光年", desc: "ペガススの大四角形の角の星です。", colorHex: "#a5f3fc", ra: 345.94, dec: 15.21 },
+      { id: "scheat", name: "シェアト (ペガススβ)", category: "constellation", type: "2等星 / 約200光年", desc: "ペガススの大四角形の北西にあたる巨星です。", colorHex: "#f97316", ra: 345.94, dec: 28.08 },
+      { id: "algenib", name: "アルゲニブ (ペガススγ)", category: "constellation", type: "2等星 / 約390光年", desc: "ペガススの大四角形の南東にあたる青白色の星です。", colorHex: "#38bdf8", ra: 3.31, dec: 15.18 },
+      { id: "alpheratz", name: "アルフェラッツ (アンドロメダα)", category: "constellation", type: "2等星 / 約97光年", desc: "アンドロメダ座の頭でもある共有星です。", colorHex: "#ffffff", ra: 2.10, dec: 29.09 },
 
-      // --- オリオン座（冬全主要星） ---
-      { id: "betelgeuse", name: "ベテルギウス", category: "1st", type: "赤色超巨星 / 約640光年", desc: "オリオン座の右肩にある赤色超巨星。冬の大三角の1つです。", colorHex: "#ff5533", pos: new THREE.Vector3(-250, 280, -320) },
-      { id: "bellatrix", name: "ベルトリックス", category: "constellation", type: "2等星 / 約250光年", desc: "オリオン座の左肩に位置する「女戦士」を意味する青白色の星です。", colorHex: "#93c5fd", pos: new THREE.Vector3(-190, 290, -320) },
-      { id: "rigel", name: "リゲル", category: "1st", type: "1等星 / 約860光年", desc: "オリオン座の左足で青白く輝く美しい1等星です。", colorHex: "#38bdf8", pos: new THREE.Vector3(-320, 140, -350) },
-      { id: "saiph", name: "サイフ", category: "constellation", type: "2等星 / 約650光年", desc: "オリオン座の右足にあたる「巨人の剣」を意味する星です。", colorHex: "#60a5fa", pos: new THREE.Vector3(-260, 150, -350) },
-      { id: "mintaka", name: "ミンタカ", category: "constellation", type: "2等星 / 約1200光年", desc: "オリオンの三ツ星の西（右）端。天の赤道に極めて近い星です。", colorHex: "#bae6fd", pos: new THREE.Vector3(-265, 220, -330) },
-      { id: "alnilam", name: "アルニラム", category: "constellation", type: "2等星 / 約2000光年", desc: "オリオンの三ツ星の中央。「真珠の帯」という意味を持つ超巨星です。", colorHex: "#e0f2fe", pos: new THREE.Vector3(-255, 218, -332) },
-      { id: "alnitak", name: "アルニタク", category: "constellation", type: "2等星 / 約1260光年", desc: "オリオンの三ツ星の東（左）端。近くに有名な馬頭星雲があります。", colorHex: "#93c5fd", pos: new THREE.Vector3(-245, 216, -334) },
+      // --- オリオン座 ---
+      { id: "betelgeuse", name: "ベテルギウス", category: "1st", type: "赤色超巨星 / 約640光年", desc: "オリオン座の右肩にある赤色超巨星です。", colorHex: "#ff5533", ra: 88.79, dec: 7.41 },
+      { id: "bellatrix", name: "ベルトリックス", category: "constellation", type: "2等星 / 約250光年", desc: "オリオン座の左肩に位置する星です。", colorHex: "#93c5fd", ra: 81.28, dec: 6.35 },
+      { id: "rigel", name: "リゲル", category: "1st", type: "1等星 / 約860光年", desc: "オリオン座の左足で青白く輝く美しい1等星です。", colorHex: "#38bdf8", ra: 78.63, dec: -8.20 },
+      { id: "saiph", name: "サイフ", category: "constellation", type: "2等星 / 約650光年", desc: "オリオン座の右足にあたる星です。", colorHex: "#60a5fa", ra: 86.93, dec: -9.67 },
+      { id: "mintaka", name: "ミンタカ", category: "constellation", type: "2等星 / 約1200光年", desc: "オリオンの三ツ星の西（右）端です。", colorHex: "#bae6fd", ra: 83.00, dec: -0.30 },
+      { id: "alnilam", name: "アルニラム", category: "constellation", type: "2等星 / 約2000光年", desc: "オリオンの三ツ星の中央の超巨星です。", colorHex: "#e0f2fe", ra: 84.05, dec: -1.20 },
+      { id: "alnitak", name: "アルニタク", category: "constellation", type: "2等星 / 約1260光年", desc: "オリオンの三ツ星の東（左）端です。", colorHex: "#93c5fd", ra: 85.19, dec: -1.94 },
 
-      // 冬の大三角の他星
-      { id: "sirius", name: "シリウス", category: "1st", type: "1等星 / 約8.6光年", desc: "おおいぬ座の星で、全天で最も明るく見える恒星です。", colorHex: "#60a5fa", pos: new THREE.Vector3(-380, 120, -250) },
-      { id: "procyon", name: "プロキオン", category: "1st", type: "1等星 / 約11.5光年", desc: "こいぬ座の1等星。シリウス・ベテルギウスと共に「冬の大三角」を作ります。", colorHex: "#fef08a", pos: new THREE.Vector3(-180, 200, -380) },
+      // 冬の主要星
+      { id: "sirius", name: "シリウス", category: "1st", type: "1等星 / 約8.6光年", desc: "おおいぬ座の星で、全天で最も明るい恒星です。", colorHex: "#60a5fa", ra: 101.29, dec: -16.72 },
+      { id: "procyon", name: "プロキオン", category: "1st", type: "1等星 / 約11.5光年", desc: "こいぬ座の1等星で冬の大三角を形成します。", colorHex: "#fef08a", ra: 114.83, dec: 5.22 },
 
-      // 他の代表的1等星
-      { id: "arcturus", name: "アークトゥルス", category: "1st", type: "1等星 / 約37光年", desc: "うかい座のオレンジ色に輝く1等星。「春の夫婦星」としても親しまれます。", colorHex: "#fbbf24", pos: new THREE.Vector3(380, 260, 100) },
-      { id: "spica", name: "スピカ", category: "1st", type: "1等星 / 約250光年", desc: "おとめ座の青白色の1等星。和名では「真珠星」と呼ばれます。", colorHex: "#c084fc", pos: new THREE.Vector3(350, 150, 200) },
-      { id: "capella", name: "カペラ", category: "1st", type: "1等星 / 約42光年", desc: "ぎょしゃ座の黄色の1等星。北の空高く長時間輝いて見えます。", colorHex: "#fde047", pos: new THREE.Vector3(-100, 420, -220) },
-      { id: "aldebaran", name: "アルデバラン", category: "1st", type: "1等星 / 約65光年", desc: "おうし座の目にあたる赤オレンジ色の星。「後に続くもの」という意味を持ちます。", colorHex: "#f97316", pos: new THREE.Vector3(-350, 220, -200) },
-      { id: "pollux", name: "ポルックス", category: "1st", type: "1等星 / 約34光年", desc: "ふたご座の弟星。オレンジ色に優しく光る1等星です。", colorHex: "#fcd34d", pos: new THREE.Vector3(-190, 310, -280) },
-      { id: "fomalhaut", name: "フォーマルハウト", category: "1st", type: "1等星 / 約25光年", desc: "みなみのうお座の1等星。秋の夜空に静かに輝く「南の星」です。", colorHex: "#e0f2fe", pos: new THREE.Vector3(80, 80, -390) },
+      // 代表的1等星
+      { id: "arcturus", name: "アークトゥルス", category: "1st", type: "1等星 / 約37光年", desc: "うしかい座のオレンジ色に輝く1等星です。", colorHex: "#fbbf24", ra: 213.92, dec: 19.18 },
+      { id: "spica", name: "スピカ", category: "1st", type: "1等星 / 約250光年", desc: "おとめ座の青白色の1等星（真珠星）です。", colorHex: "#c084fc", ra: 201.30, dec: -11.16 },
+      { id: "capella", name: "カペラ", category: "1st", type: "1等星 / 約42光年", desc: "ぎょしゃ座の黄色の1等星です。", colorHex: "#fde047", ra: 79.17, dec: 46.00 },
+      { id: "aldebaran", name: "アルデバラン", category: "1st", type: "1等星 / 約65光年", desc: "おうし座の目にあたる赤オレンジ色の星です。", colorHex: "#f97316", ra: 68.98, dec: 16.51 },
+      { id: "pollux", name: "ポルックス", category: "1st", type: "1等星 / 約34光年", desc: "ふたご座の弟星でオレンジ色の1等星です。", colorHex: "#fcd34d", ra: 116.33, dec: 28.03 },
+      { id: "fomalhaut", name: "フォーマルハウト", category: "1st", type: "1等星 / 約25光年", desc: "みなみのうお座の1等星です。", colorHex: "#e0f2fe", ra: 344.41, dec: -29.62 },
       
       // 北の空
-      { id: "polaris", name: "北極星 (ポラリス)", category: "constellation", type: "2等星 / 約430光年", desc: "こぐま座の尻尾にあり、常に真北を指し示す航海の目印です。", colorHex: "#fef08a", pos: new THREE.Vector3(0, 420, -100) },
-      { id: "schedar", name: "シェダル (カシオペヤα)", category: "constellation", type: "2等星 / 約230光年", desc: "カシオペヤ座のWの形を構成する主要な橙色巨星です。", colorHex: "#fde047", pos: new THREE.Vector3(-120, 410, 80) },
-      { id: "caph", name: "カフ (カシオペヤβ)", category: "constellation", type: "2等星 / 約54光年", desc: "カシオペヤ座のWの西端の星です。", colorHex: "#ffffff", pos: new THREE.Vector3(-160, 400, 100) },
-      { id: "gamma_cas", name: "ツィー (カシオペヤγ)", category: "constellation", type: "2等星 / 約550光年", desc: "カシオペヤ座のWの中央の山にあたる青色変光星です。", colorHex: "#a5f3fc", pos: new THREE.Vector3(-110, 425, 40) },
-      { id: "ksora", name: "ルクバー (カシオペヤδ)", category: "constellation", type: "2等星 / 約99光年", desc: "カシオペヤ座のWの東側の谷にあたる星です。", colorHex: "#e0f2fe", pos: new THREE.Vector3(-60, 415, 60) },
-      { id: "segin", name: "セギン (カシオペヤε)", category: "constellation", type: "3等星 / 約440光年", desc: "カシオペヤ座のWの東端の星です。", colorHex: "#93c5fd", pos: new THREE.Vector3(-30, 405, 80) },
+      { id: "polaris", name: "北極星 (ポラリス)", category: "constellation", type: "2等星 / 約430光年", desc: "常に真北を指し示す航海の目印です。", colorHex: "#fef08a", ra: 37.95, dec: 89.26 },
+      { id: "schedar", name: "シェダル (カシオペヤα)", category: "constellation", type: "2等星 / 約230光年", desc: "カシオペヤ座のWを構成する主要星です。", colorHex: "#fde047", ra: 10.13, dec: 56.54 },
+      { id: "caph", name: "カフ (カシオペヤβ)", category: "constellation", type: "2等星 / 約54光年", desc: "カシオペヤ座のWの西端の星です。", colorHex: "#ffffff", ra: 2.29, dec: 59.15 },
+      { id: "gamma_cas", name: "ツィー (カシオペヤγ)", category: "constellation", type: "2等星 / 約550光年", desc: "カシオペヤ座のWの中央の山にあたる星です。", colorHex: "#a5f3fc", ra: 14.18, dec: 60.72 },
+      { id: "ksora", name: "ルクバー (カシオペヤδ)", category: "constellation", type: "2等星 / 約99光年", desc: "カシオペヤ座のWの東側の谷にあたる星です。", colorHex: "#e0f2fe", ra: 20.20, dec: 60.24 },
+      { id: "segin", name: "セギン (カシオペヤε)", category: "constellation", type: "3等星 / 約440光年", desc: "カシオペヤ座のWの東端の星です。", colorHex: "#93c5fd", ra: 28.60, dec: 63.67 },
 
       // 北斗七星
-      { id: "dubhe", name: "ドゥーベ (大熊座α)", category: "constellation", type: "2等星 / 約123光年", desc: "北斗七星のひしゃくの先端に位置するオレンジ色の星です。", colorHex: "#fbbf24", pos: new THREE.Vector3(180, 380, 150) },
-      { id: "merak", name: "メラク (大熊座β)", category: "constellation", type: "2等星 / 約79光年", desc: "ドゥーベと共に北極星を指し示す目印の星です。", colorHex: "#ffffff", pos: new THREE.Vector3(210, 360, 170) },
-      { id: "phecda", name: "フェクダ (大熊座γ)", category: "constellation", type: "2等星 / 約83光年", desc: "北斗七星のひしゃくの底にあたる星です。", colorHex: "#e0f2fe", pos: new THREE.Vector3(250, 340, 120) },
-      { id: "megrez", name: "メグレズ (大熊座δ)", category: "constellation", type: "3等星 / 約81光年", desc: "北斗七星の柄とひしゃくの接点にあたる星です。", colorHex: "#bfdbfe", pos: new THREE.Vector3(230, 365, 100) },
-      { id: "alioth", name: "アリオト (大熊座ε)", category: "constellation", type: "2等星 / 約81光年", desc: "北斗七星の柄の根元にあたる、北斗七星で最も明るい星です。", colorHex: "#ffffff", pos: new THREE.Vector3(270, 355, 60) },
-      { id: "mizar", name: "ミザール (大熊座ζ)", category: "constellation", type: "2等星 / 約83光年", desc: "肉眼二重星アルコルと寄り添う北斗七星の柄の星です。", colorHex: "#a5f3fc", pos: new THREE.Vector3(300, 340, 20) },
-      { id: "alkaid", name: "アルカイド (大熊座η)", category: "constellation", type: "2等星 / 約100光年", desc: "北斗七星の柄の先端に輝く青白色の星です。", colorHex: "#60a5fa", pos: new THREE.Vector3(330, 320, -20) }
+      { id: "dubhe", name: "ドゥーベ (大熊座α)", category: "constellation", type: "2等星 / 約123光年", desc: "北斗七星のひしゃくの先端の星です。", colorHex: "#fbbf24", ra: 166.01, dec: 61.75 },
+      { id: "merak", name: "メラク (大熊座β)", category: "constellation", type: "2等星 / 約79光年", desc: "北極星を指し示す目印の星です。", colorHex: "#ffffff", ra: 165.46, dec: 56.38 },
+      { id: "phecda", name: "フェクダ (大熊座γ)", category: "constellation", type: "2等星 / 約83光年", desc: "北斗七星のひしゃくの底にあたる星です。", colorHex: "#e0f2fe", ra: 178.46, dec: 53.69 },
+      { id: "megrez", name: "メグレズ (大熊座δ)", category: "constellation", type: "3等星 / 約81光年", desc: "北斗七星の柄とひしゃくの接点にあたる星です。", colorHex: "#bfdbfe", ra: 183.85, dec: 57.03 },
+      { id: "alioth", name: "アリオト (大熊座ε)", category: "constellation", type: "2等星 / 約81光年", desc: "北斗七星で最も明るい柄の星です。", colorHex: "#ffffff", ra: 193.51, dec: 55.96 },
+      { id: "mizar", name: "ミザール (大熊座ζ)", category: "constellation", type: "2等星 / 約83光年", desc: "北斗七星の柄の二重星です。", colorHex: "#a5f3fc", ra: 200.98, dec: 54.92 },
+      { id: "alkaid", name: "アルカイド (大熊座η)", category: "constellation", type: "2等星 / 約100光年", desc: "北斗七星の柄の先端に輝く星です。", colorHex: "#60a5fa", ra: 206.88, dec: 49.31 }
     ];
 
     let currentFilterCategory = 'all';
@@ -1264,46 +1265,98 @@
     starrySkyGroup.add(new THREE.Points(bgGeo, bgMat));
 
     const starSprites = [];
+    const starSpriteMap = {};
+
     starDatabase.forEach((s) => {
       const isFirstMag = (s.category === '1st');
       const customTex = createGlowStarTexture(s.colorHex || "#ffffff", isFirstMag);
       const mat = new THREE.SpriteMaterial({ map: customTex, transparent: true, blending: THREE.AdditiveBlending });
       const sp = new THREE.Sprite(mat);
-      sp.position.copy(s.pos);
       
       const baseScale = isFirstMag ? 46 : 30;
       sp.scale.set(baseScale, baseScale, 1);
       sp.userData = { ...s, baseScale: baseScale, twinkleSpeed: 1.5 + Math.random() * 2.5, twinklePhase: Math.random() * Math.PI * 2, isVisibleOnSky: true };
       starrySkyGroup.add(sp);
       starSprites.push(sp);
+      starSpriteMap[s.id] = sp;
     });
 
     const lineGroup = new THREE.Group();
-    const starMap = {};
-    starDatabase.forEach(s => starMap[s.id] = s.pos);
-
-    function createPolyline(idList, colorHex = 0x60a5fa, opacityVal = 0.5) {
-      const pts = idList.map(id => starMap[id]).filter(p => p !== undefined);
-      if (pts.length < 2) return;
-      const geo = new THREE.BufferGeometry().setFromPoints(pts);
-      const mat = new THREE.LineBasicMaterial({ color: colorHex, transparent: true, opacity: opacityVal });
-      lineGroup.add(new THREE.Line(geo, mat));
-    }
-
-    createPolyline(["vega", "altair", "deneb", "vega"], 0x38bdf8, 0.55);
-    createPolyline(["betelgeuse", "sirius", "procyon", "betelgeuse"], 0xfbbf24, 0.55);
-    createPolyline(["betelgeuse", "bellatrix", "rigel", "saiph", "betelgeuse"], 0x60a5fa, 0.6);
-    createPolyline(["mintaka", "alnilam", "alnitak"], 0x93c5fd, 0.75);
-    createPolyline(["caph", "schedar", "gamma_cas", "ksora", "segin"], 0xfde047, 0.6);
-    createPolyline(["dubhe", "merak", "phecda", "megrez", "alioth", "mizar", "alkaid"], 0x60a5fa, 0.65);
-    createPolyline(["phecda", "megrez"], 0x60a5fa, 0.65);
-    createPolyline(["deneb", "sadr", "albireo"], 0x38bdf8, 0.65);
-    createPolyline(["gienah_cyg", "sadr"], 0x38bdf8, 0.65);
-    createPolyline(["graffias", "dschubba", "antares", "wei", "sargas", "shaula"], 0xff6666, 0.7);
-    createPolyline(["regulus", "algieba", "zosma", "denebola", "regulus"], 0xfbbf24, 0.65);
-    createPolyline(["markab", "scheat", "alpheratz", "algenib", "markab"], 0xa5f3fc, 0.65);
-
     starrySkyGroup.add(lineGroup);
+
+    const constellationLinesData = [
+      ["vega", "altair", "deneb", "vega"],
+      ["betelgeuse", "sirius", "procyon", "betelgeuse"],
+      ["betelgeuse", "bellatrix", "rigel", "saiph", "betelgeuse"],
+      ["mintaka", "alnilam", "alnitak"],
+      ["caph", "schedar", "gamma_cas", "ksora", "segin"],
+      ["dubhe", "merak", "phecda", "megrez", "alioth", "mizar", "alkaid"],
+      ["phecda", "megrez"],
+      ["deneb", "sadr", "albireo"],
+      ["gienah_cyg", "sadr"],
+      ["graffias", "dschubba", "antares", "wei", "sargas", "shaula"],
+      ["regulus", "algieba", "zosma", "denebola", "regulus"],
+      ["markab", "scheat", "alpheratz", "algenib", "markab"]
+    ];
+
+    const constellationLineObjects = [];
+    constellationLinesData.forEach(idList => {
+      const geo = new THREE.BufferGeometry();
+      const positions = new Float32Array(idList.length * 3);
+      geo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+      const mat = new THREE.LineBasicMaterial({ color: 0x38bdf8, transparent: true, opacity: 0.5 });
+      const line = new THREE.Line(geo, mat);
+      line.userData = { idList };
+      lineGroup.add(line);
+      constellationLineObjects.push(line);
+    });
+
+    /* 恒星天球座標（RA/Dec）から現地緯度経度・現在時刻に基づく地平3D座標（Alt/Az）への厳密変換関数 */
+    function calculateHorizontalPosition(raDeg, decDeg, latDeg, lonDeg, dateObj, radius = 400) {
+      // 1. ユリウス日(JD)の計算
+      const Y = dateObj.getUTCFullYear();
+      const M = dateObj.getUTCMonth() + 1;
+      const D = dateObj.getUTCDate();
+      const h = dateObj.getUTCHours();
+      const m = dateObj.getUTCMinutes();
+      const s = dateObj.getUTCSeconds();
+      
+      let year = Y, month = M;
+      if (month <= 2) { year -= 1; month += 12; }
+      const A = Math.floor(year / 100);
+      const B = 2 - A + Math.floor(A / 4);
+      const dayFraction = (h + m / 60 + s / 3600) / 24;
+      const JD = Math.floor(365.25 * (year + 4716)) + Math.floor(30.6001 * (month + 1)) + D + dayFraction + B - 1524.5;
+      
+      // 2. グリニッジ平均恒星時(GMST) の計算
+      const T = (JD - 2451545.0) / 36525.0;
+      let gmst = 280.46061837 + 360.98564736629 * (JD - 2451545.0) + 0.000387933 * T * T - (T * T * T) / 38710000;
+      gmst = (gmst % 360 + 360) % 360;
+
+      // 3. 地方恒星時(LST) と 地方時角(HA) の計算
+      const lst = (gmst + lonDeg % 360 + 360) % 360;
+      let haDeg = (lst - raDeg + 360) % 360;
+
+      // Radian 変換
+      const ha = haDeg * Math.PI / 180;
+      const dec = decDeg * Math.PI / 180;
+      const lat = latDeg * Math.PI / 180;
+
+      // 4. 高度(Altitude)と方位角(Azimuth)の計算
+      const sinAlt = Math.sin(dec) * Math.sin(lat) + Math.cos(dec) * Math.cos(lat) * Math.cos(ha);
+      const alt = Math.asin(sinAlt);
+
+      const cosAz = (Math.sin(dec) - Math.sin(alt) * Math.sin(lat)) / (Math.cos(alt) * Math.cos(lat));
+      let az = Math.acos(Math.max(-1, Math.min(1, cosAz)));
+      if (Math.sin(ha) > 0) az = 2 * Math.PI - az;
+
+      // 5. 3D空間直交座標(X, Y, Z)へ投影 (Yが天頂・Zが北・Xが東)
+      const x = radius * Math.cos(alt) * Math.sin(az);
+      const y = radius * Math.sin(alt);
+      const z = -radius * Math.cos(alt) * Math.cos(az);
+
+      return new THREE.Vector3(x, y, z);
+    }
 
     function getActiveObservationDate() {
       const now = new Date();
@@ -1330,28 +1383,27 @@
         headerElem.innerText = `${year}/${month}/${date} ${hours}:${minutes}:${seconds}${modeLabel}`;
       }
 
-      const startOfYear = new Date(year, 0, 0);
-      const diff = now - startOfYear;
-      const dayOfYear = Math.floor(diff / (1000 * 60 * 60 * 24));
-      const seasonAngle = (dayOfYear / 365.25) * Math.PI * 2;
-
-      const dayProgressSeconds = (now.getHours() * 3600) + (now.getMinutes() * 60) + now.getSeconds();
-      const dailyAngle = (dayProgressSeconds / 86400) * Math.PI * 2;
-
-      /* 緯度・経度オフセット計算 */
-      const lonOffsetRad = (currentLon - 134.2325) * (Math.PI / 180);
-      const latOffsetRad = (currentLat - 35.5398) * (Math.PI / 180);
-
-      const currentRotationY = -(seasonAngle + dailyAngle + lonOffsetRad);
-      starrySkyGroup.rotation.y = currentRotationY;
-      starrySkyGroup.rotation.x = latOffsetRad;
-
-      const worldPos = new THREE.Vector3();
+      /* 各星の3D座標を現在地・現在時刻に合わせて高精度再計算 */
       starSprites.forEach(sp => {
-        sp.getWorldPosition(worldPos);
-        const isAboveHorizon = (minPitch < -10) ? true : (worldPos.y > -50); 
+        const pos = calculateHorizontalPosition(sp.userData.ra, sp.userData.dec, currentLat, currentLon, now, 400);
+        sp.position.copy(pos);
+
+        const isAboveHorizon = (minPitch < -10) ? true : (pos.y > -20);
         sp.userData.isVisibleOnSky = isAboveHorizon;
         sp.visible = isAboveHorizon;
+      });
+
+      /* 星座結び線の座標リアルタイム更新 */
+      constellationLineObjects.forEach(line => {
+        const idList = line.userData.idList;
+        const attr = line.geometry.attributes.position;
+        for (let i = 0; i < idList.length; i++) {
+          const sp = starSpriteMap[idList[i]];
+          if (sp) {
+            attr.setXYZ(i, sp.position.x, sp.position.y, sp.position.z);
+          }
+        }
+        attr.needsUpdate = true;
       });
 
       if (document.getElementById('search-sheet')?.classList.contains('active')) {
@@ -1587,7 +1639,6 @@
 
       bgMat.opacity = 0.85 + Math.cos(elapsedTime * 2.1) * 0.08;
 
-      const worldPos = new THREE.Vector3();
       starSprites.forEach(sp => {
         if (!sp.visible) return;
         const u = sp.userData;
@@ -1595,8 +1646,7 @@
         const currentScale = u.baseScale * (1 + pulse * 0.12);
         sp.scale.set(currentScale, currentScale, 1);
 
-        sp.getWorldPosition(worldPos);
-        const heightRatio = Math.max(0, Math.min(1, (worldPos.y + 20) / 250));
+        const heightRatio = Math.max(0, Math.min(1, (sp.position.y + 20) / 250));
         const fogFactor = 0.45 + heightRatio * 0.55;
 
         sp.material.opacity = (0.88 + pulse * 0.12) * fogFactor;
@@ -1737,7 +1787,7 @@
       }
 
       container.innerHTML = filtered.map(star => {
-        const sprite = starSprites.find(s => s.userData.id === star.id);
+        const sprite = starSpriteMap[star.id];
         const isVisibleNow = sprite ? sprite.userData.isVisibleOnSky : false;
 
         if (isVisibleNow) {
@@ -1785,10 +1835,9 @@
         return;
       }
 
-      const sprite = starSprites.find(s => s.userData.id === starId);
+      const sprite = starSpriteMap[starId];
       if (sprite) {
-        const worldPos = new THREE.Vector3();
-        sprite.getWorldPosition(worldPos);
+        const worldPos = sprite.position;
         const r = Math.sqrt(worldPos.x * worldPos.x + worldPos.y * worldPos.y + worldPos.z * worldPos.z);
         lat = Math.max(minPitch, Math.min(maxPitch, THREE.MathUtils.radToDeg(Math.asin(worldPos.y / r))));
         lon = THREE.MathUtils.radToDeg(Math.atan2(worldPos.z, worldPos.x));
