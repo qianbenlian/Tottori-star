@@ -553,7 +553,7 @@
       border-color: var(--neon-glow); box-shadow: 0 0 10px rgba(56, 189, 248, 0.8); transform: scale(1.1);
     }
 
-    /* ★ PC・タブレット（768px以上）向け大画面レイアウト（ウサタ拡大対応） ★ */
+    /* ★ PC・タブレット（768px以上）向け大画面レイアウト ★ */
     @media (min-width: 768px) {
       .chat-sheet {
         left: 50%; transform: translate(-50%, 180%); width: 840px; max-width: 90vw; height: 80vh; max-height: 720px;
@@ -565,7 +565,6 @@
       .ai-hero-banner {
         grid-column: 1; grid-row: 1 / span 2; flex-direction: column; justify-content: center; text-align: center; padding: 28px 20px; height: 100%;
       }
-      /* ウサタ先生アイコン枠と画像サイズの拡大設定 */
       .ai-hero-avatar-box { width: 150px; height: 150px; border-radius: 36px; margin-bottom: 12px; }
       .ai-hero-avatar-img { width: 120px; height: 120px; }
       .ai-hero-title { font-size: 20px; justify-content: center; }
@@ -585,6 +584,7 @@
     .hidden { display: none !important; opacity: 0 !important; pointer-events: none !important; visibility: hidden !important; }
   </style>
 
+  <!-- Three.js の読み込み -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 </head>
 <body>
@@ -630,7 +630,7 @@
     <div class="grid-center-dot"></div>
   </div>
 
-  <!-- スタート画面（ボタン文言変更箇所） -->
+  <!-- スタート画面 -->
   <div id="screen-start" class="screen-start glass-card" style="border-radius:0; border:none; background: rgba(4,10,23,0.94);">
     <div class="start-logo">Tottori Star Pocket</div>
     <div class="start-sub">鳥取砂丘・馬の背に立ち、夜空を見上げるリアリティ体験。</div>
@@ -989,9 +989,6 @@
   </div>
 
   <script>
-    /* ★ ご自身のGemini APIキー (AIzaSy...) を以下のダブルクォーテーション内に入力してください ★ */
-    const GEMINI_API_KEY = const API_KEY = process.env.GEMINI_API_KEY;
-
     /* 位置情報管理 */
     let currentLocationMode = 'dune'; // 'dune' or 'gps'
     let currentLat = 35.5398; // 鳥取砂丘の緯度
@@ -1123,6 +1120,7 @@
       if (badge) badge.innerText = val;
     }
 
+    /* 三次元グラフィックス・Three.js 初期化 */
     const container = document.getElementById('canvas-container');
     const scene = new THREE.Scene();
     const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 2000);
@@ -1348,12 +1346,12 @@
 
       const ha = haDeg * Math.PI / 180;
       const dec = decDeg * Math.PI / 180;
-      const lat = latDeg * Math.PI / 180;
+      const latRad = latDeg * Math.PI / 180;
 
-      const sinAlt = Math.sin(dec) * Math.sin(lat) + Math.cos(dec) * Math.cos(lat) * Math.cos(ha);
+      const sinAlt = Math.sin(dec) * Math.sin(latRad) + Math.cos(dec) * Math.cos(latRad) * Math.cos(ha);
       const alt = Math.asin(sinAlt);
 
-      const cosAz = (Math.sin(dec) - Math.sin(alt) * Math.sin(lat)) / (Math.cos(alt) * Math.cos(lat));
+      const cosAz = (Math.sin(dec) - Math.sin(alt) * Math.sin(latRad)) / (Math.cos(alt) * Math.cos(latRad));
       let az = Math.acos(Math.max(-1, Math.min(1, cosAz)));
       if (Math.sin(ha) > 0) az = 2 * Math.PI - az;
 
@@ -1514,10 +1512,16 @@
     function setCustomTime(mode) {
       timeMode = mode;
       document.querySelectorAll('.time-opt-btn').forEach(btn => btn.classList.remove('active'));
-      if(event && event.target) event.target.classList.add('active');
+      if(window.event && window.event.target) window.event.target.classList.add('active');
       document.getElementById('time-modal').style.display = 'none';
       updateRealtimeSkyPosition();
     }
+
+    let viewLon = 0, viewLat = 20, isDragging = false, prevMouse = { x: 0, y: 0 };
+    let isAutoRotate = true;
+    let isGyroActive = false;
+
+    const targetQuaternion = new THREE.Quaternion();
 
     function setPitchLimitMode(mode) {
       document.getElementById('mode-dune').classList.remove('active');
@@ -1535,16 +1539,10 @@
         if (duneElem) duneElem.classList.add('is-hidden');
         document.getElementById('mode-free').classList.add('active');
       }
-      lat = Math.max(minPitch, Math.min(maxPitch, lat));
+      viewLat = Math.max(minPitch, Math.min(maxPitch, viewLat));
       updateRealtimeSkyPosition();
       updateCompassDisplay();
     }
-
-    let lon = 0, lat = 20, isDragging = false, prevMouse = { x: 0, y: 0 };
-    let isAutoRotate = true;
-    let isGyroActive = false;
-
-    const targetQuaternion = new THREE.Quaternion();
 
     /* ★ コンパス・高度・砂丘シルエット沈み込み計算 ★ */
     function updateCompassDisplay() {
@@ -1639,11 +1637,11 @@
       const dx = x - prevMouse.x, dy = y - prevMouse.y;
       if (Math.abs(dx) > 3 || Math.abs(dy) > 3) isDragging = true;
       if (isDragging) {
-        lon -= dx * 0.15;
-        lat += dy * 0.15;
-        lat = Math.max(minPitch, Math.min(maxPitch, lat));
+        viewLon -= dx * 0.15;
+        viewLat += dy * 0.15;
+        viewLat = Math.max(minPitch, Math.min(maxPitch, viewLat));
 
-        const euler = new THREE.Euler(THREE.MathUtils.degToRad(lat), THREE.MathUtils.degToRad(lon), 0, 'YXZ');
+        const euler = new THREE.Euler(THREE.MathUtils.degToRad(viewLat), THREE.MathUtils.degToRad(viewLon), 0, 'YXZ');
         targetQuaternion.setFromEuler(euler);
         updateCompassDisplay();
       }
@@ -1697,8 +1695,8 @@
         camera.quaternion.slerp(targetQuaternion, slerpFactor);
         updateCompassDisplay();
       } else if (isAutoRotate && !isDragging) {
-        lon += 0.02;
-        const euler = new THREE.Euler(THREE.MathUtils.degToRad(lat), THREE.MathUtils.degToRad(lon), 0, 'YXZ');
+        viewLon += 0.02;
+        const euler = new THREE.Euler(THREE.MathUtils.degToRad(viewLat), THREE.MathUtils.degToRad(viewLon), 0, 'YXZ');
         targetQuaternion.setFromEuler(euler);
         camera.quaternion.slerp(targetQuaternion, 0.1);
         updateCompassDisplay();
@@ -1792,8 +1790,8 @@
     function toggleAutoRotate(enabled) { isAutoRotate = enabled; }
 
     function renderStarList() {
-      const container = document.getElementById('star-list');
-      if (!container) return;
+      const listContainer = document.getElementById('star-list');
+      if (!listContainer) return;
       const searchText = (document.getElementById('star-search-input')?.value || '').toLowerCase().trim();
 
       const filtered = starDatabase.filter(star => {
@@ -1803,11 +1801,11 @@
       });
 
       if (filtered.length === 0) {
-        container.innerHTML = `<div style="text-align:center; padding: 20px; font-size:12px; color:var(--text-sub);">該当する星が見つかりません⭐</div>`;
+        listContainer.innerHTML = `<div style="text-align:center; padding: 20px; font-size:12px; color:var(--text-sub);">該当する星が見つかりません⭐</div>`;
         return;
       }
 
-      container.innerHTML = filtered.map(star => {
+      listContainer.innerHTML = filtered.map(star => {
         const sprite = starSpriteMap[star.id];
         const isVisibleNow = sprite ? sprite.userData.isVisibleOnSky : false;
 
@@ -1860,10 +1858,10 @@
       if (sprite) {
         const worldPos = sprite.position;
         const r = Math.sqrt(worldPos.x * worldPos.x + worldPos.y * worldPos.y + worldPos.z * worldPos.z);
-        lat = Math.max(minPitch, Math.min(maxPitch, THREE.MathUtils.radToDeg(Math.asin(worldPos.y / r))));
-        lon = THREE.MathUtils.radToDeg(Math.atan2(worldPos.z, worldPos.x));
+        viewLat = Math.max(minPitch, Math.min(maxPitch, THREE.MathUtils.radToDeg(Math.asin(worldPos.y / r))));
+        viewLon = THREE.MathUtils.radToDeg(Math.atan2(worldPos.z, worldPos.x));
         
-        const euler = new THREE.Euler(THREE.MathUtils.degToRad(lat), THREE.MathUtils.degToRad(lon), 0, 'YXZ');
+        const euler = new THREE.Euler(THREE.MathUtils.degToRad(viewLat), THREE.MathUtils.degToRad(viewLon), 0, 'YXZ');
         targetQuaternion.setFromEuler(euler);
         updateCompassDisplay();
       }
@@ -1903,8 +1901,8 @@
       row.appendChild(div);
 
       msgs.appendChild(row);
-      const container = document.querySelector('.chat-body-container');
-      if (container) container.scrollTop = container.scrollHeight;
+      const chatScrollContainer = document.querySelector('.chat-body-container');
+      if (chatScrollContainer) chatScrollContainer.scrollTop = chatScrollContainer.scrollHeight;
     }
 
     function handleKeyPress(e) { if (e.key === 'Enter') sendChatMessage(); }
@@ -1915,32 +1913,12 @@
       sendChatMessage();
     }
 
-    async function fetchWithRetry(url, options, retries = 1, delay = 500) {
-      for (let i = 0; i <= retries; i++) {
-        try {
-          const res = await fetch(url, options);
-          if (res.status === 503 && i < retries) {
-            await new Promise(r => setTimeout(r, delay));
-            continue;
-          }
-          return res;
-        } catch (err) {
-          if (i === retries) throw err;
-          await new Promise(r => setTimeout(r, delay));
-        }
-      }
-    }
-
+    /* AIチャット送信処理（バックエンドサーバー経由で通信） */
     async function sendChatMessage() {
       const input = document.getElementById('chat-input');
       const sendBtn = document.getElementById('chat-send-btn');
       const text = input.value.trim();
       if (!text) return;
-
-      if (!GEMINI_API_KEY || GEMINI_API_KEY === "YOUR_GEMINI_API_KEY_HERE") {
-        appendMessage("APIキーが設定されていないぞ！GEMINI_API_KEY を確認してみてくれ⭐", false);
-        return;
-      }
 
       setUsataEmotion('thinking');
 
@@ -1976,48 +1954,22 @@
 
       const locName = (currentLocationMode === 'dune') ? '鳥取砂丘の馬の背' : 'ユーザーの現在地';
 
-      /* スピーディーかつ要約された親しみやすいプロンプト設定 */
-      const maxTokens = 250;
-      const systemPromptWithContext = `あなたは${locName}にいる天文学ガイド「ウサタ先生」（ウサギ）です。
-語尾は「〜だぞ！」「〜だな！」を使い、以下のルールで回答してください。
-
-【回答ルール】
-1. 箇条書きを使わず、要点だけを【120〜150文字程度】でサクッと短く要約して答える。
-2. スマホ画面で一目で読める分かりやすい言葉で最後までしっかり答える。
-
-【現在空に見える主要な星】${visibleStarNames || '特になし'}`;
-
-      const cleanApiKey = GEMINI_API_KEY.trim();
-      const endpointUrl = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent';
-
       try {
-        const response = await fetchWithRetry(endpointUrl, {
+        // 自作バックエンド API サーバーのエンドポイントを呼び出し
+        const response = await fetch('/api/chat', {
           method: 'POST',
-          headers: { 
-            'Content-Type': 'application/json',
-            'x-goog-api-key': cleanApiKey
-          },
+          headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            contents: [
-              {
-                role: "user",
-                parts: [{ text: text }]
-              }
-            ],
-            systemInstruction: {
-              parts: [{ text: systemPromptWithContext }]
-            },
-            generationConfig: {
-              maxOutputTokens: maxTokens,
-              temperature: 0.5
-            }
+            message: text,
+            location: locName,
+            visibleStars: visibleStarNames
           })
         });
 
         const data = await response.json();
 
-        if (data.candidates && data.candidates[0]?.content?.parts[0]?.text) {
-          const replyText = data.candidates[0].content.parts[0].text;
+        if (data && data.reply) {
+          const replyText = data.reply;
           aiMsgDiv.innerText = replyText;
           
           const emotion = detectEmotionFromText(replyText);
@@ -2037,17 +1989,13 @@
             aiMsgDiv.appendChild(card);
           }
 
-        } else if (data.error) {
-          console.error("Gemini API Error Detail:", data.error);
-          aiMsgDiv.innerText = `通信エラー (${data.error.code}): ${data.error.message || '設定を確認してみてくれ！'}⭐`;
-          setUsataEmotion('thinking');
         } else {
           aiMsgDiv.innerText = "うーむ、うまく星の通信を捉えられなかったぞ！もう一度聞いてみてくれ⭐";
           setUsataEmotion('thinking');
         }
       } catch (err) {
         console.error("Fetch Exception:", err);
-        aiMsgDiv.innerText = "砂丘の通信が少し途切れたみたいだ！もう一回送信ボタンを押してみてくれ！⭐";
+        aiMsgDiv.innerText = "砂丘の通信が少し途切れたみたいだ！サーバーの接続を確認してみてくれ！⭐";
         setUsataEmotion('thinking');
       } finally {
         sendBtn.disabled = false;
