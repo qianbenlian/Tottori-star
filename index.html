@@ -990,7 +990,7 @@
 
   <script>
     /* ★ ご自身のGemini APIキー (AIzaSy...) を以下のダブルクォーテーション内に入力してください ★ */
-    const GEMINI_API_KEY = "";
+    const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
 
     /* 位置情報管理 */
     let currentLocationMode = 'dune'; // 'dune' or 'gps'
