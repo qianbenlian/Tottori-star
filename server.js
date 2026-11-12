@@ -8,6 +8,7 @@ app.use(express.json());
 app.post('/api/chat', async (req, res) => {
   const apiKey = process.env.GEMINI_API_KEY;
   if (!apiKey) {
+    console.error('ERROR: GEMINI_API_KEY is not set');
     return res.status(500).json({ error: 'APIキーが設定されていません' });
   }
 
@@ -22,28 +23,35 @@ app.post('/api/chat', async (req, res) => {
 【現在空に見える主要な星】${visibleStars || '特になし'}`;
 
   try {
+    // gemini-2.5-flash または gemini-1.5-flash を指定
     const apiRes = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        contents: [{ role: 'user', parts: [{ text: message }] }],
-        systemInstruction: { parts: [{ text: systemPrompt }] },
-        generationConfig: { maxOutputTokens: 250, temperature: 0.5 }
+        contents: [
+          {
+            role: 'user',
+            parts: [{ text: `${systemPrompt}\n\n質問: ${message}` }]
+          }
+        ],
+        generationConfig: {
+          maxOutputTokens: 250,
+          temperature: 0.5
+        }
       })
     });
 
     const data = await apiRes.json();
-    console.log('Gemini API Response:', JSON.stringify(data)); // RenderのLogs画面にレスポンスを表示
+    console.log('Gemini Status Code:', apiRes.status);
 
     if (data.candidates && data.candidates[0]?.content?.parts[0]?.text) {
       return res.json({ reply: data.candidates[0].content.parts[0].text });
     }
-    
-    // API側からエラーが返ってきた場合の理由を出力
-    console.error('Gemini API Error Detail:', data.error || data);
-    return res.status(500).json({ error: 'AIからの回答取得に失敗しました' });
+
+    console.error('Gemini API Error details:', JSON.stringify(data));
+    return res.status(500).json({ error: 'AIからの回答取得に失敗しました', details: data });
   } catch (err) {
-    console.error('Server Fetch Error:', err);
+    console.error('Server Catch Error:', err);
     return res.status(500).json({ error: '通信エラーが発生しました' });
   }
 });
