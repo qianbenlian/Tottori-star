@@ -22,7 +22,7 @@ app.post('/api/chat', async (req, res) => {
 【現在空に見える主要な星】${visibleStars || '特になし'}`;
 
   try {
-    const apiRes = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent?key=${apiKey}`, {
+    const apiRes = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -33,14 +33,17 @@ app.post('/api/chat', async (req, res) => {
     });
 
     const data = await apiRes.json();
-    console.log('Gemini API Response:', JSON.stringify(data)); // 👈 ここを追加するとRenderのログにエラー詳細が出ます
+    console.log('Gemini API Response:', JSON.stringify(data)); // RenderのLogs画面にレスポンスを表示
 
-    const data = await apiRes.json();
     if (data.candidates && data.candidates[0]?.content?.parts[0]?.text) {
       return res.json({ reply: data.candidates[0].content.parts[0].text });
     }
+    
+    // API側からエラーが返ってきた場合の理由を出力
+    console.error('Gemini API Error Detail:', data.error || data);
     return res.status(500).json({ error: 'AIからの回答取得に失敗しました' });
   } catch (err) {
+    console.error('Server Fetch Error:', err);
     return res.status(500).json({ error: '通信エラーが発生しました' });
   }
 });
