@@ -33,6 +33,9 @@ app.post('/api/chat', async (req, res) => {
     });
 
     const data = await apiRes.json();
+    console.log('Gemini API Response:', JSON.stringify(data)); // 👈 ここを追加するとRenderのログにエラー詳細が出ます
+
+    const data = await apiRes.json();
     if (data.candidates && data.candidates[0]?.content?.parts[0]?.text) {
       return res.json({ reply: data.candidates[0].content.parts[0].text });
     }
