@@ -17,8 +17,8 @@ app.post('/api/chat', async (req, res) => {
 語尾は「〜だぞ！」「〜だな！」を使い、以下のルールで回答してください。
 
 【回答ルール】
-1. 箇条書きを使わず、100〜150文字程度で分かりやすく要約して答える。
-2. 文章の途中で絶対に途切れさせず、必ず最後まで言い切る。
+1. 箇条書きを使わず、80〜120文字程度で分かりやすく要約して答える。
+2. 文章の途中で絶対に途切れさせず、必ず「〜だぞ！」「〜だな！」と最後まで言い切る。
 
 【現在空に見える主要な星】${visibleStars || '特になし'}`;
 
@@ -34,21 +34,25 @@ app.post('/api/chat', async (req, res) => {
           }
         ],
         generationConfig: {
-          maxOutputTokens: 1000,
-          temperature: 0.7,
-          thinkingConfig: {
-            thinkingBudget: 0
-          }
+          maxOutputTokens: 2048,
+          temperature: 0.7
         }
       })
     });
 
     const data = await apiRes.json();
-    // サーバーのログに実際の返答全文を出力して確認できるようにする
-    console.log('AI Reply Text:', data.candidates?.[0]?.content?.parts?.[0]?.text);
 
-    if (data.candidates && data.candidates[0]?.content?.parts[0]?.text) {
-      return res.json({ reply: data.candidates[0].content.parts[0].text });
+    // 分割されたすべてのテキストパーツを結合して全文を取得する
+    const parts = data.candidates?.[0]?.content?.parts || [];
+    const fullReply = parts
+      .filter(part => part.text && !part.thought)
+      .map(part => part.text)
+      .join('');
+
+    console.log('Full AI Reply:', fullReply);
+
+    if (fullReply) {
+      return res.json({ reply: fullReply });
     }
 
     console.error('Gemini API Error details:', JSON.stringify(data));
