@@ -17,14 +17,13 @@ app.post('/api/chat', async (req, res) => {
 語尾は「〜だぞ！」「〜だな！」を使い、以下のルールで回答してください。
 
 【回答ルール】
-1. 箇条書きを使わず、要点だけを【120〜150文字程度】でサクッと短く要約して答える。
-2. スマホ画面で一目で読める分かりやすい言葉で最後までしっかり答える。
+1. 箇条書きを使わず、100〜150文字程度で分かりやすく要約して答える。
+2. 文章の途中で絶対に途切れさせず、必ず「〜だぞ！」「〜だな！」と最後まで言い切る。
 
 【現在空に見える主要な星】${visibleStars || '特になし'}`;
 
   try {
-    // gemini-2.5-flash または gemini-1.5-flash を指定
-  const apiRes = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent?key=${apiKey}`, {    
+    const apiRes = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent?key=${apiKey}`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -35,14 +34,13 @@ app.post('/api/chat', async (req, res) => {
           }
         ],
         generationConfig: {
-          maxOutputTokens: 250,
-          temperature: 0.5
+          maxOutputTokens: 2048,
+          temperature: 0.7
         }
       })
     });
 
     const data = await apiRes.json();
-    console.log('Gemini Status Code:', apiRes.status);
 
     if (data.candidates && data.candidates[0]?.content?.parts[0]?.text) {
       return res.json({ reply: data.candidates[0].content.parts[0].text });
