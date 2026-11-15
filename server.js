@@ -18,7 +18,7 @@ app.post('/api/chat', async (req, res) => {
 
 【回答ルール】
 1. 箇条書きを使わず、100〜150文字程度で分かりやすく要約して答える。
-2. 文章の途中で絶対に途切れさせず、必ず「〜だぞ！」「〜だな！」と最後まで言い切る。
+2. 文章の途中で絶対に途切れさせず、必ず最後まで言い切る。
 
 【現在空に見える主要な星】${visibleStars || '特になし'}`;
 
@@ -34,13 +34,18 @@ app.post('/api/chat', async (req, res) => {
           }
         ],
         generationConfig: {
-          maxOutputTokens: 2048,
-          temperature: 0.7
+          maxOutputTokens: 1000,
+          temperature: 0.7,
+          thinkingConfig: {
+            thinkingBudget: 0
+          }
         }
       })
     });
 
     const data = await apiRes.json();
+    // サーバーのログに実際の返答全文を出力して確認できるようにする
+    console.log('AI Reply Text:', data.candidates?.[0]?.content?.parts?.[0]?.text);
 
     if (data.candidates && data.candidates[0]?.content?.parts[0]?.text) {
       return res.json({ reply: data.candidates[0].content.parts[0].text });
