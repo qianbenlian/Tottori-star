@@ -56,8 +56,8 @@ app.post('/api/chat', async (req, res) => {
     }
   });
 
-  // gemini-3.8-flash が混雑(503)していた場合、少し待って最大3回まで再試行する
-  for (let attempt = 1; attempt <= 3; attempt++) {
+  // gemini-3.8-flash が混雑(503)して、１回だけ試して、ダメなら予備回答に進む
+  for (let attempt = 1; attempt <= 1; attempt++) {
     try {
       const apiRes = await fetch(url, {
         method: 'POST',
