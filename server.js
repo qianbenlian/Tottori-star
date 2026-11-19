@@ -5,8 +5,21 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// 指定した時間だけ待機する処理
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
+// 万が一Googleのサーバーが完全に混雑していたときの予備回答
+function getBackupReply(message) {
+  if (message.includes('ベガ')) {
+    return 'ベガはこと座の1等星で、七夕の織姫星として有名な青白い星だぞ！夏の大三角のひとつでもあるんだな！';
+  }
+  if (message.includes('鳥取')) {
+    return '鳥取県はどの市町村からも天の川が見えるほど空気が澄んでいて、「星取県」とも呼ばれているすごい場所だぞ！';
+  }
+  if (message.includes('コツ') || message.includes('見つけ')) {
+    return '星を見つけるコツは、街灯の少ない暗い場所で目を10分ほど暗闇に慣らすことだぞ！まずは一番明るい星から探すんだな！';
+  }
+  return '今の夜空にはたくさんの星が輝いているぞ！空気の澄んだ場所で南の空を見上げると、季節ごとの明るい1等星がすぐに見つかるはずだな！';
+}
 
 app.post('/api/chat', async (req, res) => {
   const apiKey = process.env.GEMINI_API_KEY;
@@ -25,7 +38,6 @@ app.post('/api/chat', async (req, res) => {
 
 【現在空に見える主要な星】${visibleStars || '特になし'}`;
 
-  const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent?key=${apiKey}`;
   const requestBody = JSON.stringify({
     contents: [
       {
@@ -39,47 +51,41 @@ app.post('/api/chat', async (req, res) => {
     }
   });
 
-  try {
-    let apiRes;
-    let data;
+  // 混雑時に自動で切り替えるモデルの順番
+  const models = ['gemini-3.8-flash', 'gemini-2.5-flash'];
 
-    // 503（混雑エラー）が出た場合、1.5秒空けて最大3回まで自動で再試行する
-    for (let attempt = 1; attempt <= 3; attempt++) {
-      apiRes = await fetch(url, {
+  for (const model of models) {
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
+
+    try {
+      const apiRes = await fetch(url, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: requestBody
       });
-      data = await apiRes.json();
+      const data = await apiRes.json();
 
-      if (apiRes.status !== 503) {
-        break;
+      const parts = data.candidates?.[0]?.content?.parts || [];
+      const fullReply = parts
+        .filter((part) => part.text && !part.thought)
+        .map((part) => part.text)
+        .join('');
+
+      if (apiRes.ok && fullReply) {
+        console.log(`成功 (${model}):`, fullReply);
+        return res.json({ reply: fullReply });
       }
 
-      console.log(`503 混雑エラー (試行 ${attempt}/3) - 1.5秒後に再試行します...`);
-      if (attempt < 3) {
-        await sleep(1500);
-      }
+      console.warn(`${model} で取得失敗 (Status: ${apiRes.status}):`, JSON.stringify(data));
+      await sleep(1000);
+    } catch (err) {
+      console.error(`${model} 通信エラー:`, err);
     }
-
-    const parts = data.candidates?.[0]?.content?.parts || [];
-    const fullReply = parts
-      .filter((part) => part.text && !part.thought)
-      .map((part) => part.text)
-      .join('');
-
-    console.log('Full AI Reply:', fullReply);
-
-    if (fullReply) {
-      return res.json({ reply: fullReply });
-    }
-
-    console.error('Gemini API Error details:', JSON.stringify(data));
-    return res.status(500).json({ error: 'AIからの回答取得に失敗しました', details: data });
-  } catch (err) {
-    console.error('Server Catch Error:', err);
-    return res.status(500).json({ error: '通信エラーが発生しました' });
   }
+
+  // すべてのモデルが混雑していた場合でも、エラーにせず予備回答を返す
+  console.log('全モデル混雑のため予備回答を返却します');
+  return res.json({ reply: getBackupReply(message || '') });
 });
 
 const PORT = process.env.PORT || 3000;
