@@ -7,7 +7,7 @@ app.use(express.json());
 
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
-// 万が一Googleのサーバーが完全に混雑していたときの予備回答（口調修正済み）
+// 万が一Googleのサーバーが混雑し続けたときの予備回答
 function getBackupReply(message) {
   if (message.includes('ベガ')) {
     return 'ベガはこと座の1等星で、七夕の織姫星として有名な青白い星だよ！夏の大三角のひとつでもあって、とても明るく輝くんだ！';
@@ -42,6 +42,7 @@ app.post('/api/chat', async (req, res) => {
 
 【現在空に見える主要な星】${visibleStars || '特になし'}`;
 
+  const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent?key=${apiKey}`;
   const requestBody = JSON.stringify({
     contents: [
       {
@@ -55,12 +56,8 @@ app.post('/api/chat', async (req, res) => {
     }
   });
 
-  // 混雑時に自動で切り替えるモデルの順番
-  const models = ['gemini-3.8-flash', 'gemini-2.5-flash'];
-
-  for (const model of models) {
-    const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
-
+  // gemini-3.8-flash が混雑(503)していた場合、少し待って最大3回まで再試行する
+  for (let attempt = 1; attempt <= 3; attempt++) {
     try {
       const apiRes = await fetch(url, {
         method: 'POST',
@@ -76,18 +73,26 @@ app.post('/api/chat', async (req, res) => {
         .join('');
 
       if (apiRes.ok && fullReply) {
-        console.log(`成功 (${model}):`, fullReply);
+        console.log(`成功 (試行 ${attempt}回目):`, fullReply);
         return res.json({ reply: fullReply });
       }
 
-      console.warn(`${model} で取得失敗 (Status: ${apiRes.status}):`, JSON.stringify(data));
-      await sleep(1000);
+      console.warn(`gemini-3.8-flash 取得失敗 (試行 ${attempt}/3, Status: ${apiRes.status}):`, JSON.stringify(data));
+
+      if (apiRes.status === 503 && attempt < 3) {
+        await sleep(1500 * attempt);
+      } else {
+        break;
+      }
     } catch (err) {
-      console.error(`${model} 通信エラー:`, err);
+      console.error(`通信エラー (試行 ${attempt}/3):`, err);
+      if (attempt < 3) {
+        await sleep(1500);
+      }
     }
   }
 
-  console.log('全モデル混雑のため予備回答を返却します');
+  console.log('混雑が続いているため予備回答を返却します');
   return res.json({ reply: getBackupReply(message || '') });
 });
 
