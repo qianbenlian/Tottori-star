@@ -136,6 +136,42 @@
       display: none !important;
     }
 
+    /* ガイド枠内の星・星座名ラベル */
+    .target-hud-label {
+      position: absolute;
+      bottom: -46px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(6, 18, 41, 0.88);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border: 1px solid rgba(56, 189, 248, 0.6);
+      border-radius: 20px;
+      padding: 6px 16px;
+      white-space: nowrap;
+      font-size: 12px;
+      color: #f8fafc;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.6), 0 0 10px rgba(56, 189, 248, 0.3);
+      opacity: 0;
+      transition: opacity 0.25s ease;
+      pointer-events: auto;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .target-hud-label.visible {
+      opacity: 1;
+    }
+    .target-hud-const {
+      color: #fbbf24;
+      font-weight: 700;
+    }
+    .target-hud-star {
+      color: #38bdf8;
+      font-weight: 600;
+    }
+
     .ui-layer {
       position: absolute;
       top: 0; left: 0;
@@ -273,14 +309,24 @@
     .header {
       display: flex; justify-content: space-between; align-items: center; padding: 6px 14px; opacity: 0; transition: opacity 0.5s;
       border-radius: 20px; background: rgba(6, 18, 41, 0.75); border: 1px solid var(--glass-border);
+      pointer-events: auto; gap: 8px; flex-wrap: wrap;
+    }
+    .header-left {
+      display: flex; align-items: center; gap: 6px; flex-wrap: wrap;
+    }
+    .header-right {
+      display: flex; align-items: center; gap: 6px;
+    }
+    .datetime-text {
+      font-size: 11px; color: var(--text-main); font-weight: 600;
     }
     .time-chip {
       background: rgba(56, 189, 248, 0.2); border: 1px solid var(--glass-border); border-radius: 10px;
-      padding: 2px 6px; font-size: 10px; color: var(--neon-glow); cursor: pointer; margin-left: 4px;
+      padding: 2px 6px; font-size: 10px; color: var(--neon-glow); cursor: pointer;
     }
     .location-btn {
       background: rgba(251, 191, 36, 0.2); border: 1px solid var(--accent-gold); border-radius: 10px;
-      padding: 2px 8px; font-size: 10px; color: var(--accent-gold); cursor: pointer; margin-left: 6px; font-weight: 600;
+      padding: 2px 8px; font-size: 10px; color: var(--accent-gold); cursor: pointer; font-weight: 600;
     }
     .compass-card {
       background: rgba(15, 32, 67, 0.6); border: 1px solid var(--glass-border); border-radius: 14px;
@@ -439,6 +485,7 @@
       align-items: center;
       cursor: pointer;
       transition: background 0.2s, border-color 0.2s;
+      text-align: left;
     }
     .quick-item-btn:active {
       background: rgba(56, 189, 248, 0.2);
@@ -625,9 +672,11 @@
     </svg>
   </div>
 
+  <!-- ガイド枠＋自動星名HUDラベル -->
   <div id="planetarium-grid" class="planetarium-grid">
     <div class="grid-inner-ring"></div>
     <div class="grid-center-dot"></div>
+    <div id="target-hud-label" class="target-hud-label" onclick="openCurrentTargetStar()"></div>
   </div>
 
   <!-- スタート画面 -->
@@ -665,7 +714,7 @@
           </svg>
         </div>
         <div class="tut-card-desc">
-          スマホの傾きに合わせて、視点が動きます。まるで、実際に夜空を見上げているように星空を体験できます。
+          スマホやタブレットの傾きに合わせて視点が動きます。まるで実際に夜空を見上げているように星空を体験できます。
         </div>
 
         <div class="tut-card-content">
@@ -683,8 +732,8 @@
           <div class="tut-usage-subcard">
             <div class="tut-usage-title">使い方</div>
             <ul class="tut-usage-list">
-              <li><span class="tut-usage-num">①</span> <span>ジャイロ操作に切り替える</span></li>
-              <li><span class="tut-usage-num">②</span> <span>スマホを傾けて、見たい方向を見上げます</span></li>
+              <li><span class="tut-usage-num">①</span> <span>「かざす」ボタンでジャイロ操作をオン</span></li>
+              <li><span class="tut-usage-num">②</span> <span>端末を傾けて見たい方向を見上げます</span></li>
             </ul>
           </div>
         </div>
@@ -707,7 +756,7 @@
           </svg>
         </div>
         <div class="tut-card-desc">
-          画面をスワイプしたり、タップしたりして視点を動かします。細かい調整や、特定の星を探すときに便利です。
+          画面をスワイプしたり、星をタップしたりして視点を動かします。細かい調整や特定の星を探すときに便利です。
         </div>
 
         <div class="tut-card-content">
@@ -726,7 +775,7 @@
             <div class="tut-usage-title">使い方</div>
             <ul class="tut-usage-list">
               <li><span class="tut-usage-num">①</span> <span>スワイプ：上下左右に視点を移動</span></li>
-              <li><span class="tut-usage-num">②</span> <span>ピンチ：星空の拡大・縮小</span></li>
+              <li><span class="tut-usage-num">②</span> <span>中央の丸枠に星を入れると名前を表示</span></li>
               <li><span class="tut-usage-num">③</span> <span>タップ：星を選択して解説を表示</span></li>
             </ul>
           </div>
@@ -744,94 +793,92 @@
           <div class="tut-pill-btn">
             <span>⚙️</span> <span>ジャイロ操作</span>
           </div>
-          <span style="color: #94a3b8; font-size: 14px;">⇄</span>
+          <span style="color:var(--text-sub); font-size:12px;">⇄</span>
           <div class="tut-pill-btn">
             <span>👆</span> <span>スワイプ操作</span>
           </div>
         </div>
       </div>
 
-      <!-- ワンポイント -->
       <div class="tut-point-box">
-        <div class="tut-point-title">
-          <span>⭐</span> ワンポイント
-        </div>
+        <div class="tut-point-title"><span>✨</span> <span>観測のポイント</span></div>
         <ul class="tut-point-list">
-          <li>ジャイロ操作がうまく動かない場合は、画面をタップしてからもう一度お試しください。</li>
-          <li>どちらの操作でも、右上の「かざす」ボタン等で方向をリセットできます。</li>
-          <li>安心してお使いいただけるよう、個人情報の取得は行いません。</li>
+          <li>中央の丸枠に星を合わせると、自動で星座名と星の名前が表示されます。</li>
+          <li>「ウサタ先生」タブでは、今見えている星についてAIに質問できます。</li>
         </ul>
       </div>
 
-      <!-- メインボタン -->
-      <button class="tut-action-btn" onclick="startObservation(event)">
-        星空を見に行く <span>›</span>
-      </button>
+      <button class="tut-action-btn" onclick="startObservation(event)">観測を始める ✦</button>
     </div>
   </div>
 
+  <!-- メインUIレイヤー -->
   <div class="ui-layer">
     <div id="main-header" class="header glass-card">
-      <div>
-        <div style="font-size: 12px; font-weight: 600; display:flex; align-items:center; flex-wrap:wrap; gap:4px;">
+      <div class="header-left">
+        <button class="location-btn" onclick="toggleLocationModal()">
           <span id="current-location-label">🐪 鳥取砂丘・馬の背</span>
-          <button class="location-btn" onclick="toggleLocationModal()">📍 切り替え</button>
-          <button class="time-chip" onclick="toggleTimeModal()">🕒 時間</button>
+        </button>
+        <span id="current-datetime-display" class="datetime-text"></span>
+        <button class="time-chip" onclick="toggleTimeModal()">時刻変更</button>
+      </div>
+      <div class="header-right">
+        <div class="compass-card">
+          <span id="compass-direction">北 (N)</span>
+          <span id="compass-altitude">高度: 20°</span>
         </div>
-        <div id="current-datetime-display" style="font-size: 10px; color: var(--accent-gold); margin-top: 1px;">----/--/-- --:--</div>
+        <button id="gyro-toggle-btn" class="gyro-btn" onclick="toggleGyroMode()">
+          <span>🧭</span><span id="gyro-btn-text">かざす</span>
+        </button>
       </div>
-      
-      <div class="compass-card">
-        <span>🧭</span>
-        <span id="compass-direction" style="color: var(--text-main);">北 (N)</span>
-        <span style="opacity: 0.4;">|</span>
-        <span id="compass-altitude" style="color: var(--accent-gold);">高度: 20°</span>
-      </div>
+    </div>
 
-      <button id="gyro-toggle-btn" class="gyro-btn" onclick="toggleGyroMode()">
-        <span>📱</span><span id="gyro-btn-text">かざす</span>
+    <!-- 時刻変更モーダル -->
+    <div id="time-modal" class="glass-card time-modal">
+      <div style="display:flex; justify-content:space-between; align-items:center;">
+        <span style="font-size:13px; font-weight:700; color:var(--neon-glow);">🕒 観測時刻の切り替え</span>
+        <span style="font-size:11px; color:var(--text-sub); cursor:pointer;" onclick="toggleTimeModal()">閉じる</span>
+      </div>
+      <div class="time-options">
+        <button class="time-opt-btn active" onclick="setCustomTime('live')">現在時刻 (ライブ)</button>
+        <button class="time-opt-btn" onclick="setCustomTime('tonight_20')">今夜 20:00</button>
+        <button class="time-opt-btn" onclick="setCustomTime('tonight_22')">今夜 22:00</button>
+        <button class="time-opt-btn" onclick="setCustomTime('midnight_02')">深夜 02:00</button>
+      </div>
+    </div>
+
+    <!-- 観測地変更モーダル -->
+    <div id="location-modal" class="glass-card location-modal">
+      <div style="display:flex; justify-content:space-between; align-items:center;">
+        <span style="font-size:13px; font-weight:700; color:var(--accent-gold);">📍 観測地の切り替え</span>
+        <span style="font-size:11px; color:var(--text-sub); cursor:pointer;" onclick="toggleLocationModal()">閉じる</span>
+      </div>
+      <button id="loc-btn-dune" class="time-opt-btn active" onclick="switchToDuneLocation()">🐪 鳥取砂丘・馬の背（デフォルト）</button>
+      <button id="loc-btn-gps" class="time-opt-btn" onclick="fetchGPSLocation()">📍 GPSで現在地を登録・切り替え</button>
+    </div>
+
+    <!-- 星の詳細解説シート -->
+    <div id="star-sheet" class="glass-card star-sheet">
+      <div class="drag-handle" onclick="closeStarSheet()"></div>
+      <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:6px;">
+        <div>
+          <h3 id="sheet-star-name" style="font-size:18px; font-weight:700; color:var(--neon-glow);">星の名前</h3>
+          <div id="sheet-star-type" style="font-size:11px; color:var(--accent-gold); margin-top:2px;">1等星 / 約25光年</div>
+        </div>
+        <span style="font-size:11px; color:var(--text-sub); cursor:pointer;" onclick="closeStarSheet()">閉じる</span>
+      </div>
+      <p id="sheet-star-desc" style="font-size:12px; color:var(--text-main); line-height:1.6; margin-bottom:14px;"></p>
+      <button class="btn-primary" style="width:100%; padding:10px; font-size:13px;" onclick="openAIChatFromSheet()">
+        🐰 ウサタ先生にもっと詳しく聞く
       </button>
     </div>
 
-    <!-- 観測場所切り替え modal -->
-    <div id="location-modal" class="glass-card location-modal">
-      <div style="font-size: 12px; font-weight: 600; color: var(--neon-glow); margin-bottom: 6px;">📍 観測地の選択</div>
-      <div style="display:flex; flex-direction:column; gap:8px;">
-        <button class="time-opt-btn active" id="loc-btn-dune" onclick="switchToDuneLocation()">🐪 日本一きれいな星空：鳥取砂丘 (馬の背)</button>
-        <button class="time-opt-btn" id="loc-btn-gps" onclick="fetchGPSLocation()">📍 GPSで現在地を登録・切り替え</button>
-      </div>
-    </div>
-
-    <div id="time-modal" class="glass-card time-modal">
-      <div style="font-size: 12px; font-weight: 600; color: var(--neon-glow); margin-bottom: 4px;">🕒 観測時間を変更（プレビュー）</div>
-      <div class="time-options">
-        <button class="time-opt-btn active" onclick="setCustomTime('live')">⚡ 現在時刻 (LIVE)</button>
-        <button class="time-opt-btn" onclick="setCustomTime('tonight_20')">🌙 今夜 20:00</button>
-        <button class="time-opt-btn" onclick="setCustomTime('tonight_22')">🌌 今夜 22:00</button>
-        <button class="time-opt-btn" onclick="setCustomTime('midnight_02')">✨ 深夜 02:00</button>
-      </div>
-    </div>
-
-    <div id="star-sheet" class="glass-card star-sheet">
-      <div class="drag-handle" onclick="closeStarSheet()"></div>
-      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-        <h2 id="sheet-star-name" style="font-size: 17px; color: var(--neon-glow);">織姫星 (ベガ)</h2>
-        <span id="sheet-star-type" style="font-size: 11px; color: var(--text-sub);">1等星 / 約25光年</span>
-      </div>
-      <p id="sheet-star-desc" style="font-size: 12px; color: var(--text-main); line-height: 1.5; margin-bottom: 12px;">
-        こと座の最光星。夏の大三角を形作る美しく明るい星です。
-      </p>
-      <button class="btn-primary" style="width: 100%; padding: 10px; font-size: 13px;" onclick="openAIChatFromSheet()">ウサタ先生に聞いてみる</button>
-    </div>
-
-    <!-- AIチャット画面 -->
+    <!-- ウサタ先生 AIチャットシート -->
     <div id="chat-sheet" class="glass-card chat-sheet">
       <div class="drag-handle" onclick="closeChatSheet()"></div>
       <div class="chat-header">
-        <div style="font-weight: 700; font-size: 14px; color: var(--neon-glow); display:flex; align-items:center;">
-          ウサタ先生 AI
-        </div>
-        <span style="font-size: 11px; color: var(--text-sub); cursor:pointer;" onclick="closeChatSheet()">閉じる</span>
+        <span style="font-weight:700; font-size:14px; color:var(--neon-glow);">🐰 ウサタ先生の星空ガイド</span>
+        <span style="font-size:11px; color:var(--text-sub); cursor:pointer;" onclick="closeChatSheet()">閉じる</span>
       </div>
 
       <div class="chat-body-container">
@@ -841,56 +888,51 @@
           </div>
           <div class="ai-hero-info">
             <div class="ai-hero-title">
-              ウサタ先生 <span class="ai-hero-badge">AI</span>
+              ウサタ先生 <span class="ai-hero-badge">AIガイド</span>
             </div>
-            <div class="ai-hero-desc">星空のことなら、なんでも聞いてね！</div>
+            <div class="ai-hero-desc">今この瞬間の夜空に合わせて、星の探し方や専門的な天文学まで何でも教えるよ！</div>
           </div>
         </div>
 
         <div class="quick-questions-section">
-          <div class="section-title">✦ よくある質問</div>
+          <div class="section-title">✨ おすすめの質問（タップで送信）</div>
           <div class="quick-list">
-            <button class="quick-item-btn" onclick="sendQuickQuestion('ベガってどんな星？')">
-              <span>⭐️ ベガってどんな星？</span> <span>➔</span>
+            <button class="quick-item-btn" onclick="sendQuickQuestion('今見えているおすすめの星を教えて！')">
+              <span>今見えているおすすめの星を教えて！</span><span>➔</span>
             </button>
-            <button class="quick-item-btn" onclick="sendQuickQuestion('今夜見える星座はどれ？')">
-              <span>🌌 今夜見える星座はどれ？</span> <span>➔</span>
+            <button class="quick-item-btn" onclick="sendQuickQuestion('初心者でも星を見つけるコツはある？')">
+              <span>初心者でも星を見つけるコツはある？</span><span>➔</span>
             </button>
-            <button class="quick-item-btn" onclick="sendQuickQuestion('星の見つけ方のコツは？')">
-              <span>🧭 星の見つけ方のコツは？</span> <span>➔</span>
-            </button>
-            <button class="quick-item-btn" onclick="sendQuickQuestion('鳥取の星空の特徴は？')">
-              <span>🐪 鳥取の星空の特徴は？</span> <span>➔</span>
+            <button class="quick-item-btn" onclick="sendQuickQuestion('鳥取の星空がきれいな理由を教えて！')">
+              <span>鳥取の星空がきれいな理由を教えて！</span><span>➔</span>
             </button>
           </div>
         </div>
 
         <div id="chat-messages" class="chat-messages">
           <div class="msg-row msg-row-ai">
-            <img class="msg-avatar" src="./teacher-rabbit.png" onerror="handleImageError(this)">
-            <div class="msg msg-ai">
-              こんにちは！ウサタ先生だぞ！⭐️<br>
-              気になった星や星座、鳥取の星空についてなんでも質問してね！
-            </div>
+            <img class="msg-avatar" src="./teacher-rabbit.png" alt="ウサタ" onerror="handleImageError(this)">
+            <div class="msg msg-ai">ようこそ！鳥取砂丘の星空へ！気になる星の名前や、知りたいことがあれば何でも聞いてね！✨</div>
           </div>
         </div>
       </div>
 
       <div class="chat-input-area">
-        <input type="text" id="chat-input" class="chat-input" placeholder="メッセージを入力してください..." onkeypress="handleKeyPress(event)">
+        <input type="text" id="chat-input" class="chat-input" placeholder="例：オリオン座ってどんな星座？ / ベガを詳しく" onkeypress="handleKeyPress(event)">
         <button id="chat-send-btn" class="chat-send-btn" onclick="sendChatMessage()">送信</button>
       </div>
     </div>
 
+    <!-- 星を探すシート -->
     <div id="search-sheet" class="glass-card search-sheet">
       <div class="drag-handle" onclick="closeSearchSheet()"></div>
-      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-        <div style="font-weight: 600; font-size: 14px; color: var(--neon-glow);">🔍 星を探す</div>
-        <span style="font-size: 11px; color: var(--text-sub); cursor:pointer;" onclick="closeSearchSheet()">閉じる</span>
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+        <span style="font-weight:700; font-size:14px; color:var(--neon-glow);">🔍 星・星座を探す（全76天体）</span>
+        <span style="font-size:11px; color:var(--text-sub); cursor:pointer;" onclick="closeSearchSheet()">閉じる</span>
       </div>
 
       <div class="search-input-box">
-        <input type="text" id="star-search-input" placeholder="天体名・星座名で検索..." oninput="filterStarList()">
+        <input type="text" id="star-search-input" placeholder="星や星座の名前で検索..." oninput="filterStarList()">
       </div>
 
       <div class="filter-tags">
@@ -902,6 +944,7 @@
       <div id="star-list" class="star-list"></div>
     </div>
 
+    <!-- 設定シート -->
     <div id="settings-sheet" class="glass-card settings-sheet">
       <div class="drag-handle" onclick="closeSettingsSheet()"></div>
       <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
@@ -939,7 +982,7 @@
         <div class="setting-item">
           <div>
             <div class="setting-label">プラネタリウム枠（ガイド）</div>
-            <div class="setting-desc">画面中央の円枠や度数ガイドを表示</div>
+            <div class="setting-desc">画面中央の円枠や星名自動キャッチを表示</div>
           </div>
           <label class="switch">
             <input type="checkbox" id="toggle-grid-lines" checked onchange="toggleGridLines(this.checked)">
@@ -971,7 +1014,7 @@
 
         <div class="setting-item" style="flex-direction: column; align-items: flex-start; gap: 4px; margin-top: 10px;">
           <div class="setting-label" style="color: var(--neon-glow);">アプリ情報</div>
-          <div class="setting-desc">Tottori Star Pocket v65.0.0</div>
+          <div class="setting-desc">Tottori Star Pocket v66.0.0</div>
           <div class="setting-desc">Powered by Gemini 3.8 Flash & Three.js</div>
         </div>
       </div>
@@ -990,7 +1033,7 @@
 
   <script>
     /* 位置情報管理 */
-    let currentLocationMode = 'dune'; // 'dune' or 'gps'
+    let currentLocationMode = 'dune';
     let currentLat = 35.5398; // 鳥取砂丘の緯度
     let currentLon = 134.2325; // 鳥取砂丘の経度
 
@@ -1004,10 +1047,8 @@
     function setUsataEmotion(emotionType) {
       const img = document.getElementById('usata-avatar');
       if (!img) return;
-
       const newSrc = usataAvatars[emotionType] || usataAvatars.default;
       if (img.getAttribute('src') === newSrc) return;
-
       img.src = newSrc;
     }
 
@@ -1029,7 +1070,7 @@
       if (text.includes('💭') || text.includes('考え中') || text.includes('うーむ') || text.includes('質問')) {
         return 'thinking';
       }
-      if (text.includes('最高') || text.includes('すごい') || text.includes('おすすめ') || text.includes('きれい') || text.includes('ようこそ') || text.includes('！') && text.includes('✨')) {
+      if (text.includes('最高') || text.includes('すごい') || text.includes('おすすめ') || text.includes('きれい') || text.includes('ようこそ') || (text.includes('！') && text.includes('✨'))) {
         return 'happy';
       }
       if (text.includes('だぞ') || text.includes('任せて') || text.includes('知識') || text.includes('教えてあげる') || text.includes('星空の秘密')) {
@@ -1038,7 +1079,7 @@
       return 'default';
     }
 
-    // 各主要天体の 赤緯(Declination: deg) と 赤経(Right Ascension: deg)
+    // 各主要天体の 赤緯(Declination: deg) と 赤経(Right Ascension: deg) - 全76天体
     const starDatabase = [
       // --- 夏の大三角 ＆ はくちょう座 ---
       { id: "vega", name: "織姫星 (ベガ)", category: "1st", type: "1等星 / 約25光年", desc: "こと座の1等星。夏の大三角を形成する最も青白く輝く星です。", colorHex: "#a5f3fc", ra: 279.23, dec: 38.78 },
@@ -1142,8 +1183,7 @@
     let timeMode = 'live';
     let minPitch = -5;
     let maxPitch = 85;
-
-    let gyroSensitivityLevel = 3; 
+    let gyroSensitivityLevel = 3;
 
     function updateGyroSensitivity(val) {
       gyroSensitivityLevel = parseFloat(val);
@@ -1191,7 +1231,6 @@
 
       ctx.save();
       ctx.fillStyle = "rgba(255, 255, 255, 0.9)";
-      
       ctx.beginPath();
       ctx.moveTo(cx - spikeWidth, cy);
       ctx.lineTo(cx, cy - spikeLen);
@@ -1313,7 +1352,7 @@
       const customTex = createGlowStarTexture(s.colorHex || "#ffffff", isFirstMag);
       const mat = new THREE.SpriteMaterial({ map: customTex, transparent: true, blending: THREE.AdditiveBlending });
       const sp = new THREE.Sprite(mat);
-      
+
       const baseScale = isFirstMag ? 46 : 30;
       sp.scale.set(baseScale, baseScale, 1);
       sp.userData = { ...s, baseScale: baseScale, twinkleSpeed: 1.5 + Math.random() * 2.5, twinklePhase: Math.random() * Math.PI * 2, isVisibleOnSky: true };
@@ -1325,7 +1364,7 @@
     const lineGroup = new THREE.Group();
     starrySkyGroup.add(lineGroup);
 
-   const constellationLinesData = [
+    const constellationLinesData = [
       ["vega", "altair", "deneb", "vega"],
       ["betelgeuse", "sirius", "procyon", "betelgeuse"],
       ["betelgeuse", "bellatrix", "rigel", "saiph", "betelgeuse"],
@@ -1371,14 +1410,14 @@
       const h = dateObj.getUTCHours();
       const m = dateObj.getUTCMinutes();
       const s = dateObj.getUTCSeconds();
-      
+
       let year = Y, month = M;
       if (month <= 2) { year -= 1; month += 12; }
       const A = Math.floor(year / 100);
       const B = 2 - A + Math.floor(A / 4);
       const dayFraction = (h + m / 60 + s / 3600) / 24;
       const JD = Math.floor(365.25 * (year + 4716)) + Math.floor(30.6001 * (month + 1)) + D + dayFraction + B - 1524.5;
-      
+
       const T = (JD - 2451545.0) / 36525.0;
       let gmst = 280.46061837 + 360.98564736629 * (JD - 2451545.0) + 0.000387933 * T * T - (T * T * T) / 38710000;
       gmst = (gmst % 360 + 360) % 360;
@@ -1608,7 +1647,7 @@
       const altElem = document.getElementById('compass-altitude');
       if (altElem) {
         if (altDeg === 90) altElem.innerText = "高度: 90° (天頂)";
-        else if (altDeg === 0) altElem.innerText = "高度: 0° (地平線)";
+        else if (altDeg === 0) altElem.innerText = "高度: 0° (地平)";
         else altElem.innerText = `高度: ${altDeg}°`;
       }
 
@@ -1712,6 +1751,89 @@
     window.addEventListener('touchmove', onPointerMove, {passive:true});
     window.addEventListener('touchend', onPointerEnd);
 
+    // 各星IDに対応する星座名マップ
+    const starConstellationMap = {
+      vega: "こと座", altair: "わし座",
+      deneb: "はくちょう座", sadr: "はくちょう座", albireo: "はくちょう座", gienah_cyg: "はくちょう座",
+      antares: "さそり座", graffias: "さそり座", dschubba: "さそり座", wei: "さそり座", sargas: "さそり座", shaula: "さそり座",
+      regulus: "しし座", denebola: "しし座", algieba: "しし座", zosma: "しし座",
+      arcturus: "うしかい座", izar: "うしかい座", muphrid: "うしかい座",
+      spica: "おとめ座", porrima: "おとめ座", vindemiatrix: "おとめ座",
+      markab: "ペガスス座", scheat: "ペガスス座", algenib: "ペガスス座",
+      alpheratz: "アンドロメダ座", mirach: "アンドロメダ座", almach: "アンドロメダ座", m31: "アンドロメダ座",
+      mirfak: "ペルセウス座", algol: "ペルセウス座",
+      fomalhaut: "みなみのうお座",
+      betelgeuse: "オリオン座", bellatrix: "オリオン座", rigel: "オリオン座", saiph: "オリオン座",
+      mintaka: "オリオン座", alnilam: "オリオン座", alnitak: "オリオン座",
+      sirius: "おおいぬ座", mirzam: "おおいぬ座", wezen: "おおいぬ座", adhara: "おおいぬ座", aludra: "おおいぬ座",
+      procyon: "こいぬ座", gomeisa: "こいぬ座",
+      aldebaran: "おうし座", elnath: "おうし座", zeta_tau: "おうし座", ain: "おうし座", hyadum1: "おうし座", alcyone: "おうし座",
+      pollux: "ふたご座", castor: "ふたご座", alhena: "ふたご座", wasat: "ふたご座", mebsuta: "ふたご座",
+      capella: "ぎょしゃ座", menkalinan: "ぎょしゃ座", mahasim: "ぎょしゃ座", hassaleh: "ぎょしゃ座",
+      polaris: "こぐま座",
+      schedar: "カシオペヤ座", caph: "カシオペヤ座", gamma_cas: "カシオペヤ座", ksora: "カシオペヤ座", segin: "カシオペヤ座",
+      dubhe: "おおぐま座 (北斗七星)", merak: "おおぐま座 (北斗七星)", phecda: "おおぐま座 (北斗七星)",
+      megrez: "おおぐま座 (北斗七星)", alioth: "おおぐま座 (北斗七星)", mizar: "おおぐま座 (北斗七星)", alkaid: "おおぐま座 (北斗七星)",
+      canopus: "りゅうこつ座", achernar: "エリダヌス座", acrux: "みなみじゅうじ座"
+    };
+
+    let currentTargetStarData = null;
+
+    function openCurrentTargetStar() {
+      if (currentTargetStarData) {
+        openStarSheet(currentTargetStarData);
+      }
+    }
+
+    function updateTargetHud() {
+      const grid = document.getElementById('planetarium-grid');
+      const hud = document.getElementById('target-hud-label');
+      if (!grid || !hud || grid.classList.contains('is-hidden')) return;
+
+      const rect = grid.getBoundingClientRect();
+      const centerX = rect.left + rect.width / 2;
+      const centerY = rect.top + rect.height / 2;
+      const maxRadius = rect.width / 2;
+
+      let closestStar = null;
+      let minDistance = maxRadius;
+
+      const tempVec = new THREE.Vector3();
+
+      starSprites.forEach(sp => {
+        if (!sp.visible) return;
+
+        tempVec.copy(sp.position);
+        tempVec.project(camera);
+
+        // カメラの後ろ側にある星は除外
+        if (tempVec.z >= 1) return;
+
+        const screenX = (tempVec.x * 0.5 + 0.5) * window.innerWidth;
+        const screenY = (-tempVec.y * 0.5 + 0.5) * window.innerHeight;
+
+        const dist = Math.hypot(screenX - centerX, screenY - centerY);
+        if (dist < minDistance) {
+          minDistance = dist;
+          closestStar = sp.userData;
+        }
+      });
+
+      if (closestStar) {
+        if (!currentTargetStarData || currentTargetStarData.id !== closestStar.id) {
+          currentTargetStarData = closestStar;
+          const constName = starConstellationMap[closestStar.id] || "";
+          hud.innerHTML = constName
+            ? `<span class="target-hud-const">✨ ${constName}</span><span>／</span><span class="target-hud-star">${closestStar.name}</span>`
+            : `<span class="target-hud-star">★ ${closestStar.name}</span>`;
+        }
+        hud.classList.add('visible');
+      } else {
+        currentTargetStarData = null;
+        hud.classList.remove('visible');
+      }
+    }
+
     let clock = new THREE.Clock();
     function animate() {
       requestAnimationFrame(animate);
@@ -1746,6 +1868,7 @@
         camera.quaternion.slerp(targetQuaternion, 0.15);
       }
 
+      updateTargetHud();
       renderer.render(scene, camera);
     }
     animate();
@@ -1838,7 +1961,8 @@
 
       const filtered = starDatabase.filter(star => {
         const matchesCategory = (currentFilterCategory === 'all') || (star.category === currentFilterCategory);
-        const matchesText = star.name.toLowerCase().includes(searchText) || star.desc.toLowerCase().includes(searchText);
+        const constName = (starConstellationMap[star.id] || '').toLowerCase();
+        const matchesText = star.name.toLowerCase().includes(searchText) || star.desc.toLowerCase().includes(searchText) || constName.includes(searchText);
         return matchesCategory && matchesText;
       });
 
@@ -1850,13 +1974,14 @@
       listContainer.innerHTML = filtered.map(star => {
         const sprite = starSpriteMap[star.id];
         const isVisibleNow = sprite ? sprite.userData.isVisibleOnSky : false;
+        const constLabel = starConstellationMap[star.id] ? `・${starConstellationMap[star.id]}` : '';
 
         if (isVisibleNow) {
           return `
             <div class="star-item" onclick="selectStarFromList('${star.id}')">
               <div class="star-item-info">
                 <h4>${star.name}</h4>
-                <p>${star.type}</p>
+                <p>${star.type}${constLabel}</p>
               </div>
               <span style="font-size: 11px; color: var(--neon-glow); font-weight:600;">✨ 観測可能 ➔</span>
             </div>
@@ -1866,7 +1991,7 @@
             <div class="star-item disabled" onclick="selectStarFromList('${star.id}', false)">
               <div class="star-item-info">
                 <h4>${star.name}</h4>
-                <p>${star.type}</p>
+                <p>${star.type}${constLabel}</p>
               </div>
               <span style="font-size: 11px; color: var(--text-sub);">🌅 地平線の下</span>
             </div>
@@ -1902,7 +2027,7 @@
         const r = Math.sqrt(worldPos.x * worldPos.x + worldPos.y * worldPos.y + worldPos.z * worldPos.z);
         viewLat = Math.max(minPitch, Math.min(maxPitch, THREE.MathUtils.radToDeg(Math.asin(worldPos.y / r))));
         viewLon = THREE.MathUtils.radToDeg(Math.atan2(worldPos.z, worldPos.x));
-        
+
         const euler = new THREE.Euler(THREE.MathUtils.degToRad(viewLat), THREE.MathUtils.degToRad(viewLon), 0, 'YXZ');
         targetQuaternion.setFromEuler(euler);
         updateCompassDisplay();
@@ -1997,7 +2122,6 @@
       const locName = (currentLocationMode === 'dune') ? '鳥取砂丘の馬の背' : 'ユーザーの現在地';
 
       try {
-        // 自作バックエンド API サーバーのエンドポイントを呼び出し
         const response = await fetch('https://tottori-star.onrender.com/api/chat', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -2013,7 +2137,7 @@
         if (data && data.reply) {
           const replyText = data.reply;
           aiMsgDiv.innerText = replyText;
-          
+
           const emotion = detectEmotionFromText(replyText);
           setUsataEmotion(emotion);
 
@@ -2030,14 +2154,13 @@
             `;
             aiMsgDiv.appendChild(card);
           }
-
         } else {
-          aiMsgDiv.innerText = "うーむ、うまく星の通信を捉えられなかったぞ！もう一度聞いてみてくれ⭐";
+          aiMsgDiv.innerText = "うーむ、うまく星の通信を捉えられなかったよ！もう一度聞いてみてね！⭐";
           setUsataEmotion('thinking');
         }
       } catch (err) {
         console.error("Fetch Exception:", err);
-        aiMsgDiv.innerText = "砂丘の通信が少し途切れたみたいだ！サーバーの接続を確認してみてくれ！⭐";
+        aiMsgDiv.innerText = "砂丘の通信が少し途切れたみたいだよ！サーバーの接続を確認してみてね！⭐";
         setUsataEmotion('thinking');
       } finally {
         sendBtn.disabled = false;
